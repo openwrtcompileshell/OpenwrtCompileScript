@@ -23,7 +23,10 @@
 脚本使用办法：https://www.right.com.cn/forum/thread-345378-1-1.html
 
 
+
 脚本版本
+
+
 ++2.7版本
 
   	1.修改脚本名字为《openwr.sh》不再以版本命名，以后执行脚本sh openwrt.sh即可
