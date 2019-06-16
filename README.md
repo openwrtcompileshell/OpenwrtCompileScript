@@ -1,21 +1,21 @@
 序言
 
-  降低编译难度，减少重复的步骤，但不利于学习，此脚本适用于有点openwrt编译的基础的最佳，完全没有编译基础的请去补充相关知识 
+  	降低编译难度，减少重复的步骤，但不利于学习，此脚本适用于有点openwrt编译的基础的最佳，完全没有编译基础的请去补充相关知识 
           
- 想学点东西请走这里： https://www.right.com.cn/forum/thread-324501-1-1.html
+	 想学点东西请走这里： https://www.right.com.cn/forum/thread-324501-1-1.html
           
- 此脚本并不是无脑脚本，这个脚本对新手是无脑的但要点基础，起码你要会选择机型与插件，有点基础的可以说是辅助，加快你的编译速度，写这个脚本的初衷就是编译的过程重复太多，所以写了脚本         
+ 	此脚本并不是无脑脚本，这个脚本对新手是无脑的但要点基础，起码你要会选择机型与插件，有点基础的可以说是辅助，加快你的编译速度，写这个脚本的初衷就是编译的过程重复太多，所以写了脚本         
 
 脚本作用
-用于辅助Openwrt编译，但不会帮你完成整个编译过程，需要一点Openwrt编译基础
+		用于辅助Openwrt编译，但不会帮你完成整个编译过程，需要一点Openwrt编译基础
 
 
-目前支持系统Ubuntu 16.4 or 18.4
+		目前支持系统Ubuntu 16.4 or 18.4
 
 使用方法
- 1. git clone https://github.com/OpenWrtCompileScript/OpenwrtCompileScript.git
+ 1. git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
   
- 2. sh openwrt.sh
+ 2. bash openwrt.sh
 
 
 
