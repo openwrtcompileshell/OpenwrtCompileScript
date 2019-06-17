@@ -881,7 +881,7 @@ self_test(){
 	read a 
 }
 
-description()(
+description(){
 		echo "	      +++++++++++++++++++++++++++++++++++++++"
 		echo "	    ++欢迎使用Openwrt-Compile-Script Ver $version ++"
 		echo "	      +++++++++++++++++++++++++++++++++++++++"
@@ -900,6 +900,6 @@ description()(
 		echo ""
 		echo ""
 		echo "请阅读完上面的前言，（）里面的就是密码，此界面只会出现一次，后面就不会了"
-)
+}
 
 description_if 
