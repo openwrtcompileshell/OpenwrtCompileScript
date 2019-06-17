@@ -14,9 +14,13 @@
 
 使用方法
  1. git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+ 
+ 2. cd OpenwrtCompileScript
   
- 2. bash openwrt.sh
-
+ 3. bash openwrt.sh
+ 
+ 
+脚本执行一次以后会自动添加变量，第二次执行脚本 bash $openwrt
 
 
 
