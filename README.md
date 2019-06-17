@@ -10,7 +10,10 @@
 		用于辅助Openwrt编译，但不会帮你完成整个编译过程，需要一点Openwrt编译基础
 
 
-		目前支持系统Ubuntu 16.4 or 18.4
+		目前支持系统：1.Ubuntu 16.4  
+			    2.Ubuntu 18.4
+			    3.win10子系统（ubuntu 18.04 LTS）
+			  
 
 使用方法
  1. git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
