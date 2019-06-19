@@ -545,6 +545,7 @@ software(){
 	fi
 	cd $HOME/$fl/$file/lede
 	Update_feeds
+	mk_df
 		
 }
 
@@ -556,7 +557,7 @@ Update_feeds(){
 	echo "---------------------------"
 				
 		./scripts/feeds update -a && ./scripts/feeds install -a
-		mk_df
+		
 		
 }
 
