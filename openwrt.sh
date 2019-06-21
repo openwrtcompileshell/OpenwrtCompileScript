@@ -102,79 +102,6 @@ DL_other(){
 		
 }
 
-#选项5.DNS替换
-DNS_Host(){
-	clear 
-	echo "××××××替换HOST文件×××××××"
-	echo ""
-	echo "    1.替换HOST文件"
-	echo "    2.恢复HOST文件"
-	echo ""
-	read -p "请输入你的决定："  HOST
-		case "$HOST" in
-			1)
-			DNS_Host_replace
-			;;
-			2)
-			DNS_Host_restore
-			;;
-			*)
-			clear &&  echo  "请输入正确的数字 [1-2]" && Time
-			DNS_Host
-			;;
-		esac
-		
-}
-DNS_Host_replace(){
-	
-	if [ -e /etc/hosts.back ]; then
-		echo "-----已存在-----"
-	 else
-		sudo mv /etc/hosts /etc/hosts.back
-		
-	fi
-	
-		touch ./hosts && echo "
-		127.0.0.1 localhost
-		162.159.209.51 www.right.com.cn
-		192.30.253.112 github.com 
-		192.30.253.119 gist.github.com 
-		151.101.100.133 assets-cdn.github.com 
-		151.101.100.133 raw.githubusercontent.com 
-		151.101.100.133 gist.githubusercontent.com 
-		151.101.100.133 cloud.githubusercontent.com 
-		151.101.100.133 camo.githubusercontent.com 
-		151.101.100.133 avatars0.githubusercontent.com 
-		151.101.100.133 avatars1.githubusercontent.com 
-		151.101.100.133 avatars2.githubusercontent.com 
-		151.101.100.133 avatars3.githubusercontent.com 
-		151.101.100.133 avatars4.githubusercontent.com 
-		151.101.100.133 avatars5.githubusercontent.com 
-		151.101.100.133 avatars6.githubusercontent.com 
-		151.101.100.133 avatars7.githubusercontent.com 
-		151.101.100.133 avatars8.githubusercontent.com
-		# The following lines are desirable for IPv6 capable hosts
-		::1     ip6-localhost ip6-loopback
-		fe00::0 ip6-localnet
-		ff00::0 ip6-mcastprefix
-		ff02::1 ip6-allnodes
-		ff02::2 ip6-allrouters	
-		">>./hosts
-		sudo mv ./hosts /etc/hosts 
-		sudo /etc/init.d/networking restart 
-		echo "替换完成如果使用的过程中发现有任何问题，请还原之前的HOST文件"
-	
-	
-}
-
-
-DNS_Host_restore(){
-	sudo rm -rf /etc/hosts
-	sudo mv /etc/hosts.back /etc/hosts
-	sudo /etc/init.d/networking restart 
-	echo "还原完成"
-}
-
 
 #选项4.恢复编译环境
 source_RestoreFactory(){
@@ -372,8 +299,6 @@ Main_interface(){
 	echo ""
 	echo "			4.恢复编译环境"
 	echo ""
-	echo "			5.替换DNS HOST(加快下载与打开GitHub)"
-	echo ""
 	echo "			6.其他选项"	
 	echo ""
 	echo "			9.更新脚本"	
@@ -398,9 +323,6 @@ Main_interface(){
 		4)
 		source_RestoreFactory
 		;;
-		5)
-		DNS_Host
-		;;
 		6)
 		other
 		;;
@@ -411,7 +333,7 @@ Main_interface(){
 		exit
 		;;
 		*)
-	clear && echo  "请输入正确的数字 [1-5,0]" && Time
+	clear && echo  "请输入正确的数字 [1-4,6,0]" && Time
 	Main_interface
 	;;
 esac
