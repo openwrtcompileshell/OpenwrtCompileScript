@@ -97,7 +97,7 @@ DL_other(){
 	echo "***你的openwrt文件夹有以下几个***"
 		 Ls_File
 	read -p "请选择你要输入你要更新的文件夹：" DL_file
-	cd && cd $HOME/$fl/DL_file/lede 
+	cd && cd $HOME/$fl/$DL_file/lede 
 	DL_source
 		
 }
