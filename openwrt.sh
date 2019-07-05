@@ -406,9 +406,11 @@ source_Download(){
 		echo ""
 		echo "	2.openwrt18.6(Trunk)_source"
 		echo ""
-		echo "	3.Lean_R8(stable version)_source"
+		echo "	3.openwrt19.7(Trunk)_source"
 		echo ""
-		echo " 	4.Lean_R9(Trunk)_source"
+		echo "	4.Lean_R8(stable version)_source"
+		echo ""
+		echo " 	5.Lean_R9(Trunk)_source"
 		echo ""
 		echo "	0.exit"
 		echo ""
@@ -421,14 +423,18 @@ source_Download(){
 				cd lede
 				;;
 				2)
-				git clone  https://github.com/openwrt/openwrt.git lede
+				git clone -b openwrt-18.06 https://github.com/openwrt/openwrt.git lede
 				cd lede
 				;;
 				3)
-				git clone https://github.com/coolsnowwolf/openwrt.git lede
+				git clone -b openwrt-19.07 https://github.com/openwrt/openwrt.git lede
 				cd lede
 				;;
 				4)
+				git clone https://github.com/coolsnowwolf/openwrt.git lede
+				cd lede
+				;;
+				5)
 				git clone https://github.com/coolsnowwolf/lede.git lede
 				cd lede
 				;;
@@ -727,7 +733,7 @@ description_if(){
 			esac
 					
 	 else	
-		clear && echo "不是win10" 
+		 echo "不是win10" && clear 
 	 fi
 	 
 	 
