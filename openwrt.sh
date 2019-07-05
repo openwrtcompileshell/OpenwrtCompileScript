@@ -48,7 +48,7 @@ update_script(){
 			git reset --hard origin/master
 			echo "回车进入编译菜单"
 			read a 
-			Main_interface
+			bash $openwrt
 		else
 			echo "请检查你的网络!!!!" && read a
 			Time && Main_interface
@@ -112,16 +112,16 @@ source_RestoreFactory(){
 		Ls_File
 	
 	echo ""
-	read  -p "请输入你的根目录openwrt文件夹名（用于还原dl文件夹）:" openwrt
-	if [ -e $HOME/$fl/$openwrt ]; then
-			cd && cd $HOME/$fl/$openwrt/lede
+	read  -p "请输入你的根目录openwrt文件夹名（用于还原dl文件夹）:" openwrt_file
+	if [ -e $HOME/$fl/$openwrt_file ]; then
+			cd && cd $HOME/$fl/$openwrt_file/lede
 			echo "所有编译过的文件全部删除,openwrt源代码保存，回车继续 Ctrl+c取消" && read a  
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_Secondary_compilation
 		fi
 	make distclean 
-	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$openwrt/lede/dl
+	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$openwrt_file/lede/dl
 	./scripts/feeds update -a && ./scripts/feeds install -a
 	clear && echo ""
 	echo "所有编译过的文件全部删除完成，如依旧编译失败，请重新下载源代码，回车可以开始编译 不需要编译Ctrl+c取消" && read a 
@@ -420,23 +420,19 @@ source_Download(){
 			case "$Download_source" in
 				1)
 				git clone -b lede-17.01 https://github.com/openwrt/openwrt.git lede
-				cd lede
 				;;
 				2)
 				git clone -b openwrt-18.06 https://github.com/openwrt/openwrt.git lede
-				cd lede
+				
 				;;
 				3)
 				git clone -b openwrt-19.07 https://github.com/openwrt/openwrt.git lede
-				cd lede
 				;;
 				4)
 				git clone https://github.com/coolsnowwolf/openwrt.git lede
-				cd lede
 				;;
 				5)
 				git clone https://github.com/coolsnowwolf/lede.git lede
-				cd lede
 				;;
 				0)
 				exit;;
@@ -504,7 +500,7 @@ mk_df(){
 		description >> $HOME/$fl/$OF/description 
 		ln -s  $HOME/$fl/$OF/dl $HOME/$fl/$file/lede/dl
 		ln -s  $HOME/$fl/$OF/My_config $HOME/$fl/$file/lede/My_config
-		ln -s  $HOME/$fl/$OF/$OCS/$0 $HOME/$fl/$file/lede/$0
+		ln -s  $HOME/$fl/$OF/$OCS/openwrt.sh $HOME/$fl/$file/lede/openwrt.sh
 		cd $HOME/$fl/$file/lede
 		DL_Detection
 		DL_source
@@ -522,13 +518,13 @@ DL_source(){
 		read -p "请输入你的决定："  DL_so
 			case "$DL_so" in
 				1)
-				sudo 1rm -rf $HOME/$fl/$file/lede/scripts/download.pl
+				rm -rf $HOME/$fl/$file/lede/scripts/download.pl
 				cp $HOME/$fl/$OF/pl/download_1150.pl $HOME/$fl/$file/lede/scripts/download.pl
 				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 				DL_download
 				;;
 				2)
-				sudo rm -rf $HOME/$fl/$file/lede/scripts/download.pl
+				rm -rf $HOME/$fl/$file/lede/scripts/download.pl
 				cp $HOME/$fl/$OF/pl/download_1806.pl $HOME/$fl/$file/lede/scripts/download.pl
 				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 				DL_download
@@ -543,14 +539,14 @@ DL_source(){
 
 DL_Detection(){
 	if [ -e $HOME/$fl/$OF/pl/download_1806.pl ]; then
-			echo "文件已存在"
+			echo "download_1806.pl文件已存在"
 	 	 else
 			wget --no-check-certificate https://raw.githubusercontent.com/openwrt/openwrt/openwrt-18.06/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1806.pl
 			
 			
 		fi
 	if [ -e $HOME/$fl/$OF/pl/download_1150.pl ]; then
-			echo "文件已存在"
+			echo "download_1150.pl文件已存在"
 	 	 else
 			wget --no-check-certificate https://raw.githubusercontent.com/LGA1150/openwrt/exp/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1150.pl
 				
@@ -613,10 +609,12 @@ Ecc(){
 	echo "	  2.进去编译菜单选择你要的功能完成以后Save"
 	echo "	  3.菜单Exit以后会自动开始编译"
 	echo ""
-	echo "    注：如果不需要编译 Ctrl+c退出"
+	echo "          注：如果不需要编译 Ctrl+c退出"
 	echo "   -------------------------------------------------"
 	read a
-	make menuconfig 
+	pwd
+	make menuconfig
+	 #[需要添加判断防止报错]
 	Save_My_Config_luci
 	mk_time
 
