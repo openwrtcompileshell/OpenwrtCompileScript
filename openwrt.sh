@@ -506,6 +506,7 @@ mk_df(){
 		ln -s  $HOME/$fl/$OF/My_config $HOME/$fl/$file/lede/My_config
 		ln -s  $HOME/$fl/$OF/$OCS/$0 $HOME/$fl/$file/lede/$0
 		cd $HOME/$fl/$file/lede
+		DL_Detection
 		DL_source
 }
 
@@ -521,13 +522,13 @@ DL_source(){
 		read -p "请输入你的决定："  DL_so
 			case "$DL_so" in
 				1)
-				DL_Detection
+				sudo 1rm -rf $HOME/$fl/$file/lede/scripts/download.pl
 				cp $HOME/$fl/$OF/pl/download_1150.pl $HOME/$fl/$file/lede/scripts/download.pl
 				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 				DL_download
 				;;
 				2)
-				DL_Detection
+				sudo rm -rf $HOME/$fl/$file/lede/scripts/download.pl
 				cp $HOME/$fl/$OF/pl/download_1806.pl $HOME/$fl/$file/lede/scripts/download.pl
 				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 				DL_download
@@ -555,7 +556,7 @@ DL_Detection(){
 				
 		fi
 	if [ -e $HOME/$fl/$file/lede/scipts/download_back.pl ]; then
-			sudo rm -rf $HOME/$fl/$file/lede/scripts/download.pl
+			echo ""
 	 	 else
 			cd $HOME/$fl/$file/lede/scripts
 			mv download.pl download_back.pl
@@ -580,6 +581,7 @@ DL_download(){
 }
 
 DL_error(){
+			
 			echo "----------------------------------------"
 			echo "请检查上面有没有error出现，如果有请重新下载"
 			echo " 1.有"
@@ -595,7 +597,7 @@ DL_error(){
 				;;
 				*)
 				clear && echo  "Error请输入正确的数字 [1-2]" && Time
-				Dl_error
+				 clear && DL_error 
 				;;
 			esac
 }	
@@ -611,7 +613,7 @@ Ecc(){
 	echo "	  2.进去编译菜单选择你要的功能完成以后Save"
 	echo "	  3.菜单Exit以后会自动开始编译"
 	echo ""
-	echo ""
+	echo "    注：如果不需要编译 Ctrl+c退出"
 	echo "   -------------------------------------------------"
 	read a
 	make menuconfig 
