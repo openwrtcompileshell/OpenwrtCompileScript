@@ -572,7 +572,15 @@ DL_download(){
 		echo "------------------------------------------"	
 			Time
 			make download V=s 
-			DL_error
+			if [ $? -eq 0 ];then
+				DL_error
+			else
+				echo ""
+				echo -e "\e[31mError，请查看上面报错，回车重新执行命令\e[0m"
+				echo "" && read a
+				DL_download
+			fi
+			
 			
 }
 
@@ -612,11 +620,18 @@ Ecc(){
 	echo "          注：如果不需要编译 Ctrl+c退出"
 	echo "   -------------------------------------------------"
 	read a
-	pwd
 	make menuconfig
-	 #[需要添加判断防止报错]
-	Save_My_Config_luci
-	mk_time
+	if [ $? -eq 0 ];then
+		Save_My_Config_luci
+		mk_time
+	else
+		echo ""
+		echo -e "\e[31mError，请查看上面报错，回车重新执行命令\e[0m"
+		echo "" && read a
+		Ecc
+	fi
+	
+	
 
 }	
 	
