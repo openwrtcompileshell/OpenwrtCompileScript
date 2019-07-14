@@ -42,7 +42,7 @@
 
 ++2.7版本
 
-  	1.修改脚本名字为《openwr.sh》不再以版本命名，以后执行脚本sh openwrt.sh即可
+  	1.修改脚本名字为《openwr.sh》不再以版本命名，以后执行脚本bash openwrt.sh即可
   
   	2.加入if判断是否源码下载成功
   
