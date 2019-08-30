@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="2.7"
+version="2.8_test"
 OF="Script_File"
 fl="Openwrt"
 by="ITdesk"
@@ -123,13 +123,12 @@ source_RestoreFactory() {
 		fi
 	make distclean
 	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$openwrt_file/lede/dl
-	./scripts/feeds update -a && ./scripts/feeds install -a
 	clear && echo ""
 	echo "所有编译过的文件全部删除完成，如依旧编译失败，请重新下载源代码，回车可以开始编译 不需要编译Ctrl+c取消" && read a
-	./scripts/feeds update -a && ./scripts/feeds install -a
+	update_feeds
 	make menuconfig
 	Save_My_Config_luci
-	mk_time
+	mk_menu
 }
 
 #选项3.二次编译
@@ -151,15 +150,16 @@ source_secondary_compilation() {
 		source_config
 		make menuconfig
 		Save_My_Config_luci
-		mk_time
+		mk_menu
 }
 
 source_config() {
 	clear
 		 echo "----------------------------------------"
-		 echo "是否要加载你之前保存的配置(1.是  2.否)"
-		 echo "     1.是（加载配置）"
+		 echo "是否要加载你之前保存的配置"
+		 echo "     1.是（加载之前保存的配置）"
 		 echo "     2.否（以全新的config进行编译）"
+		 echo "     3.继续上次的编译（不对配置做任何操作）"
 		 echo "----------------------------------------- "
 	read -p "请输入你的决定："  config
 		case "$config" in
@@ -168,6 +168,9 @@ source_config() {
 			;;
 			2)
 			source_Secondary_compilation_deleteConfig
+			;;
+			3)
+			echo ""
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -261,8 +264,9 @@ source_update() {
 	update_feeds
         clear && echo "更新完成回车进行编译  Ctrl+c取消,不进行编译" && read a && Time
 	source_config
+	make menuconfig
 	Save_My_Config_luci
-	mk_time
+	mk_menu
 }
 
 source_update_No_git_pull() {
@@ -374,11 +378,40 @@ create_file() {
 		echo "开始创建文件夹"
 			mkdir $HOME/$fl/$file
 			cd $HOME/$fl/$file  && clear
-			source_Download
+			source_download_select
 	 fi
 }
 
-source_Download() {
+source_download_select() {
+		clear
+		echo "  -----------------------------------------"
+		echo ""
+  		echo "	选择你要编译的类型"
+		echo ""
+		echo "	1.Openwrt"
+		echo ""
+		echo " 	2.Pandorabox_SDK"
+		echo ""
+		echo "  ----------------------------------------"
+		read  -p "请输入你要编译的类型:" Download_select
+			case "$Download_select" in
+				1)
+				source_download_openwrt
+				;;
+				2)
+				source_download_pandorabox_sdk
+				;;
+				0)
+				exit
+				;;
+				*)
+				clear && echo  "请输入正确的数字（1-2，0）" && Time
+				source_download_select
+				 ;;
+			esac
+}
+
+source_download_openwrt() {
 		clear
 		echo "  -----------------------------------------"
 		echo ""
@@ -400,8 +433,8 @@ source_Download() {
 		echo ""
 		echo ""
 		echo "  ----------------------------------------"
-		read  -p "请输入你要下载的源代码:" Download_source
-			case "$Download_source" in
+		read  -p "请输入你要下载的源代码:" Download_source_openwrt
+			case "$Download_source_openwrt" in
 				1)
 				git clone https://github.com/coolsnowwolf/openwrt.git lede
 				;;
@@ -421,13 +454,58 @@ source_Download() {
 				git clone  https://github.com/openwrt/openwrt.git lede
 				;;
 				0)
-				exit;;
+				exit
+				;;
 				*)
-				clear && echo  "请输入正确的数字（1-4，0）" && Time
-				source_Download
+				clear && echo  "请输入正确的数字（1-6，0）" && Time
+				source_download_openwrt
 				 ;;
 			esac
 			source_if
+}
+
+source_download_pandorabox_sdk() {
+	clear
+		echo "  ----------------------------------------"
+		echo ""
+  		echo "	准备下载Pandorabox_SDK代码"
+		echo ""
+		echo "	1.PandoraBox-SDK-ralink-mt7621"
+		echo ""
+		echo "	0.exit"
+		echo ""
+		echo ""
+		echo "  注：此源码只是SDK用于编译Pandorabox的插件"
+		echo "  并不是Pandorabox的源码.不懂百度"
+		#echo "PS：为什么不顺便放Openwrt的SDK呢，因为他的平台太多了，工程量巨大，先不考虑"
+		echo "  ----------------------------------------"
+		read  -p "请输入你要下载的源代码:" Download_source_pandorabox_sdk
+			case "$Download_source_pandorabox_sdk" in
+				1)
+				wget --no-check-certificate http://downloads.pangubox.com:6380/sdk_for_pear/PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64.tar.xz  
+				tar -xvJf PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64.tar.xz
+				mv PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64 lede
+				rm -rf PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64.tar.xz 
+				rm -rf lede/dl
+				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$fl/$file/lede/feeds.conf.default
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/base-files $HOME/$fl/$file/lede/package/base-files
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/boot $HOME/$fl/$file/lede/package/boot	
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/devel $HOME/$fl/$file/lede/package/devel
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/kernel $HOME/$fl/$file/lede/package/kernel
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$fl/$file/lede/package/libs
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$fl/$file/lede/package/system
+				;;
+				0)
+				exit
+				;;
+				*)
+				clear && echo  "请输入正确的数字（1，0）" && Time
+				source_download_pandorabox_sdk
+				 ;;
+			esac
+			source_if
+			
+	
 }
 
 source_if() {
@@ -439,7 +517,7 @@ source_if() {
 			echo ""
 			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
 			cd $HOME/$fl/$file
-			source_Download
+			source_download_select
 		fi
 }
 
@@ -462,6 +540,13 @@ update_feeds() {
 	echo "      更新Feeds代码"
 	echo "---------------------------"
 	./scripts/feeds update -a && ./scripts/feeds install -a
+	if [ $? -eq 0 ]; then
+		echo ""
+	else
+		clear	
+		echo "Feeds没有更新或安装成功，重新执行代码" && Time
+		update_feeds
+	fi
 }
 
 mk_df() {
@@ -484,6 +569,21 @@ mk_df() {
 		dl_source
 }
 
+dl_detection() {
+	if [ -e $HOME/$fl/$OF/pl/download_1150.pl ]; then
+		echo "download_1150.pl文件已存在"
+	else
+		wget --no-check-certificate https://raw.githubusercontent.com/LGA1150/openwrt/exp/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1150.pl
+	fi
+	if [ -e $HOME/$fl/$file/lede/scipts/download_back.pl ]; then
+		echo ""
+	else
+		cd $HOME/$fl/$file/lede/scripts
+		cp download.pl download_back.pl
+		cd ..
+	fi
+}
+
 dl_source() {
 		clear && echo "选择DL服务器"
 		echo "----------------------------------------"
@@ -501,9 +601,6 @@ dl_source() {
 				dl_download
 				;;
 				2)
-				rm -rf $HOME/$fl/$file/lede/scripts/download.pl
-				cp $HOME/$fl/$OF/pl/download_1806.pl $HOME/$fl/$file/lede/scripts/download.pl
-				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 				dl_download
 				;;
 				*)
@@ -513,25 +610,6 @@ dl_source() {
 			esac
 }
 
-dl_detection() {
-	if [ -e $HOME/$fl/$OF/pl/download_1806.pl ]; then
-		echo "download_1806.pl文件已存在"
-	else
-		wget --no-check-certificate https://raw.githubusercontent.com/openwrt/openwrt/openwrt-18.06/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1806.pl
-	fi
-	if [ -e $HOME/$fl/$OF/pl/download_1150.pl ]; then
-		echo "download_1150.pl文件已存在"
-	else
-		wget --no-check-certificate https://raw.githubusercontent.com/LGA1150/openwrt/exp/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1150.pl
-	fi
-	if [ -e $HOME/$fl/$file/lede/scipts/download_back.pl ]; then
-		echo ""
-	else
-		cd $HOME/$fl/$file/lede/scripts
-		mv download.pl download_back.pl
-		cd ..
-	fi
-}
 
 dl_download() {
 	clear
@@ -540,14 +618,8 @@ dl_download() {
 	echo "------------------------------------------"
 	Time
 	make download V=s
-	if [ $? -eq 0 ]; then
-		dl_error
-	else
-		echo ""
-		echo -e "\e[31mError，请查看上面报错，回车重新执行命令\e[0m"
-		echo "" && read a
-		dl_download
-	fi
+	dl_error
+	
 }
 
 dl_error() {
@@ -587,7 +659,7 @@ ecc() {
 	make menuconfig
 	if [ $? -eq 0 ]; then
 		Save_My_Config_luci
-		mk_time
+		mk_menu
 	else
 		echo ""
 		echo -e "\e[31mError，请查看上面报错，回车重新执行命令\e[0m"
@@ -596,29 +668,109 @@ ecc() {
 	fi
 }
 
-mk_time() {
-	starttime=`date +'%Y-%m-%d %H:%M:%S'`
+mk_menu() {
 	clear
-	echo  "是否要使用多线程编译"
+	starttime=`date +'%Y-%m-%d %H:%M:%S'`
+	echo "----------------------------------------"
+	echo "请选择编译固件 OR 编译插件"
+	echo " 1.编译固件"
+	echo " 2.编译插件"
+	echo "----------------------------------------"
+	read -p "请输入你的决定：" mk_value
+	case "$mk_value" in
+		1)
+		mk_compile_firmware
+		;;
+		2)
+		mk_Compile_plugin
+		;;
+		*)
+		clear && echo  "Error请输入正确的数字 [1-2]" && Time
+		 clear && mk_menu
+		;;
+	esac
+	
+	
+}
+
+mk_compile_firmware() {
+	clear
+	echo  "编译固件是否要使用多线程编译"
 	echo ""
-	echo "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s,多线程例子：（ make -j4 V=s ）  -j（这个值看你电脑），不要随便乱输，电脑炸了不管"
+	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s,\e[32m多线程例子：（ make -j4 V=s ）\e[0m  -j（这个值看你电脑），不要随便乱输，电脑炸了不管，如果你不需要多线程编译那么直接回车即可"
 	echo ""
-	read  -p "请输入你的参数(回车默认：make V=s)：" mk_j
-	if [ -z "$mk_j" ];then
+	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
+	if [ -z "$mk_f" ];then
 		clear && echo "开始执行编译" && Time
 		make V=s
 	else
 		clear
-		echo "你数入的线程是：$mk_j"
+		echo -e "你输入的线程是：\e[32m$mk_f\e[0m"
 		echo "准备开始执行编译" && Time
-		$mk_j
+		$mk_f
 	fi
+	
 	endtime=`date +'%Y-%m-%d %H:%M:%S'`
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 	#by：BoomLee  ITdesk
 }
+
+mk_Compile_plugin() {
+	clear
+	echo "--------------------------------------------------------"
+	echo "编译插件"
+	echo ""
+	echo -e "\e[32m例子：make package/插件名字/compile V=99\e[0m" 
+	echo ""
+	echo "PS:Openwrt首次git clone仓库不要用此功能，绝对失败!!!"
+	echo "--------------------------------------------------------"
+	read  -p "请输入你的参数：" mk_p
+		clear
+		echo -e "你输入的参数是：\e[32m$mk_p\e[0m"
+		echo "准备开始执行编译" && Time
+		$mk_p
+	echo ""
+	echo "" 
+	echo "---------------------------------------------------------------------"
+	echo ""
+	echo -e "  潘多拉编译完成的插件在\e[32m/Openwrt/文件名/lede/bin/packages/你的平台/base\e[0m,如果还是找不到的话，看下有没有报错，善用搜索 "
+	echo ""
+	echo "回车可以继续编译插件，或者Ctrl + c终止操作"
+	echo ""
+	echo "---------------------------------------------------------------------"	
+	read a
+	mk_Continue_compiling_the_plugin
+	endtime=`date +'%Y-%m-%d %H:%M:%S'`
+	start_seconds=$(date --date="$starttime" +%s);
+	end_seconds=$(date --date="$endtime" +%s);
+	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	#by：BoomLee  ITdesk
+}
+
+mk_Continue_compiling_the_plugin() {
+	clear
+	echo "----------------------------------------"
+	echo "是否需要继续编译插件"
+	echo " 1.继续编译插件"
+	echo " 2.不需要了"
+	echo "----------------------------------------"
+	read -p "请输入你的决定：" mk_value
+	case "$mk_value" in
+		1)
+		mk_Compile_plugin
+		;;
+		2)
+		echo ""
+		;;
+		*)
+		clear && echo  "Error请输入正确的数字 [1-2]" && Time
+		 clear && mk_Continue_compiling_the_plugin
+		;;
+	esac
+}
+
 
 description_if() {
 	cd
