@@ -25,15 +25,14 @@ The script is made to work on these OS :
 1、使用git克隆下载脚本并赋予执行权限
 
 ```bash
-git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
-chmod +x OpenwrtCompileScript/openwrt.sh
+git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git && chmod +x OpenwrtCompileScript/openwrt.sh
+
 ```
 
 2、进入脚本目录并执行
 
 ```bash
-cd OpenwrtCompileScript
-bash openwrt.sh
+cd OpenwrtCompileScript && bash openwrt.sh
 ```
 
 **注意**:执行脚本后会自动添加系统变量，第二次可使用如下命令运行脚本。
