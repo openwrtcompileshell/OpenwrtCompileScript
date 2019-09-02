@@ -99,8 +99,8 @@ dl_other() {
 	clear && cd
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
-	read -p "请选择你要输入你要更新的文件夹：" DL_file
-	cd && cd $HOME/$fl/$DL_file/lede
+	read -p "请选择你要输入你要更新的文件夹：" file
+	cd && cd $HOME/$fl/$file/lede
 	dl_source
 }
 
@@ -114,7 +114,7 @@ source_RestoreFactory() {
 
 	echo ""
 	read  -p "请输入你的根目录openwrt文件夹名（用于还原dl文件夹）:" openwrt_file
-	if [ -e $HOME/$fl/$openwrt_file ]; then
+	if [[ -e $HOME/$fl/$openwrt_file ]]; then
 			cd && cd $HOME/$fl/$openwrt_file/lede
 			echo "所有编译过的文件全部删除,openwrt源代码保存，回车继续 Ctrl+c取消" && read a
 	 	 else
@@ -139,7 +139,7 @@ source_secondary_compilation() {
 	echo "-----------------------------"
 		 ls_file
 	read -p "请输入你要编译的库名（记得区分大小写）："  Library
-		if [ -e $HOME/$fl/$Library ]; then
+		if [[ -e $HOME/$fl/$Library ]]; then
 			cd && cd $HOME/$fl/$Library/lede
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
@@ -215,7 +215,7 @@ transfer_my_config() {
 		ls_my_config
 	echo ""
 	read -p "请输入你要调用的配置名（记得区分大小写）："  transfer
-	if [ -e `pwd`/My_config/$transfer ]; then
+	if [[ -e `pwd`/My_config/$transfer ]]; then
 		Time && clear
 		echo "正在调用"
 		cp My_config/$transfer  .config
@@ -236,7 +236,7 @@ source_update() {
 	echo "***你的openwrt文件夹有以下几个***"
 		ls_file
 	read -p "请选择你要输入你要更新的文件夹：" You_file
-	if [ -e $HOME/$fl/$You_file ]; then
+	if [[ -e $HOME/$fl/$You_file ]]; then
 			cd && cd $HOME/$fl/$You_file/lede
 			clear && echo "开始清理之前的编译文件"
 			make clean
@@ -370,7 +370,7 @@ create_file() {
 	echo ""
 	read -p "请输入你要创建的文件夹名:" file
 
-	if [ -e $HOME/$fl/$file ]; then
+	if [[ -e $HOME/$fl/$file ]]; then
 		clear && echo "文件夹已存在，请重新输入文件夹名" && Time
 		create_file
 
@@ -524,8 +524,9 @@ source_if() {
 software() {
 	cd
 	if [[ -e $HOME/$fl/$file/lede/package/lean ]]; then
-		clear && echo "" && Time
+		 echo ""
 	else
+		echo "开始下载lean的软件库"
 		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
 
 	fi
@@ -540,7 +541,7 @@ update_feeds() {
 	echo "      更新Feeds代码"
 	echo "---------------------------"
 	./scripts/feeds update -a && ./scripts/feeds install -a
-	if [ $? -eq 0 ]; then
+	if [[ $? -eq 0 ]]; then
 		echo ""
 	else
 		clear	
@@ -570,18 +571,13 @@ mk_df() {
 }
 
 dl_detection() {
-	if [ -e $HOME/$fl/$OF/pl/download_1150.pl ]; then
+	if [[ -e $HOME/$fl/$OF/pl/download_1150.pl ]]; then
 		echo "download_1150.pl文件已存在"
 	else
 		wget --no-check-certificate https://raw.githubusercontent.com/LGA1150/openwrt/exp/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1150.pl
+		chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 	fi
-	if [ -e $HOME/$fl/$file/lede/scipts/download_back.pl ]; then
-		echo ""
-	else
-		cd $HOME/$fl/$file/lede/scripts
-		cp download.pl download_back.pl
-		cd ..
-	fi
+	
 }
 
 dl_source() {
@@ -595,12 +591,11 @@ dl_source() {
 		read -p "请输入你的决定："  DL_so
 			case "$DL_so" in
 				1)
-				rm -rf $HOME/$fl/$file/lede/scripts/download.pl
-				cp $HOME/$fl/$OF/pl/download_1150.pl $HOME/$fl/$file/lede/scripts/download.pl
-				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
+				domestic_dl
 				dl_download
 				;;
 				2)
+				official_dl
 				dl_download
 				;;
 				*)
@@ -610,6 +605,25 @@ dl_source() {
 			esac
 }
 
+domestic_dl() {
+		if [[ -e $HOME/$fl/$file/lede/scripts/download_back.pl ]]; then
+			echo ""
+		else
+			cp $HOME/$fl/$file/lede/scripts/download.pl $HOME/$fl/$file/lede/scripts/download_back.pl
+			rm -rf $HOME/$fl/$file/lede/scripts/download.pl
+			cp $HOME/$fl/$OF/pl/download_1150.pl $HOME/$fl/$file/lede/scripts/download.pl
+		fi
+}
+
+official_dl () {
+		if [[ -e $HOME/$fl/$file/lede/scripts/download_back.pl ]]; then
+			rm -rf $HOME/$fl/$file/lede/scripts/download.pl
+			mv $HOME/$fl/$file/lede/scripts/download_back.pl $HOME/$fl/$file/lede/scripts/download.pl
+		else
+			echo ""
+		fi
+
+}
 
 dl_download() {
 	clear
@@ -657,7 +671,7 @@ ecc() {
 	echo "   -------------------------------------------------"
 	read a
 	make menuconfig
-	if [ $? -eq 0 ]; then
+	if [[ $? -eq 0 ]]; then
 		Save_My_Config_luci
 		mk_menu
 	else
@@ -700,7 +714,7 @@ mk_compile_firmware() {
 	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s,\e[32m多线程例子：（ make -j4 V=s ）\e[0m  -j（这个值看你电脑），不要随便乱输，电脑炸了不管，如果你不需要多线程编译那么直接回车即可"
 	echo ""
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
-	if [ -z "$mk_f" ];then
+	if [[ -z "$mk_f" ]];then
 		clear && echo "开始执行编译" && Time
 		make V=s
 	else
@@ -849,7 +863,7 @@ description_if() {
 		cd ${HOME}/${fl}
 	fi
 
-	if [ -e $HOME/$fl/$OF/description ]; then
+	if [[ -e $HOME/$fl/$OF/description ]]; then
 		self_test
 		main_interface
 	else
@@ -874,12 +888,14 @@ self_test() {
 	else
 		Check_google=`echo -e "\e[31m网络较差\e[0m"`
 	fi
+
 	CheckUrl_baidu=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com)
 	if [[ "$CheckUrl_baidu" -eq "200" ]]; then
 		Check_baidu=`echo -e "\e[32m百度正常\e[0m"`
 	else
 		Check_baidu=`echo -e "\e[31m百度无法打开，请修复这个错误\e[0m"`
 	fi
+
 	Root_detection=`id -u`	# 学渣代码改良版
 	if [[ "$Root_detection" -eq "0" ]]; then
 		Root_run=`echo -e "\e[31m请勿以root运行,请修复这个错误\e[0m"`
