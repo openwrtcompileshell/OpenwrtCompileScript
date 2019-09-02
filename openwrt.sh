@@ -790,8 +790,9 @@ description_if() {
 	cd
 	clear
 	echo "开始检测系统"
-	openwrt_script_path=$(cat /etc/profile | grep -o OpenwrtCompileScript)
-	if [[ "${openwrt_script_path}" = "${OCS}" ]]; then
+	openwrt_script_path=$(cat /etc/profile | grep -o Openwrt)
+
+	if [[ "${openwrt_script_path}" = "Openwrt" ]]; then
 		echo "系统变量存在"
 	else
 		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
@@ -800,6 +801,21 @@ description_if() {
 		echo "-----------------------------------------------------------------------"
 		echo ""
 		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本\e[0m"
+		echo ""
+		echo "-----------------------------------------------------------------------"
+	fi
+
+	#添加一下脚本路径
+	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
+	if [[ "${openwrt_shfile_path}" = "shfile" ]]; then
+		echo "系统变量存在"
+	else
+		echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
+		source /etc/profile
+		clear
+		echo "-----------------------------------------------------------------------"
+		echo ""
+		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录\e[0m"
 		echo ""
 		echo "-----------------------------------------------------------------------"
 	fi
