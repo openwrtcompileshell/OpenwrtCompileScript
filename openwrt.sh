@@ -790,9 +790,9 @@ description_if() {
 	cd
 	clear
 	echo "开始检测系统"
-	openwrt_script_path=$(cat /etc/profile | grep -o Openwrt)
+	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
 
-	if [[ "${openwrt_script_path}" = "Openwrt" ]]; then
+	if [[ "${openwrt_script_path}" = "openwrt.sh" ]]; then
 		echo "系统变量存在"
 	else
 		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
