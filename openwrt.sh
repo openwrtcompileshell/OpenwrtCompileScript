@@ -131,7 +131,58 @@ source_RestoreFactory() {
 	mk_menu
 }
 
-#选项3.二次编译
+#选项3.源码更新
+source_update() {
+	clear
+	echo "--------------------------------"
+	echo " 准备开始更新openwrt源代码与软件"
+	echo "--------------------------------"
+	echo "***你的openwrt文件夹有以下几个***"
+		ls_file
+	read -p "请选择你要输入你要更新的文件夹：" You_file
+	if [[ -e $HOME/$fl/$You_file ]]; then
+			cd && cd $HOME/$fl/$You_file/lede
+			clear && echo "开始清理之前的编译文件"
+			make clean
+	 	 else
+			clear && echo "-----文件名错误，请重新输入-----" && Time
+			source_update
+		fi
+
+	clear && echo "有没有改动过源代码，因为改动过源代码可能会导致git pull失效无法更新"
+	echo "		1.是 "
+	echo "		2.否"
+	read -p "请输入你的决定："  git_source
+		case "$git_source" in
+			1)
+			source_update_No_git_pull
+			;;
+			2)
+			source_update_git_pull
+			;;
+			*)
+			clear && echo  "Error请输入正确的数字 [1-2]" && Time
+			source_update
+			;;
+		esac
+	update_feeds
+        clear && echo "更新完成回车进行编译  Ctrl+c取消,不进行编译" && read a && Time
+	source_config
+	make menuconfig
+	Save_My_Config_luci
+	mk_menu
+}
+
+source_update_No_git_pull() {
+	git fetch --all
+	git reset --hard origin/master
+}
+
+source_update_git_pull() {
+	git pull
+}
+
+#选项2.二次编译
 source_secondary_compilation() {
 	clear
 	echo "-----------------------------"
@@ -227,73 +278,191 @@ transfer_my_config() {
 	fi
 }
 
-#选项2.源码更新
-source_update() {
-	clear
-	echo "--------------------------------"
-	echo " 准备开始更新openwrt源代码与软件"
-	echo "--------------------------------"
-	echo "***你的openwrt文件夹有以下几个***"
-		ls_file
-	read -p "请选择你要输入你要更新的文件夹：" You_file
-	if [[ -e $HOME/$fl/$You_file ]]; then
-			cd && cd $HOME/$fl/$You_file/lede
-			clear && echo "开始清理之前的编译文件"
-			make clean
-	 	 else
-			clear && echo "-----文件名错误，请重新输入-----" && Time
-			source_update
-		fi
-
-	clear && echo "有没有改动过源代码，因为改动过源代码可能会导致git pull失效无法更新"
-	echo "		1.是 "
-	echo "		2.否"
-	read -p "请输入你的决定："  git_source
-		case "$git_source" in
-			1)
-			source_update_No_git_pull
-			;;
-			2)
-			source_update_git_pull
-			;;
-			*)
-			clear && echo  "Error请输入正确的数字 [1-2]" && Time
-			source_update
-			;;
-		esac
-	update_feeds
-        clear && echo "更新完成回车进行编译  Ctrl+c取消,不进行编译" && read a && Time
-	source_config
-	make menuconfig
-	Save_My_Config_luci
-	mk_menu
-}
-
-source_update_No_git_pull() {
-	git fetch --all
-	git reset --hard origin/master
-}
-
-source_update_git_pull() {
-	git pull
-}
-
 #选项1.开始搭建编译环境与主菜单
+#判断代码
+description_if() {
+	cd
+	clear
+	echo "开始检测系统"
+	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
+
+	if [[ "${openwrt_script_path}" = "openwrt.sh" ]]; then
+		echo "系统变量存在"
+	else
+		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
+		source /etc/profile
+		clear
+		echo "-----------------------------------------------------------------------"
+		echo ""
+		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本\e[0m"
+		echo ""
+		echo "-----------------------------------------------------------------------"
+	fi
+
+	#添加一下脚本路径
+	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
+	if [[ "${openwrt_shfile_path}" = "shfile" ]]; then
+		echo "系统变量存在"
+	else
+		echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
+		source /etc/profile
+		clear
+		echo "-----------------------------------------------------------------------"
+		echo ""
+		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录\e[0m"
+		echo ""
+		echo "-----------------------------------------------------------------------"
+	fi
+
+	if [[ ! -d {$HOME/$fl/$OF/$OSC} ]]; then
+		echo "开始创建主文件夹"
+		mkdir -p $HOME/$fl/$OF/dl
+		mkdir -p $HOME/$fl/$OF/My_config
+		mkdir  $HOME/$fl/$OF/pl
+		cp -r `pwd`/$OCS $HOME/$fl/$OF/
+	fi
+
+	if [[ -e /etc/apt/sources.list.back ]]; then
+		clear && echo -e "\e[32m源码已替换\e[0m"
+	else
+		check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
+	fi
+	clear
+
+	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
+		clear
+		echo "-----------------------------------------------------------------"
+		echo "+++检测到win10子系统+++"
+		echo ""
+		echo "  win10子系统已知问题"
+		echo "     1.IO很慢，编译很慢，不怕耗时间随意"
+		echo "     2.win10对大小写不敏感，你需要百度如何开启win10子系统大小写敏感"
+		echo "     3.需要替换子系统的linux源（脚本可以帮你搞定）"
+		echo "-----------------------------------------------------------------"
+		echo ""
+		read -p "是否替换软件源然后进行编译（1.yes，2.no）："  win10_select
+			case "$win10_select" in
+			1)
+				clear
+				echo -e "\e[32m开始替换软件源\e[0m" && Time
+				sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
+				sudo rm -rf /etc/apt/sources.list
+				sudo cp $HOME/$fl/$OF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+				;;
+			2)
+				 clear
+				 echo "不做任何操作，即将进入主菜单" && Time
+				 ;;
+			*)
+				 clear && echo  "Error请输入正确的数字 [1-2]" && Time
+				 description_if
+				 ;;
+			esac
+	else
+		echo "不是win10系统" && clear
+	fi
+
+	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
+	if [[ "$?" == "0" ]]; then
+		clear && echo -e  "\e[32m已经安装curl\e[0m"
+	else
+		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
+		sudo apt update
+		sudo apt install curl -y
+		sudo rm -rf $HOME/${OCS}
+		cd ${HOME}/${fl}
+	fi
+
+	if [[ -e $HOME/$fl/$OF/description ]]; then
+		self_test
+		main_interface
+	else
+		clear
+		description
+		echo ""
+		read -p "请输入密码:" ps
+			if [[ $ps = $by ]]; then
+				description >> $HOME/$fl/$OF/description && clear && self_test && main_interface
+			else
+				clear && echo "+++++密码错误++++++" && Time && description_if
+			fi
+	fi
+}
+
+self_test() {
+	clear
+	CheckUrl_google=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null   www.google.com)
+
+	if [[ "$CheckUrl_google" -eq "200" ]]; then
+		Check_google=`echo -e "\e[32m网络正常\e[0m"`
+	else
+		Check_google=`echo -e "\e[31m网络较差\e[0m"`
+	fi
+
+	CheckUrl_baidu=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com)
+	if [[ "$CheckUrl_baidu" -eq "200" ]]; then
+		Check_baidu=`echo -e "\e[32m百度正常\e[0m"`
+	else
+		Check_baidu=`echo -e "\e[31m百度无法打开，请修复这个错误\e[0m"`
+	fi
+
+	Root_detection=`id -u`	# 学渣代码改良版
+	if [[ "$Root_detection" -eq "0" ]]; then
+		Root_run=`echo -e "\e[31m请勿以root运行,请修复这个错误\e[0m"`
+	else
+		Root_run=`echo -e "\e[32m非root运行\e[0m"`
+	fi
+	echo "	      	    -------------------------------------------"
+	echo "	      	  	【  Script Self-Test Program  】"
+	echo ""
+	echo " 			检测是否root运行:  $Root_run  "
+	echo ""
+	echo "		  	检测与DL网络情况： $Check_google "
+	echo "  "
+	echo "		  	检测百度是否正常： $Check_baidu "
+	echo "  "
+	echo "	      	    -------------------------------------------"
+	echo ""
+	echo "  请自行决定是否修复红字的错误，以保证编译顺利，你也可以直接回车进入菜单，但有可能会出现编译失败！！！如果都是绿色正常可以忽略此段话"
+	read a
+}
+
+description() {
+		echo "	      +++++++++++++++++++++++++++++++++++++++"
+		echo "	    ++欢迎使用Openwrt-Compile-Script Ver $version ++"
+		echo "	      +++++++++++++++++++++++++++++++++++++++"
+		echo ""
+		echo "  创建脚本的初衷是因(I)为openwrt编译的时候有些东西太繁琐了，为了简化掉一些操作，使编译更加简单就有了此脚本(T)的诞生，后面觉得好玩就分享给了大家一起玩耍，你需要清楚此脚本仅用于学习，有一定危险性，请勿进行商用，如果商用导致损失或者其他问题，均由使用者自行承担!!!"
+		echo ""
+		echo "下面简单给大家描述脚本的作用"
+		echo "	1.协助你更快的搭建编译环境，小白(d)建议学习一下再用会比较好"
+		echo "	2.统一管理你的编译源，全部(e)存放在Openwrt这个文件里面"
+		echo "	3.你只要启动脚本就可以控制你的源，进行二次编译或者更新"
+		echo ""
+		echo "缺陷1：小白(s)不太适合，因为他们不了解过程"
+		echo "缺陷2：不能自定义openwrt代码或者修改，此脚本适合做重复的事情(k)"
+		echo ""
+		echo "注：请自行将你系统的软件源更换为国内的服务器，不会请百度"
+		echo ""
+		echo ""
+		echo "请阅读完上面的前言，（）里面的就是密码，此界面只会出现一次，后面就不会了"
+}
+
 #主菜单
 main_interface() {
 	clear
 	echo "	      	    -------------------------------------"
 	echo "	      	  【 Openwrt Compile Script Ver ${version}版 】"
 	echo ""
-	echo " 		  	1.开始搭建编译环境"
+	echo " 		  	1.搭建编译环境"
 	echo ""
-	echo "		  	2.更新源代码"
+	echo "		  	2.二次编译固件"
 	echo ""
-	echo "			3.二次编译固件"
+	echo "			3.更新源代码"
 	echo ""
 	echo "			4.恢复编译环境"
 	echo ""
-	echo "			6.其他选项"
+	echo "			5.其他选项"
 	echo ""
 	echo "			9.更新脚本"
 	echo ""
@@ -309,15 +478,15 @@ main_interface() {
 		system_install
 		;;
 		2)
-		source_update
+		source_secondary_compilation
 		;;
 		3)
-		source_secondary_compilation
+		source_update
 		;;
 		4)
 		source_RestoreFactory
 		;;
-		6)
+		5)
 		other
 		;;
 		9)
@@ -615,7 +784,7 @@ domestic_dl() {
 		fi
 }
 
-official_dl () {
+official_dl() {
 		if [[ -e $HOME/$fl/$file/lede/scripts/download_back.pl ]]; then
 			rm -rf $HOME/$fl/$file/lede/scripts/download.pl
 			mv $HOME/$fl/$file/lede/scripts/download_back.pl $HOME/$fl/$file/lede/scripts/download.pl
@@ -783,175 +952,6 @@ mk_Continue_compiling_the_plugin() {
 		 clear && mk_Continue_compiling_the_plugin
 		;;
 	esac
-}
-
-
-description_if() {
-	cd
-	clear
-	echo "开始检测系统"
-	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
-
-	if [[ "${openwrt_script_path}" = "openwrt.sh" ]]; then
-		echo "系统变量存在"
-	else
-		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
-		source /etc/profile
-		clear
-		echo "-----------------------------------------------------------------------"
-		echo ""
-		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本\e[0m"
-		echo ""
-		echo "-----------------------------------------------------------------------"
-	fi
-
-	#添加一下脚本路径
-	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
-	if [[ "${openwrt_shfile_path}" = "shfile" ]]; then
-		echo "系统变量存在"
-	else
-		echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
-		source /etc/profile
-		clear
-		echo "-----------------------------------------------------------------------"
-		echo ""
-		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录\e[0m"
-		echo ""
-		echo "-----------------------------------------------------------------------"
-	fi
-
-	if [[ ! -d {$HOME/$fl/$OF/$OSC} ]]; then
-		echo "开始创建主文件夹"
-		mkdir -p $HOME/$fl/$OF/dl
-		mkdir -p $HOME/$fl/$OF/My_config
-		mkdir  $HOME/$fl/$OF/pl
-		cp -r `pwd`/$OCS $HOME/$fl/$OF/
-	fi
-
-	if [[ -e /etc/apt/sources.list.back ]]; then
-		clear && echo -e "\e[32m源码已替换\e[0m"
-	else
-		check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
-	fi
-	clear
-
-	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
-		clear
-		echo "-----------------------------------------------------------------"
-		echo "+++检测到win10子系统+++"
-		echo ""
-		echo "  win10子系统已知问题"
-		echo "     1.IO很慢，编译很慢，不怕耗时间随意"
-		echo "     2.win10对大小写不敏感，你需要百度如何开启win10子系统大小写敏感"
-		echo "     3.需要替换子系统的linux源（脚本可以帮你搞定）"
-		echo "-----------------------------------------------------------------"
-		echo ""
-		read -p "是否替换软件源然后进行编译（1.yes，2.no）："  win10_select
-			case "$win10_select" in
-			1)
-				clear
-				echo -e "\e[32m开始替换软件源\e[0m" && Time
-				sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
-				sudo rm -rf /etc/apt/sources.list
-				sudo cp $HOME/$fl/$OF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
-				;;
-			2)
-				 clear
-				 echo "不做任何操作，即将进入主菜单" && Time
-				 ;;
-			*)
-				 clear && echo  "Error请输入正确的数字 [1-2]" && Time
-				 description_if
-				 ;;
-			esac
-	else
-		echo "不是win10系统" && clear
-	fi
-
-	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
-	if [[ "$?" == "0" ]]; then
-		clear && echo -e  "\e[32m已经安装curl\e[0m"
-	else
-		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
-		sudo apt update
-		sudo apt install curl -y
-		sudo rm -rf $HOME/${OCS}
-		cd ${HOME}/${fl}
-	fi
-
-	if [[ -e $HOME/$fl/$OF/description ]]; then
-		self_test
-		main_interface
-	else
-		clear
-		description
-		echo ""
-		read -p "请输入密码:" ps
-			if [[ $ps = $by ]]; then
-				description >> $HOME/$fl/$OF/description && clear && self_test && main_interface
-			else
-				clear && echo "+++++密码错误++++++" && Time && description_if
-			fi
-	fi
-}
-
-self_test() {
-	clear
-	CheckUrl_google=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null   www.google.com)
-
-	if [[ "$CheckUrl_google" -eq "200" ]]; then
-		Check_google=`echo -e "\e[32m网络正常\e[0m"`
-	else
-		Check_google=`echo -e "\e[31m网络较差\e[0m"`
-	fi
-
-	CheckUrl_baidu=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com)
-	if [[ "$CheckUrl_baidu" -eq "200" ]]; then
-		Check_baidu=`echo -e "\e[32m百度正常\e[0m"`
-	else
-		Check_baidu=`echo -e "\e[31m百度无法打开，请修复这个错误\e[0m"`
-	fi
-
-	Root_detection=`id -u`	# 学渣代码改良版
-	if [[ "$Root_detection" -eq "0" ]]; then
-		Root_run=`echo -e "\e[31m请勿以root运行,请修复这个错误\e[0m"`
-	else
-		Root_run=`echo -e "\e[32m非root运行\e[0m"`
-	fi
-	echo "	      	    -------------------------------------------"
-	echo "	      	  	【  Script Self-Test Program  】"
-	echo ""
-	echo " 			检测是否root运行:  $Root_run  "
-	echo ""
-	echo "		  	检测与DL网络情况： $Check_google "
-	echo "  "
-	echo "		  	检测百度是否正常： $Check_baidu "
-	echo "  "
-	echo "	      	    -------------------------------------------"
-	echo ""
-	echo "  请自行决定是否修复红字的错误，以保证编译顺利，你也可以直接回车进入菜单，但有可能会出现编译失败！！！如果都是绿色正常可以忽略此段话"
-	read a
-}
-
-description() {
-		echo "	      +++++++++++++++++++++++++++++++++++++++"
-		echo "	    ++欢迎使用Openwrt-Compile-Script Ver $version ++"
-		echo "	      +++++++++++++++++++++++++++++++++++++++"
-		echo ""
-		echo "  创建脚本的初衷是因(I)为openwrt编译的时候有些东西太繁琐了，为了简化掉一些操作，使编译更加简单就有了此脚本(T)的诞生，后面觉得好玩就分享给了大家一起玩耍，你需要清楚此脚本仅用于学习，有一定危险性，请勿进行商用，如果商用导致损失或者其他问题，均由使用者自行承担!!!"
-		echo ""
-		echo "下面简单给大家描述脚本的作用"
-		echo "	1.协助你更快的搭建编译环境，小白(d)建议学习一下再用会比较好"
-		echo "	2.统一管理你的编译源，全部(e)存放在Openwrt这个文件里面"
-		echo "	3.你只要启动脚本就可以控制你的源，进行二次编译或者更新"
-		echo ""
-		echo "缺陷1：小白(s)不太适合，因为他们不了解过程"
-		echo "缺陷2：不能自定义openwrt代码或者修改，此脚本适合做重复的事情(k)"
-		echo ""
-		echo "注：请自行将你系统的软件源更换为国内的服务器，不会请百度"
-		echo ""
-		echo ""
-		echo "请阅读完上面的前言，（）里面的就是密码，此界面只会出现一次，后面就不会了"
 }
 
 description_if
