@@ -526,8 +526,14 @@ update_system() {
 	sudo apt-get update
 	clear
 	echo "准备安装依赖" && Time
-	rely_on && rely_on #这里执行两次是因为发现win10这个坑爹货会安装不全，所以再执行一次
-	echo "安装完成" && Time
+	rely_on
+	if [[ $? -eq 0 ]]; then
+		echo "安装完成" && Time
+	else
+		clear	
+		echo "依赖没有更新或安装成功，重新执行代码" && Time
+		rely_on
+	fi
 }
 
 create_file() {
