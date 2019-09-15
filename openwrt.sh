@@ -126,6 +126,7 @@ source_RestoreFactory() {
 	clear && echo ""
 	echo "所有编译过的文件全部删除完成，如依旧编译失败，请重新下载源代码，回车可以开始编译 不需要编译Ctrl+c取消" && read a
 	update_feeds
+	source_config
 	make menuconfig
 	Save_My_Config_luci
 	mk_menu
@@ -269,6 +270,7 @@ transfer_my_config() {
 	if [[ -e `pwd`/My_config/$transfer ]]; then
 		Time && clear
 		echo "正在调用"
+		rm -rf .config
 		cp My_config/$transfer  .config
 		echo "配置加载完成" && Time
 
