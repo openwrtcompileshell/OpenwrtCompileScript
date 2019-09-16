@@ -689,7 +689,7 @@ source_if() {
 		clear
 		if [[ -e $HOME/$fl/$file/lede ]]; then
 			cd lede
-			#software
+			software
 			cd $HOME/$fl/$file/lede
 			update_feeds
 			mk_df
@@ -711,8 +711,12 @@ software() {
 		
 		echo "开始配置优化"
 			#初始配置
-			mkdir $HOME/$fl/$OF/lean 
-			wget --no-check-certificate  https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/target.mk  $HOME/$fl/$OF/lean/target.mk
+			if [[ -e $HOME/$fl/$OF/lean ]]; then
+				echo ""
+			else
+				mkdir $HOME/$fl/$OF/lean 
+				wget --no-check-certificate  https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/target.mk -O $HOME/$fl/$OF/lean/target.mk
+			fi
 			mv $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
 			cp $HOME/$fl/$OF/lean/target.mk $HOME/$fl/$file/lede/include/target.mk
 			
@@ -726,9 +730,13 @@ software() {
 
 			#开启彩蛋
 			sed -i '69i\echo 0xDEADBEEF > /etc/config/google_fu_mode' package/lean/default-settings/files/zzz-default-settings
+
 			#修改点东西55r
 			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/server.lua
 			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/client-config.lua
+
+			#修改frp
+			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp.lua
 			
 			update_feeds
 			
@@ -739,32 +747,33 @@ software() {
 			echo "<%#
 				 Copyright 2008 Steven Barth <steven@midlink.org>
  				 Copyright 2008-2018 Jo-Philipp Wich <jo@mein.io>
-				 Licensed to the public under the Apache License 2.0.
+ 				 licensed to the public under the Apache License 2.0.
 				-%>
 
-			<%
-				local boardinfo = luci.util.ubus("system", "board") or { }
-				local unameinfo = nixio.uname() or { }
-				local ver = require "luci.version"
-			%>
+			     <%
+				 local boardinfo = luci.util.ubus("system", "board") or { }
+				 local unameinfo = nixio.uname() or { }
+				 local ver = require "luci.version"
+			      %>
 
-<div class="cbi-section">
-	<h3><%:System%></h3>
+		<div class="cbi-section">
+			<h3><%:System%></h3>
 
-	<div class="table" width="100%">
-		<div class="tr"><div class="td left" width="33%"><%:Hostname%></div><div class="td left"><%=luci.sys.hostname() or "?"%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Model%></div><div class="td left"><%=pcdata(boardinfo.model or "?")%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Architecture%></div><div class="td left"><%=pcdata(boardinfo.system or "?")%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Firmware Version%></div><div class="td left">
-			<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%> /
-			<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>)
-		</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Kernel Version%></div><div class="td left"><%=unameinfo.release or "?"%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Local Time%></div><div class="td left" id="localtime">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Uptime%></div><div class="td left" id="uptime">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Load Average%></div><div class="td left" id="loadavg">-</div></div>
-	</div>
-</div>" |  tee -a feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
+			<div class="table" width="100%">
+				<div class="tr"><div class="td left" width="33%"><%:Hostname%></div><div class="td left"><%=luci.sys.hostname() or "?"%></div></div>
+				<div class="tr"><div class="td left" width="33%"><%:Model%></div><div class="td left"><%=pcdata(boardinfo.model or "?")%></div></div>
+				<div class="tr"><div class="td left" width="33%"><%:Architecture%></div><div class="td left"><%=pcdata(boardinfo.system or "?")%></div></div>
+				<div class="tr"><div class="td left" width="33%"><%:CPU Info%></div><div class="td left"><%=luci.sys.exec("grep 'MHz' /proc/cpuinfo | cut -c11- |sed -n '1p'")%> MHz <%=luci.sys.exec("sensors | grep 'Core 0' | cut -c10-24")%></div></div>
+				<div class="tr"><div class="td left" width="33%"><%:Firmware Version%></div><div class="td left">
+				<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%> /
+				<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>)
+			</div></div>
+			<div class="tr"><div class="td left" width="33%"><%:Kernel Version%></div><div class="td left"><%=unameinfo.release or "?"%></div></div>
+			<div class="tr"><div class="td left" width="33%"><%:Local Time%></div><div class="td left" id="localtime">-</div></div>
+			<div class="tr"><div class="td left" width="33%"><%:Uptime%></div><div class="td left" id="uptime">-</div></div>
+			<div class="tr"><div class="td left" width="33%"><%:Load Average%></div><div class="td left" id="loadavg">-</div></div>
+		</div>
+	</div>" |  tee -a feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
 		
 			
 
