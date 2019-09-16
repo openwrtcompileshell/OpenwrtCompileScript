@@ -689,7 +689,10 @@ source_if() {
 		clear
 		if [[ -e $HOME/$fl/$file/lede ]]; then
 			cd lede
-			software
+			#software
+			cd $HOME/$fl/$file/lede
+			update_feeds
+			mk_df
 		else
 			echo ""
 			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
@@ -707,9 +710,6 @@ software() {
 		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
 
 	fi
-	cd $HOME/$fl/$file/lede
-	update_feeds
-	mk_df
 }
 
 update_feeds() {
