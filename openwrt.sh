@@ -671,6 +671,10 @@ source_download_pandorabox_sdk() {
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/kernel $HOME/$fl/$file/lede/package/kernel
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$fl/$file/lede/package/libs
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$fl/$file/lede/package/system
+				cd $HOME/$fl/$file/lede				
+				software_lean
+				update_feeds
+				mk_df
 				;;
 				0)
 				exit
@@ -689,7 +693,7 @@ source_if() {
 		clear
 		if [[ -e $HOME/$fl/$file/lede ]]; then
 			cd lede
-			software
+			software_luci
 			cd $HOME/$fl/$file/lede
 			update_feeds
 			mk_df
@@ -701,24 +705,41 @@ source_if() {
 		fi
 }
 
-software() {
-	cd
+software_luci() {
 	if [[ -e $HOME/$fl/$file/lede/package/lean ]]; then
 		 echo ""
 	else
-		echo "开始下载lean的软件库"
+		echo "----------------------------------------------------"
+  		echo "检测到你是openwrt官方源码，是否加入lean插件"
+		echo " 1.添加插件"
+		echo " 2.不添加插件"
+		echo "----------------------------------------------------"
+		read  -p "请输入你的选择:" software_luci_select
+			case "$software_luci_select" in
+				1)
+				software_Setting
+				;;
+				2)
+				echo ""
+				;;
+				*)
+				clear && echo  "请输入正确的数字（1-2）" && Time
+				software_luci_select
+				 ;;
+			esac					
+	fi	
+}
+software_lean() {
+	echo "开始下载lean的软件库"
 			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
-		
+}
+
+software_Setting() {
+		software_lean
 		echo "开始配置优化"
 			#初始配置
-			if [[ -e $HOME/$fl/$OF/lean ]]; then
-				echo ""
-			else
-				mkdir $HOME/$fl/$OF/lean 
-				wget --no-check-certificate  https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/target.mk -O $HOME/$fl/$OF/lean/target.mk
-			fi
 			mv $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
-			cp $HOME/$fl/$OF/lean/target.mk $HOME/$fl/$file/lede/include/target.mk
+			cp $HOME/$fl/$OF/$OCS/lean/target.mk $HOME/$fl/$file/lede/include/target.mk
 			
 			#应用fullconenat
 			cd $HOME/$fl/$file/lede
@@ -736,48 +757,13 @@ software() {
 			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/client-config.lua
 
 			#修改frp
-			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp.lua
+			sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
 			
 			update_feeds
 			
-			#修改一下luci
-			#sed -i 's/1024/1048576/g' feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/index.js
-			
-			rm -rf feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
-			echo "<%#
-				 Copyright 2008 Steven Barth <steven@midlink.org>
- 				 Copyright 2008-2018 Jo-Philipp Wich <jo@mein.io>
- 				 licensed to the public under the Apache License 2.0.
-				-%>
-
-			     <%
-				 local boardinfo = luci.util.ubus("system", "board") or { }
-				 local unameinfo = nixio.uname() or { }
-				 local ver = require "luci.version"
-			      %>
-
-		<div class="cbi-section">
-			<h3><%:System%></h3>
-
-			<div class="table" width="100%">
-				<div class="tr"><div class="td left" width="33%"><%:Hostname%></div><div class="td left"><%=luci.sys.hostname() or "?"%></div></div>
-				<div class="tr"><div class="td left" width="33%"><%:Model%></div><div class="td left"><%=pcdata(boardinfo.model or "?")%></div></div>
-				<div class="tr"><div class="td left" width="33%"><%:Architecture%></div><div class="td left"><%=pcdata(boardinfo.system or "?")%></div></div>
-				<div class="tr"><div class="td left" width="33%"><%:CPU Info%></div><div class="td left"><%=luci.sys.exec("grep 'MHz' /proc/cpuinfo | cut -c11- |sed -n '1p'")%> MHz <%=luci.sys.exec("sensors | grep 'Core 0' | cut -c10-24")%></div></div>
-				<div class="tr"><div class="td left" width="33%"><%:Firmware Version%></div><div class="td left">
-				<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%> /
-				<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>)
-			</div></div>
-			<div class="tr"><div class="td left" width="33%"><%:Kernel Version%></div><div class="td left"><%=unameinfo.release or "?"%></div></div>
-			<div class="tr"><div class="td left" width="33%"><%:Local Time%></div><div class="td left" id="localtime">-</div></div>
-			<div class="tr"><div class="td left" width="33%"><%:Uptime%></div><div class="td left" id="uptime">-</div></div>
-			<div class="tr"><div class="td left" width="33%"><%:Load Average%></div><div class="td left" id="loadavg">-</div></div>
-		</div>
-	</div>" |  tee -a feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
-		
-			
-
-	fi
+			#修改一下luci 添加频率和温度		
+			rm -rf feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm		
+			cp $HOME/$fl/$OF/$OCS/lean/10-system.htm feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
 }
 
 update_feeds() {
@@ -817,7 +803,7 @@ mk_df() {
 
 dl_detection() {
 	if [[ -e $HOME/$fl/$OF/pl/download_1150.pl ]]; then
-		echo "download_1150.pl文件已存在"
+		echo ""
 	else
 		wget --no-check-certificate https://raw.githubusercontent.com/LGA1150/openwrt/exp/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1150.pl
 		chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
