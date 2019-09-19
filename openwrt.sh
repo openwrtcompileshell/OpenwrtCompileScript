@@ -711,7 +711,7 @@ software_luci() {
 	else
 		echo "----------------------------------------------------"
   		echo "检测到你是openwrt官方源码，是否加入lean插件"
-		echo " 1.添加插件"
+		echo " 1.添加插件(测试功能会有问题)"
 		echo " 2.不添加插件"
 		echo "----------------------------------------------------"
 		read  -p "请输入你的选择:" software_luci_select
@@ -735,11 +735,21 @@ software_lean() {
 }
 
 software_Setting() {
+		#已知ok的插件有55r，frpc，其他有些用不到没有测试
+		#已知不行的插件有samb，qt
 		software_lean
 		echo "开始配置优化"
 			#初始配置
-			mv $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
-			cp $HOME/$fl/$OF/$OCS/lean/target.mk $HOME/$fl/$file/lede/include/target.mk
+			cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark \
+kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
+default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
+luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus \
+luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree \
+luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/g"  $HOME/$fl/$file/lede/include/target.mk
+			sed -i 's/block-mount fdisk lsblk mdadm/fdisk lsblk mdadm automount autosamba luci-app-usb-printer /g' $HOME/$fl/$file/lede/include/target.mk
+			
+			sed -i 's/dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr/g' $HOME/$fl/$file/lede/include/target.mk
 			
 			#应用fullconenat
 			cd $HOME/$fl/$file/lede
