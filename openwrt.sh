@@ -741,7 +741,7 @@ software_Setting() {
 		echo "开始配置优化"
 			#初始配置
 			cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
-			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark \
+			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors\
 kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
 default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
 luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus \
@@ -768,11 +768,22 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 
 			#修改frp
 			sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
+
+			#解决qt问题(未完成)
+			if [[ -e $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz ]]; then
+				echo ""
+			else
+				wget --no-check-certificate http://mirrors.ustc.edu.cn/qtproject/archive/qt/5.8/5.8.0/single/qt-everywhere-opensource-src-5.8.0.tar.xz -O $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz
+				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
+			fi
+			
 			
 			update_feeds
 			
-			#修改一下luci 添加频率和温度		
-			rm -rf feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm		
+			#修改一下luci 添加频率和温度
+			rm -rf feeds/packages/utils/lm-sensors
+			rm -rf feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm	
+			cp -r $HOME/$fl/$OF/$OCS/lean/lm-sensors	feeds/packages/utils/lm-sensors
 			cp $HOME/$fl/$OF/$OCS/lean/10-system.htm feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
 }
 
