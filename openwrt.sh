@@ -19,6 +19,13 @@ ls_file() {
 	echo -e "\e[49;32;1m $LF \e[0m"
 	echo ""
 }
+ls_file_luci(){
+	clear && cd
+	echo "***你的openwrt文件夹有以下几个***"
+	ls_file
+	read -p "请选择你要输入你要更新的文件夹：" file
+	cd && cd $HOME/$fl/$file/lede
+}
 
 #显示config文件夹
 ls_my_config() {
@@ -59,7 +66,7 @@ update_script() {
 		fi
 }
 
-#选项6.其他选项
+#选项5.其他选项
 other() {
 	clear
 	echo "	      -------------------------------------"
@@ -68,6 +75,8 @@ other() {
 	echo " 		  1.只搭建编译环境，不进行编译"
 	echo ""
 	echo "		  2.单独Download DL库 "
+	echo ""
+	echo "		  3.更新lean软件库 "
 	echo ""
 	echo "		  0. 回到上一级菜单"
 	echo ""
@@ -85,23 +94,32 @@ other() {
 		dl_other
 		echo "DL更新完成"
 		;;
+		3)
+		update_lean_package
+		echo "lean软件库更新完成"
+		;;
 		0)
 		main_interface
 		;;
 		*)
-	clear && echo  "请输入正确的数字 [1-2,0]" && Time
+	clear && echo  "请输入正确的数字 [1-3,0]" && Time
 	other
 	;;
 esac
 }
 
 dl_other() {
-	clear && cd
-	echo "***你的openwrt文件夹有以下几个***"
-	ls_file
-	read -p "请选择你要输入你要更新的文件夹：" file
-	cd && cd $HOME/$fl/$file/lede
+	ls_file_luci
 	dl_source
+}
+
+update_lean_package() {
+	ls_file_luci
+	rm -rf package/lean
+	software_lean
+	Time
+	update_feeds
+	mk_df
 }
 
 #选项4.恢复编译环境
