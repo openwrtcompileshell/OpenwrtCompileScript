@@ -23,7 +23,7 @@ ls_file_luci(){
 	clear && cd
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
-	read -p "请选择你要输入你要更新的文件夹：" file
+	read -p "请选择你要文件夹：" file
 	cd && cd $HOME/$fl/$file/lede
 }
 
@@ -78,6 +78,8 @@ other() {
 	echo ""
 	echo "		  3.更新lean软件库 "
 	echo ""
+	echo "		  4.下载额外的插件 "
+	echo ""
 	echo "		  0. 回到上一级菜单"
 	echo ""
 	echo ""
@@ -98,11 +100,15 @@ other() {
 		update_lean_package
 		echo "lean软件库更新完成"
 		;;
+		4)
+		download_package
+		echo "插件下载完成"
+		;;
 		0)
 		main_interface
 		;;
 		*)
-	clear && echo  "请输入正确的数字 [1-3,0]" && Time
+	clear && echo  "请输入正确的数字 [1-4,0]" && Time
 	other
 	;;
 esac
@@ -120,6 +126,33 @@ update_lean_package() {
 	Time
 	update_feeds
 	mk_df
+}
+
+download_package() {
+	ls_file_luci 
+	mkdir package/Extra-plugin
+	cd package/Extra-plugin
+	clear
+	echo "--------------------------------------------------------------------------------"
+	echo "4.下载额外的插件"
+	echo ""
+	echo -e " \e[32m例子：git clone https://github.com/destan19/OpenAppFilter.git   (此插件用于过滤应用)\e[0m"
+ 	echo "--------------------------------------------------------------------------------"
+	echo ""
+	read -p "请输入你要下载的插件地址："  download_url
+	$download_url
+	read a
+	if [[ $? -eq 0 ]]; then
+		cd $HOME/$fl/$file/lede
+	else
+		clear	
+		echo "没有下载成功，重新执行代码" && Time
+		download_package
+	fi
+	
+	update_feeds
+	mk_df
+	
 }
 
 #选项4.恢复编译环境
@@ -516,7 +549,7 @@ main_interface() {
 		exit
 		;;
 		*)
-	clear && echo  "请输入正确的数字 [1-4,6,0]" && Time
+	clear && echo  "请输入正确的数字 [1-5,9,0]" && Time
 	main_interface
 	;;
 esac
