@@ -16,14 +16,14 @@ subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake
 #显示编译文件夹
 ls_file() {
 	LF=`ls $HOME/$fl | grep -v $0  | grep -v Script_File`
-	echo -e "\e[49;32;1m $LF \e[0m"
+	echo -e "\e[49;32;1m$LF\e[0m"
 	echo ""
 }
 ls_file_luci(){
 	clear && cd
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
-	read -p "请选择你要文件夹：" file
+	read -p "请输入你的文件夹（记得区分大小写）：" file
 	cd && cd $HOME/$fl/$file/lede
 }
 
@@ -72,13 +72,13 @@ other() {
 	echo "	      -------------------------------------"
 	echo "	      	    【 其他选项 】"
 	echo ""
-	echo " 		  1.只搭建编译环境，不进行编译"
+	echo " 		  5.1 只搭建编译环境，不进行编译"
 	echo ""
-	echo "		  2.单独Download DL库 "
+	echo "		  5.2 单独Download DL库 "
 	echo ""
-	echo "		  3.更新lean软件库 "
+	echo "		  5.3 更新lean软件库 "
 	echo ""
-	echo "		  4.下载额外的插件 "
+	echo "		  5.4 下载额外的插件 "
 	echo ""
 	echo "		  0. 回到上一级菜单"
 	echo ""
@@ -88,19 +88,21 @@ other() {
 	echo "	      --------------------------------------"
 	read -p "请输入数字:" other_num
 	case "$other_num" in
-		1)
+		5.1)
+		clear
+		echo "5.1 只搭建编译环境，不进行编译 " && Time
 		update_system
 		echo "环境搭建完成，请自行创建文件夹和git"
 		;;
-		2)
+		5.2)
 		dl_other
 		echo "DL更新完成"
 		;;
-		3)
+		5.3)
 		update_lean_package
 		echo "lean软件库更新完成"
 		;;
-		4)
+		5.4)
 		download_package
 		echo "插件下载完成"
 		;;
@@ -134,14 +136,13 @@ download_package() {
 	cd package/Extra-plugin
 	clear
 	echo "--------------------------------------------------------------------------------"
-	echo "4.下载额外的插件"
+	echo "5.4下载额外的插件"
 	echo ""
 	echo -e " \e[32m例子：git clone https://github.com/destan19/OpenAppFilter.git   (此插件用于过滤应用)\e[0m"
  	echo "--------------------------------------------------------------------------------"
 	echo ""
 	read -p "请输入你要下载的插件地址："  download_url
 	$download_url
-	read a
 	if [[ $? -eq 0 ]]; then
 		cd $HOME/$fl/$file/lede
 	else
@@ -157,23 +158,17 @@ download_package() {
 
 #选项4.恢复编译环境
 source_RestoreFactory() {
-	clear
-	echo "------------------------------"
-	echo "你的openwrt文件夹有以下几个"
-	echo "------------------------------"
-	ls_file
-
+	ls_file_luci 
 	echo ""
-	read  -p "请输入你的根目录openwrt文件夹名（用于还原dl文件夹）:" openwrt_file
-	if [[ -e $HOME/$fl/$openwrt_file ]]; then
-			cd && cd $HOME/$fl/$openwrt_file/lede
+	if [[ -e $HOME/$fl/$file ]]; then
+			cd && cd $HOME/$fl/$file/lede
 			echo "所有编译过的文件全部删除,openwrt源代码保存，回车继续 Ctrl+c取消" && read a
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_secondary_compilation
 		fi
 	make distclean
-	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$openwrt_file/lede/dl
+	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$file/lede/dl
 	clear && echo ""
 	echo "所有编译过的文件全部删除完成，如依旧编译失败，请重新下载源代码，回车可以开始编译 不需要编译Ctrl+c取消" && read a
 	update_feeds
@@ -189,11 +184,9 @@ source_update() {
 	echo "--------------------------------"
 	echo " 准备开始更新openwrt源代码与软件"
 	echo "--------------------------------"
-	echo "***你的openwrt文件夹有以下几个***"
-		ls_file
-	read -p "请选择你要输入你要更新的文件夹：" You_file
-	if [[ -e $HOME/$fl/$You_file ]]; then
-			cd && cd $HOME/$fl/$You_file/lede
+	ls_file_luci
+	if [[ -e $HOME/$fl/$file ]]; then
+			cd && cd $HOME/$fl/$file/lede
 			clear && echo "开始清理之前的编译文件"
 			make clean
 	 	 else
@@ -236,14 +229,9 @@ source_update_git_pull() {
 
 #选项2.二次编译
 source_secondary_compilation() {
-	clear
-	echo "-----------------------------"
-	echo " 你需要编译那个openwrt库"
-	echo "-----------------------------"
-		 ls_file
-	read -p "请输入你要编译的库名（记得区分大小写）："  Library
-		if [[ -e $HOME/$fl/$Library ]]; then
-			cd && cd $HOME/$fl/$Library/lede
+		ls_file_luci
+		if [[ -e $HOME/$fl/$file ]]; then
+			cd && cd $HOME/$fl/$file/lede
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_secondary_compilation
