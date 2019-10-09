@@ -790,6 +790,9 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			
 			sed -i 's/dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr/g' $HOME/$fl/$file/lede/include/target.mk
 			
+			#enable KERNEL_MIPS_FPU_EMULATOR
+			sed -i 's/default y if TARGET_pistachio/default y/g' $HOME/$fl/$file/lede/config/Config-kernel.in
+			
 			#应用fullconenat
 			cd $HOME/$fl/$file/lede
 			rm -rf package/network/config/firewall
