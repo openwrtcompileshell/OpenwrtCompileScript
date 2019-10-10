@@ -801,7 +801,7 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			#活动连接数
 			sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
 
-			#开启彩蛋
+			#彩蛋
 			sed -i '69i\echo 0xDEADBEEF > /etc/config/google_fu_mode' package/lean/default-settings/files/zzz-default-settings
 
 			#修改点东西55r
@@ -818,8 +818,7 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 				wget --no-check-certificate http://mirrors.ustc.edu.cn/qtproject/archive/qt/5.8/5.8.0/single/qt-everywhere-opensource-src-5.8.0.tar.xz -O $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz
 				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
 			fi
-			
-			
+
 			update_feeds
 			
 			#修改一下luci 添加频率和温度
@@ -827,6 +826,10 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			rm -rf feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm	
 			cp -r $HOME/$fl/$OF/$OCS/lean/lm-sensors	feeds/packages/utils/lm-sensors
 			cp $HOME/$fl/$OF/$OCS/lean/10-system.htm feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
+
+			#补全依赖(网易云正常显示)
+			#rm -rf feeds/packages/lang
+			#cp -r  $HOME/$fl/$OF/$OCS/lean/lang feeds/packages/lang
 }
 
 update_feeds() {
