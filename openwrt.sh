@@ -6,6 +6,12 @@ fl="Openwrt"
 by="ITdesk"
 OCS="OpenwrtCompileScript"
 
+#颜色调整参考wen55333
+red="\033[31m"
+green="\033[32m"
+white="\033[0m"
+
+
 rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
 g++ gawk gcc gcc-multilib gettext git git-core help2man htop lib32gcc1 libc6-dev-i386 libglib2.0-dev libncurses5-dev \
@@ -16,7 +22,7 @@ subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake
 #显示编译文件夹
 ls_file() {
 	LF=`ls $HOME/$fl | grep -v $0  | grep -v Script_File`
-	echo -e "\e[49;32;1m$LF\e[0m"
+	echo -e "$green$LF$white"
 	echo ""
 }
 ls_file_luci(){
@@ -30,7 +36,7 @@ ls_file_luci(){
 #显示config文件夹
 ls_my_config() {
 	LF=`ls My_config`
-	echo -e "\e[49;32;1m $LF \e[0m"
+	echo -e "$green$LF$white"
 	echo ""
 }
 
@@ -138,7 +144,7 @@ download_package() {
 	echo "--------------------------------------------------------------------------------"
 	echo "5.4下载额外的插件"
 	echo ""
-	echo -e " \e[32m例子：git clone https://github.com/destan19/OpenAppFilter.git   (此插件用于过滤应用)\e[0m"
+	echo -e " $green例子：git clone https://github.com/destan19/OpenAppFilter.git   (此插件用于过滤应用)$white"
  	echo "--------------------------------------------------------------------------------"
 	echo ""
 	read -p "请输入你要下载的插件地址："  download_url
@@ -335,7 +341,7 @@ description_if() {
 		clear
 		echo "-----------------------------------------------------------------------"
 		echo ""
-		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本\e[0m"
+		echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
 		echo ""
 		echo "-----------------------------------------------------------------------"
 	fi
@@ -350,7 +356,7 @@ description_if() {
 		clear
 		echo "-----------------------------------------------------------------------"
 		echo ""
-		echo -e "\e[32m添加openwrt变量成功,重启系统以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录\e[0m"
+		echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
 		echo ""
 		echo "-----------------------------------------------------------------------"
 	fi
@@ -364,7 +370,7 @@ description_if() {
 	fi
 
 	if [[ -e /etc/apt/sources.list.back ]]; then
-		clear && echo -e "\e[32m源码已替换\e[0m"
+		clear && echo -e "$green源码已替换$white"
 	else
 		check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
 	fi
@@ -385,7 +391,7 @@ description_if() {
 			case "$win10_select" in
 			1)
 				clear
-				echo -e "\e[32m开始替换软件源\e[0m" && Time
+				echo -e "$green开始替换软件源$white" && Time
 				sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
 				sudo rm -rf /etc/apt/sources.list
 				sudo cp $HOME/$fl/$OF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
@@ -405,7 +411,7 @@ description_if() {
 
 	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
 	if [[ "$?" == "0" ]]; then
-		clear && echo -e  "\e[32m已经安装curl\e[0m"
+		clear && echo -e  "$green已经安装curl$white"
 	else
 		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
 		sudo apt update
@@ -435,23 +441,23 @@ self_test() {
 	CheckUrl_google=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null   www.google.com)
 
 	if [[ "$CheckUrl_google" -eq "200" ]]; then
-		Check_google=`echo -e "\e[32m网络正常\e[0m"`
+		Check_google=`echo -e "$green网络正常$white"`
 	else
-		Check_google=`echo -e "\e[31m网络较差\e[0m"`
+		Check_google=`echo -e "$red网络较差$white"`
 	fi
 
 	CheckUrl_baidu=$(curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com)
 	if [[ "$CheckUrl_baidu" -eq "200" ]]; then
-		Check_baidu=`echo -e "\e[32m百度正常\e[0m"`
+		Check_baidu=`echo -e "$green百度正常$white"`
 	else
-		Check_baidu=`echo -e "\e[31m百度无法打开，请修复这个错误\e[0m"`
+		Check_baidu=`echo -e "$red百度无法打开，请修复这个错误$white"`
 	fi
 
 	Root_detection=`id -u`	# 学渣代码改良版
 	if [[ "$Root_detection" -eq "0" ]]; then
-		Root_run=`echo -e "\e[31m请勿以root运行,请修复这个错误\e[0m"`
+		Root_run=`echo -e "$red请勿以root运行,请修复这个错误$white"`
 	else
-		Root_run=`echo -e "\e[32m非root运行\e[0m"`
+		Root_run=`echo -e "$green非root运行$white"`
 	fi
 	echo "	      	    -------------------------------------------"
 	echo "	      	  	【  Script Self-Test Program  】"
@@ -473,15 +479,15 @@ description() {
 		echo "	    ++欢迎使用Openwrt-Compile-Script Ver $version ++"
 		echo "	      +++++++++++++++++++++++++++++++++++++++"
 		echo ""
-		echo -e "  创建脚本的初衷是因(\e[31m I \e[0m)为openwrt编译的时候有些东西太繁琐了，为了简化掉一些操作，使编译更加简单就有了此脚本(\e[31m T \e[0m)的诞生，后面觉得好玩就分享给了大家一起玩耍，你需要清楚此脚本仅用于学习，有一定危险性，请勿进行商用，如果商用导致损失或者其他问题，均由使用者自行承担!!!"
+		echo -e "  创建脚本的初衷是因($red I $white)为openwrt编译的时候有些东西太繁琐了，为了简化掉一些操作，使编译更加简单就有了此脚本($red T $white)的诞生，后面觉得好玩就分享给了大家一起玩耍，你需要清楚此脚本仅用于学习，有一定危险性，请勿进行商用，如果商用导致损失或者其他问题，均由使用者自行承担!!!"
 		echo ""
 		echo "下面简单给大家描述脚本的作用"
-		echo -e "	1.协助你更快的搭建编译环境，小白(\e[31m d \e[0m)建议学习一下再用会比较好"
-		echo -e  "	2.统一管理你的编译源，全部(\e[31m e \e[0m)存放在Openwrt这个文件里面"
+		echo -e "	1.协助你更快的搭建编译环境，小白($red d $white)建议学习一下再用会比较好"
+		echo -e  "	2.统一管理你的编译源，全部($red e $white)存放在Openwrt这个文件里面"
 		echo "	3.你只要启动脚本就可以控制你的源，进行二次编译或者更新"
 		echo ""
-		echo -e "缺陷1：小白(\e[31m s \e[0m)不太适合，因为他们不了解过程"
-		echo -e "缺陷2：不能自定义openwrt代码或者修改，此脚本适合做重复的事情(\e[31m k \e[0m)"
+		echo -e "缺陷1：小白($red s $white)不太适合，因为他们不了解过程"
+		echo -e "缺陷2：不能自定义openwrt代码或者修改，此脚本适合做重复的事情($red k $white)"
 		echo ""
 		echo "注：请自行将你系统的软件源更换为国内的服务器，不会请百度"
 		echo ""
@@ -973,7 +979,7 @@ ecc() {
 		mk_menu
 	else
 		echo ""
-		echo -e "\e[31mError，请查看上面报错，回车重新执行命令\e[0m"
+		echo -e "$redError，请查看上面报错，回车重新执行命令$white"
 		echo "" && read a
 		ecc
 	fi
@@ -1008,7 +1014,7 @@ mk_compile_firmware() {
 	clear
 	echo  "编译固件是否要使用多线程编译"
 	echo ""
-	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s,\e[32m多线程例子：（ make -j4 V=s ）\e[0m  -j（这个值看你电脑），不要随便乱输，电脑炸了不管，如果你不需要多线程编译那么直接回车即可"
+	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s,$green多线程例子：（ make -j4 V=s ）$white  -j（这个值看你电脑），不要随便乱输，电脑炸了不管，如果你不需要多线程编译那么直接回车即可"
 	echo ""
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
 	if [[ -z "$mk_f" ]];then
@@ -1016,7 +1022,7 @@ mk_compile_firmware() {
 		make V=s
 	else
 		clear
-		echo -e "你输入的线程是：\e[32m$mk_f\e[0m"
+		echo -e "你输入的线程是：$green$mk_f$white"
 		echo "准备开始执行编译" && Time
 		$mk_f
 	fi
@@ -1033,20 +1039,20 @@ mk_Compile_plugin() {
 	echo "--------------------------------------------------------"
 	echo "编译插件"
 	echo ""
-	echo -e "\e[32m例子：make package/插件名字/compile V=99\e[0m" 
+	echo -e "$green例子：make package/插件名字/compile V=99$white" 
 	echo ""
 	echo "PS:Openwrt首次git clone仓库不要用此功能，绝对失败!!!"
 	echo "--------------------------------------------------------"
 	read  -p "请输入你的参数：" mk_p
 		clear
-		echo -e "你输入的参数是：\e[32m$mk_p\e[0m"
+		echo -e "你输入的参数是：$green$mk_p$white"
 		echo "准备开始执行编译" && Time
 		$mk_p
 	echo ""
 	echo "" 
 	echo "---------------------------------------------------------------------"
 	echo ""
-	echo -e "  潘多拉编译完成的插件在\e[32m/Openwrt/文件名/lede/bin/packages/你的平台/base\e[0m,如果还是找不到的话，看下有没有报错，善用搜索 "
+	echo -e "  潘多拉编译完成的插件在$green/Openwrt/文件名/lede/bin/packages/你的平台/base$white,如果还是找不到的话，看下有没有报错，善用搜索 "
 	echo ""
 	echo "回车可以继续编译插件，或者Ctrl + c终止操作"
 	echo ""
