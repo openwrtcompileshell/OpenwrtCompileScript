@@ -138,11 +138,59 @@ update_lean_package() {
 
 download_package() {
 	ls_file_luci 
-	mkdir package/Extra-plugin
-	cd package/Extra-plugin
+	if [[ -e package/Extra-plugin ]]; then
+		cd package/Extra-plugin	
+	else
+		mkdir package/Extra-plugin
+	fi
+	download_package_luci
+	cd $HOME/$fl/$file/lede 
+	update_feeds
+	mk_df
+}
+
+
+download_package_luci() {
+	clear
+	echo "	      -------------------------------------"
+	echo "	      	    【 5.4额外的插件 】"
+	echo ""
+	echo " 		  1. luci-theme-argon"
+	echo ""
+	echo "		  2. luci-app-oaf （测试中）"
+	echo ""
+	echo "		  99. 自定义下载插件 "
+	echo ""
+	echo "		  0. 回到上一级菜单"
+	echo ""
+	echo "		PS:如果你有什么好玩的插件，可以提交给我"
+	echo "	      --------------------------------------"
+	read -p "请输入数字:" download_num
+	case "$download_num" in
+		1)
+		git clone https://github.com/jerrykuku/luci-theme-argon.git
+		;;
+		2)
+		git clone https://github.com/destan19/OpenAppFilter.git
+		;;
+		99)
+		download_package_customize
+		;;
+		0)
+		other
+		;;
+		*)
+	clear && echo  "请输入正确的数字 [1-2,99,0]" && Time
+	download_package_luci
+	;;
+esac
+download_package_customize_Decide
+}
+
+download_package_customize() {	
 	clear
 	echo "--------------------------------------------------------------------------------"
-	echo "5.4下载额外的插件"
+	echo "自定义下载插件"
 	echo ""
 	echo -e " $green例子：git clone https://github.com/destan19/OpenAppFilter.git   (此插件用于过滤应用)$white"
  	echo "--------------------------------------------------------------------------------"
@@ -153,14 +201,35 @@ download_package() {
 		cd $HOME/$fl/$file/lede
 	else
 		clear	
-		echo "没有下载成功，重新执行代码" && Time
-		download_package
+		echo -e "没有下载成功或者插件已经存在，请检查$red package/Extra-plugin $white里面是否已经存在" && Time
+		download_package_customize
 	fi
-	
-	update_feeds
-	mk_df
+	download_package_customize_Decide
 	
 }
+
+download_package_customize_Decide() {
+	clear
+	echo "----------------------------------------"
+	echo "是否需要继续下载插件"
+	echo " 1.继续下载插件"
+	echo " 2.不需要了"
+	echo "----------------------------------------"
+	read -p "请输入你的决定：" Decide
+	case "$Decide" in
+		1)
+		download_package_luci
+		;;
+		2)
+		echo ""
+		;;
+		*)
+		clear && echo  "Error请输入正确的数字 [1-2]" && Time
+		 clear && download_package_customize_Decide
+		;;
+	esac
+}
+
 
 #选项4.恢复编译环境
 source_RestoreFactory() {
