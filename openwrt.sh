@@ -902,9 +902,6 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			cp -r $HOME/$fl/$OF/$OCS/lean/lm-sensors	feeds/packages/utils/lm-sensors
 			cp $HOME/$fl/$OF/$OCS/lean/10-system.htm feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
 
-			#补全依赖(网易云正常显示)
-			#rm -rf feeds/packages/lang
-			#cp -r  $HOME/$fl/$OF/$OCS/lean/lang feeds/packages/lang
 }
 
 update_feeds() {
