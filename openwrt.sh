@@ -876,8 +876,8 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			#活动连接数
 			sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
 
-			#彩蛋
-			sed -i '69i\echo 0xDEADBEEF > /etc/config/google_fu_mode' package/lean/default-settings/files/zzz-default-settings
+			#热爱党和国家
+			#sed -i '69i\echo 0xDEADBEEF > /etc/config/google_fu_mode' package/lean/default-settings/files/zzz-default-settings
 
 			#修改点东西55r
 			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/server.lua
