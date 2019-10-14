@@ -9,7 +9,9 @@ OCS="OpenwrtCompileScript"
 #颜色调整参考wen55333
 red="\033[31m"
 green="\033[32m"
+yellow="\033[33m"
 white="\033[0m"
+
 
 
 rely_on() {
@@ -46,14 +48,31 @@ display_git_log() {
 #参考xueguang668
 }
 
+display_git_log_if() {
+		git_branch=$(git branch -v | grep -o 落后 )""
+		if [[ "$git_branch" == "落后" ]]; then
+			echo -e  "自动检测：$red本地源码已经落后远端，建议更新$white"
+		else
+			echo -e  "自动检测：$green本地源码与远端一样$white"
+			
+		fi
+}
+
 display_git_log_luci() {
 	clear
+		echo "稍等一下，正在取回分支，用于比较现在源码，不会更新请放心，速度看你网络"
+		git fetch
+		clear
 		echo "----------------------------------------"
 		echo -e "   $green显示远端仓库最近三条更新内容$white                  "
 		echo "----------------------------------------"
 		echo ""
-				display_git_log
+		display_git_log
 		echo ""
+		echo ""
+		echo -e "$yellow你现在所用的分支：$white`git branch -v`"
+		echo ""
+		display_git_log_if
 		echo ""
 		read -p "是否需要更新源码（1.yes 2.no）：" update_soure
 		case "$update_soure" in
