@@ -40,6 +40,36 @@ ls_my_config() {
 	echo ""
 }
 
+#显示git log 提交记录
+display_git_log() {
+	git log -3 --graph --all --branches --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(bold green)(%ai)%C(reset) %C(white)%s%C(reset) %C(yellow) - %an%C(reset)%C(auto) %d%C(reset)'
+#参考xueguang668
+}
+
+display_git_log_luci() {
+	clear
+		echo "----------------------------------------"
+		echo -e "   $green显示远端仓库最近三条更新内容$white                  "
+		echo "----------------------------------------"
+		echo ""
+				display_git_log
+		echo ""
+		echo ""
+		read -p "是否需要更新源码（1.yes 2.no）：" update_soure
+		case "$update_soure" in
+			1)
+			source_update
+			;;
+			2)
+			echo ""
+			;;
+			*)
+			clear && echo  "Error请输入正确的数字 [1-2]" && Time
+			display_git_log_luci
+			;;
+		esac	
+}
+
 #倒数专用
 Time() {
 	seconds_left=3
@@ -263,56 +293,7 @@ source_RestoreFactory() {
 	mk_menu
 }
 
-#选项3.源码更新
-source_update() {
-	clear
-	echo "--------------------------------"
-	echo " 准备开始更新openwrt源代码与软件"
-	echo "--------------------------------"
-	ls_file_luci
-	if [[ -e $HOME/$fl/$file ]]; then
-			cd && cd $HOME/$fl/$file/lede
-			clear && echo "开始清理之前的编译文件"
-			make clean
-	 	 else
-			clear && echo "-----文件名错误，请重新输入-----" && Time
-			source_update
-		fi
-
-	clear && echo "有没有改动过源代码，因为改动过源代码可能会导致git pull失效无法更新"
-	echo "		1.是 "
-	echo "		2.否"
-	read -p "请输入你的决定："  git_source
-		case "$git_source" in
-			1)
-			source_update_No_git_pull
-			;;
-			2)
-			source_update_git_pull
-			;;
-			*)
-			clear && echo  "Error请输入正确的数字 [1-2]" && Time
-			source_update
-			;;
-		esac
-	update_feeds
-        clear && echo "更新完成回车进行编译  Ctrl+c取消,不进行编译" && read a && Time
-	source_config
-	make menuconfig
-	Save_My_Config_luci
-	mk_menu
-}
-
-source_update_No_git_pull() {
-	git fetch --all
-	git reset --hard origin/master
-}
-
-source_update_git_pull() {
-	git pull
-}
-
-#选项2.二次编译
+#选项2.二次编译 与 源码更新合并
 source_secondary_compilation() {
 		ls_file_luci
 		if [[ -e $HOME/$fl/$file ]]; then
@@ -321,12 +302,12 @@ source_secondary_compilation() {
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_secondary_compilation
 		fi
-		clear && echo "开始清理之前的文件"
+		echo "开始清理之前的文件"
 		make clean && rm -rf ./tmp && Time
+		display_git_log_luci
+		update_feeds
 		source_config
-		make menuconfig
-		Save_My_Config_luci
-		mk_menu
+		mk_df
 }
 
 source_config() {
@@ -402,6 +383,46 @@ transfer_my_config() {
 		clear && echo "调用错误" && Time
 		transfer_my_config
 	fi
+}
+
+#选项 3.源码更新 与 二次编译合并
+source_update() {
+	clear
+	echo "------------------------------------------------------------------"
+	echo -e "$green***准备开始更新openwrt源代码与软件***$white"
+	echo ""
+	echo "有没有改动过源代码，因为改动过源代码可能会导致git pull失效无法更新"
+	echo "1.是   2.否 "
+	echo "	"
+	echo "------------------------------------------------------------------"
+	read -p "请输入你的决定："  git_source
+		case "$git_source" in
+			1)
+			source_update_No_git_pull
+			;;
+			2)
+			source_update_git_pull
+			;;
+			*)
+			clear && echo  "Error请输入正确的数字 [1-2]" && Time
+			source_update
+			;;
+		esac
+	if [[ "$?" == "0" ]]; then
+		echo -e  "$green源码更新完成$white"
+	else
+		echo -e  "$red源码更新失败，重新执行代码$white" && Time
+		source_update
+	fi
+}
+
+source_update_No_git_pull() {
+	git fetch --all
+	git reset --hard origin/master
+}
+
+source_update_git_pull() {
+	git pull
 }
 
 #选项1.开始搭建编译环境与主菜单
@@ -584,8 +605,6 @@ main_interface() {
 	echo ""
 	echo "		  	2.二次编译固件"
 	echo ""
-	echo "			3.更新源代码"
-	echo ""
 	echo "			4.恢复编译环境"
 	echo ""
 	echo "			5.其他选项"
@@ -605,9 +624,6 @@ main_interface() {
 		;;
 		2)
 		source_secondary_compilation
-		;;
-		3)
-		source_update
 		;;
 		4)
 		source_RestoreFactory
