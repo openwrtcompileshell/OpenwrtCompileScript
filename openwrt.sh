@@ -227,6 +227,7 @@ download_package_customize_Decide
 }
 
 download_package_customize() {	
+	cd $HOME/$fl/$file/lede/package/Extra-plugin
 	clear
 	echo "--------------------------------------------------------------------------------"
 	echo "自定义下载插件"
