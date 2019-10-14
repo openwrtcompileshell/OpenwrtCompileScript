@@ -144,8 +144,14 @@ download_package() {
 		mkdir package/Extra-plugin
 	fi
 	download_package_luci
+	
+}
+
+download_package2() {
 	cd $HOME/$fl/$file/lede 
+	rm -rf ./tmp
 	update_feeds
+	source_config
 	mk_df
 }
 
@@ -218,10 +224,11 @@ download_package_customize_Decide() {
 	read -p "请输入你的决定：" Decide
 	case "$Decide" in
 		1)
+		cd $HOME/$fl/$file/lede/package/Extra-plugin
 		download_package_luci
 		;;
 		2)
-		echo ""
+		download_package2
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
