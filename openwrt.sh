@@ -129,10 +129,13 @@ dl_other() {
 
 update_lean_package() {
 	ls_file_luci
+	make clean
 	rm -rf package/lean
 	software_lean
+	software_Setting
 	Time
 	update_feeds
+	source_config
 	mk_df
 }
 
@@ -794,6 +797,7 @@ source_download_pandorabox_sdk() {
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$fl/$file/lede/package/system
 				cd $HOME/$fl/$file/lede				
 				software_lean
+				software_Setting
 				update_feeds
 				mk_df
 				;;
