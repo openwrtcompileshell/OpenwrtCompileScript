@@ -17,7 +17,7 @@
 The script is made to work on these OS :
 
 - Ubuntu 16.4
-- Ubuntu 18.4
+- Ubuntu 18.4 （首选，脚本基于此版本编写测试）
 - win10子系统（ubuntu 18.04 LTS）
 
 ## Usage 使用方法
