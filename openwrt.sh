@@ -125,15 +125,15 @@ update_script() {
 other() {
 	clear
 	echo "	      -------------------------------------"
-	echo "	      	    【 其他选项 】"
+	echo "	      	    【 5.其他选项 】"
 	echo ""
-	echo " 		  5.1 只搭建编译环境，不进行编译"
+	echo " 		  1 只搭建编译环境，不进行编译"
 	echo ""
-	echo "		  5.2 单独Download DL库 "
+	echo "		  2 单独Download DL库 "
 	echo ""
-	echo "		  5.3 更新lean软件库 "
+	echo "		  3 更新lean软件库 "
 	echo ""
-	echo "		  5.4 下载额外的插件 "
+	echo "		  4 下载额外的插件 "
 	echo ""
 	echo "		  0. 回到上一级菜单"
 	echo ""
@@ -143,21 +143,21 @@ other() {
 	echo "	      --------------------------------------"
 	read -p "请输入数字:" other_num
 	case "$other_num" in
-		5.1)
+		1)
 		clear
 		echo "5.1 只搭建编译环境，不进行编译 " && Time
 		update_system
 		echo "环境搭建完成，请自行创建文件夹和git"
 		;;
-		5.2)
+		2)
 		dl_other
 		echo "DL更新完成"
 		;;
-		5.3)
+		3)
 		update_lean_package
 		echo "lean软件库更新完成"
 		;;
-		5.4)
+		4)
 		download_package
 		echo "插件下载完成"
 		;;
@@ -183,6 +183,7 @@ update_lean_package() {
 	software_lean
 	software_Setting
 	Time
+	display_git_log_luci
 	update_feeds
 	source_config
 	mk_df
@@ -202,6 +203,7 @@ download_package() {
 download_package2() {
 	cd $HOME/$fl/$file/lede 
 	rm -rf ./tmp
+	display_git_log_luci
 	update_feeds
 	source_config
 	mk_df
