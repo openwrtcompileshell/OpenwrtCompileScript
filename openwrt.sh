@@ -151,15 +151,12 @@ other() {
 		;;
 		2)
 		dl_other
-		echo "DL更新完成"
 		;;
 		3)
 		update_lean_package
-		echo "lean软件库更新完成"
 		;;
 		4)
-		download_package
-		echo "插件下载完成"
+		download_package		
 		;;
 		0)
 		main_interface
@@ -182,6 +179,7 @@ update_lean_package() {
 	rm -rf package/lean
 	software_lean
 	software_Setting
+	echo "插件下载完成"
 	Time
 	display_git_log_luci
 	update_feeds
@@ -334,12 +332,14 @@ source_secondary_compilation() {
 
 source_config() {
 	clear
-		 echo "----------------------------------------"
+		 echo "----------------------------------------------------------------------"
 		 echo "是否要加载你之前保存的配置"
 		 echo "     1.是（加载之前保存的配置）"
 		 echo "     2.否（以全新的config进行编译）"
 		 echo "     3.继续上次的编译（不对配置做任何操作）"
-		 echo "----------------------------------------- "
+		 echo ""
+		 echo "PS:如果源码进行过重大更新，建议直接选择2.以全新config进行编译，以减少报错"
+		 echo "----------------------------------------------------------------------"
 	read -p "请输入你的决定："  config
 		case "$config" in
 			1)
@@ -359,7 +359,14 @@ source_config() {
 }
 
 source_Secondary_compilation_deleteConfig() {
-	rm -rf .config
+	rm -rf .config && rm -rf ./tmp
+	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
+	if [[ "$git_remote" == "2" ]]; then
+		echo "openwrt官方源码需要单独配置一下"
+		software_Setting	
+	else
+		echo  ""		
+	fi
 }
 
 Save_My_Config_luci() {
@@ -904,7 +911,7 @@ software_Setting() {
 		echo "开始配置优化"
 			#初始配置
 			cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
-			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors\
+			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors \
 kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
 default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
 luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus \
