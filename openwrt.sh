@@ -332,6 +332,7 @@ source_secondary_compilation() {
 
 source_config() {
 	clear
+		source_Secondary_compilation_deleteConfig
 		 echo "----------------------------------------------------------------------"
 		 echo "是否要加载你之前保存的配置"
 		 echo "     1.是（加载之前保存的配置）"
@@ -346,7 +347,7 @@ source_config() {
 			transfer_my_config
 			;;
 			2)
-			source_Secondary_compilation_deleteConfig
+			rm -rf .config && rm -rf ./tmp
 			;;
 			3)
 			echo ""
@@ -359,14 +360,20 @@ source_config() {
 }
 
 source_Secondary_compilation_deleteConfig() {
-	rm -rf .config && rm -rf ./tmp
+	clear
+	echo "-----------------------------------------------------"
+	echo -e "$green检查一下是否openwrt官方源码，用于同步lean插件$white"
+	echo "-----------------------------------------------------"
 	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
 	if [[ "$git_remote" == "2" ]]; then
 		echo "openwrt官方源码需要单独配置一下"
+		Time
+		rm -rf package/lean
 		software_Setting	
 	else
-		echo  ""		
+		echo  "不是openwrt官方源码"		
 	fi
+	clear
 }
 
 Save_My_Config_luci() {
@@ -414,7 +421,7 @@ transfer_my_config() {
 	fi
 }
 
-#选项 3.源码更新 与 二次编译合并
+#源码更新
 source_update() {
 	clear
 	echo "------------------------------------------------------------------"
@@ -910,7 +917,12 @@ software_Setting() {
 		software_lean
 		echo "开始配置优化"
 			#初始配置
-			cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+			if [[ -e $HOME/$fl/$file/lede/include/target.mk_back ]]; then
+				echo ""
+			else
+				cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+			fi
+			
 			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors \
 kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
 default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
