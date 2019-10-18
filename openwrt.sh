@@ -62,6 +62,12 @@ display_git_log_luci() {
 	clear
 		echo "稍等一下，正在取回分支，用于比较现在源码，不会更新请放心，速度看你网络"
 		git fetch
+		if [[ $? -eq 0 ]]; then
+			echo ""
+		else
+			echo "取回分支没有成功，重新执行代码" && Time
+			display_git_log_luci
+		fi
 		clear
 		echo "----------------------------------------"
 		echo -e "   $green显示远端仓库最近三条更新内容$white                  "
@@ -908,7 +914,14 @@ software_luci() {
 }
 software_lean() {
 	echo "开始下载lean的软件库"
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
+	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
+	if [[ $? -eq 0 ]]; then
+		echo ""
+	else
+		clear	
+		echo "下载lean插件没有成功，重新执行代码" && Time
+		software_lean
+	fi
 }
 
 software_Setting() {
@@ -943,13 +956,6 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 
 			#活动连接数
 			sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
-
-			#热爱党和国家
-			#sed -i '69i\echo 0xDEADBEEF > /etc/config/google_fu_mode' package/lean/default-settings/files/zzz-default-settings
-
-			#修改点东西55r
-			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/server.lua
-			sed -i 's/local ipkg = require("luci.model.ipkg")/-- local ipkg = require("luci.model.ipkg")--/g' package/lean/luci-app-ssr-plus/luasrc/model/cbi/shadowsocksr/client-config.lua
 
 			#修改frp
 			sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
