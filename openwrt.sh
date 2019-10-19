@@ -975,6 +975,15 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			rm -rf feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm	
 			cp -r $HOME/$fl/$OF/$OCS/lean/lm-sensors	feeds/packages/utils/lm-sensors
 			cp $HOME/$fl/$OF/$OCS/lean/10-system.htm feeds/luci/modules/luci-mod-status/luasrc/view/admin_status/index/10-system.htm
+	
+			#取消官方源码强制https
+			sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
+			sed -i '10s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
+			sed -i 's/option redirect_https\s1/option redirect_https   0/g' package/network/services/uhttpd/files/uhttpd.config
+			sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+			sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+			sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+			
 
 }
 
