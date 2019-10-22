@@ -86,7 +86,8 @@ display_git_log_luci() {
 			source_update
 			;;
 			2)
-			echo ""
+			source_config
+			ecc
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
