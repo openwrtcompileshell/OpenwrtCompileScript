@@ -1013,11 +1013,29 @@ mk_df() {
 	echo ""
 	echo "--------------------------"
 		make defconfig
- 		cd
-		description >> $HOME/$fl/$OF/description
-		ln -s  $HOME/$fl/$OF/dl $HOME/$fl/$file/lede/dl
-		ln -s  $HOME/$fl/$OF/My_config $HOME/$fl/$file/lede/My_config
-		ln -s  $HOME/$fl/$OF/$OCS/openwrt.sh $HOME/$fl/$file/lede/openwrt.sh
+		if [[ -e $HOME/$fl/$OF/description ]]; then
+			echo ""
+		else
+			description >> $HOME/$fl/$OF/description
+		fi
+		
+		if [[ -e $HOME/$fl/$file/lede/dl ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$fl/$OF/dl $HOME/$fl/$file/lede/dl
+		fi
+	
+		if [[ -e $HOME/$fl/$file/lede/My_config ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$fl/$OF/My_config $HOME/$fl/$file/lede/My_config
+		fi
+
+		if [[ -e $HOME/$fl/$file/lede/openwrt.sh ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$fl/$OF/$OCS/openwrt.sh $HOME/$fl/$file/lede/openwrt.sh
+		fi
 		cd $HOME/$fl/$file/lede
 		dl_detection
 		dl_source
