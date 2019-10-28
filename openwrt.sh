@@ -49,7 +49,7 @@ display_git_log() {
 }
 
 display_git_log_if() {
-		git_branch=$(git branch -v | grep -o 落后 )""
+		git_branch=$(git branch -v | grep -o 落后 )
 		if [[ "$git_branch" == "落后" ]]; then
 			echo -e  "自动检测：$red本地源码已经落后远端，建议更新$white"
 		else
@@ -185,7 +185,7 @@ update_lean_package() {
 	make clean
 	rm -rf package/lean
 	software_lean
-	software_Setting
+	software_Setting_if
 	echo "插件下载完成"
 	Time
 	display_git_log_luci
@@ -373,10 +373,8 @@ source_Secondary_compilation_deleteConfig() {
 	echo "-----------------------------------------------------"
 	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
 	if [[ "$git_remote" == "2" ]]; then
-		echo "openwrt官方源码需要单独配置一下"
-		Time
 		rm -rf package/lean
-		software_Setting	
+		software_Setting_if	
 	else
 		echo  "不是openwrt官方源码"		
 	fi
@@ -855,8 +853,7 @@ source_download_pandorabox_sdk() {
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$fl/$file/lede/package/libs
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$fl/$file/lede/package/system
 				cd $HOME/$fl/$file/lede				
-				software_lean
-				software_Setting
+				software_Setting_if
 				update_feeds
 				mk_df
 				;;
@@ -901,7 +898,7 @@ software_luci() {
 		read  -p "请输入你的选择:" software_luci_select
 			case "$software_luci_select" in
 				1)
-				software_Setting
+				software_Setting_if
 				;;
 				2)
 				echo ""
@@ -913,7 +910,45 @@ software_luci() {
 			esac					
 	fi	
 }
+
+software_Setting_if() {
+	if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
+		echo -e  "检查到你的源码是：$green官方源码lede-17.01$white"
+		software_Setting
+	elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
+		echo -e  "检查到你的源码是：$green官方源码18.06$white"
+		software_Setting
+		software_Setting_18
+	elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
+		echo -e  "检查到你的源码是：$green官方源码openwrt-19.07$white"
+		software_Setting
+		
+	elif [[ "$(git branch | grep -o master )" == "master" ]]; then
+		echo -e  "检查到你的源码是：$green官方源码master$white"
+		software_Setting
+	else
+		echo -e  "检查到你的源码是：$red未知源码$white"
+	fi
+}
+
+software_Setting_18() {
+	clear
+	echo "针对18.6版本开始配置优化"
+
+	#修改x86启动等待时间成0秒
+	sed -i 's/default "5"/default "0"/g' $HOME/$fl/$file/lede/config/Config-images.in
+
+	#去掉IPV6
+	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$fl/$file/lede/feeds/luci/collections/luci/Makefile
+
+	#修改exfat支持
+	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$fl/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
+
+#以上代码合并自左右	
+}
+
 software_lean() {
+	echo ""
 	echo "开始下载lean的软件库"
 	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
 	if [[ $? -eq 0 ]]; then
@@ -935,17 +970,13 @@ software_Setting() {
 				echo ""
 			else
 				cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+				sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/g"  $HOME/$fl/$file/lede/include/target.mk
+				sed -i 's/block-mount fdisk lsblk mdadm/fdisk lsblk mdadm automount autosamba luci-app-usb-printer /g' $HOME/$fl/$file/lede/include/target.mk
+			
+				sed -i 's/dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr/g' $HOME/$fl/$file/lede/include/target.mk
 			fi
 			
-			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors \
-kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \
-default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot \
-luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus \
-luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree \
-luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/g"  $HOME/$fl/$file/lede/include/target.mk
-			sed -i 's/block-mount fdisk lsblk mdadm/fdisk lsblk mdadm automount autosamba luci-app-usb-printer /g' $HOME/$fl/$file/lede/include/target.mk
 			
-			sed -i 's/dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr/g' $HOME/$fl/$file/lede/include/target.mk
 			
 			#enable KERNEL_MIPS_FPU_EMULATOR
 			sed -i 's/default y if TARGET_pistachio/default y/g' $HOME/$fl/$file/lede/config/Config-kernel.in
@@ -962,12 +993,12 @@ luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app
 			sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
 
 			#解决qt问题(未完成)
-			if [[ -e $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz ]]; then
-				echo ""
-			else
-				wget --no-check-certificate http://mirrors.ustc.edu.cn/qtproject/archive/qt/5.8/5.8.0/single/qt-everywhere-opensource-src-5.8.0.tar.xz -O $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz
-				chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
-			fi
+			#if [[ -e $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz ]]; then
+			#	echo ""
+			#else
+			#	wget --no-check-certificate http://mirrors.ustc.edu.cn/qtproject/archive/qt/5.8/5.8.0/single/qt-everywhere-opensource-src-5.8.0.tar.xz -O $HOME/$fl/$OF/dl/qt-everywhere-opensource-src-5.8.0.tar.xz
+			#	chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
+			#fi
 
 			update_feeds
 			
