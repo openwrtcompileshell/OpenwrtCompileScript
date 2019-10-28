@@ -84,6 +84,7 @@ display_git_log_luci() {
 		case "$update_soure" in
 			1)
 			source_update
+			source_Secondary_compilation_deleteConfig
 			;;
 			2)
 			source_config
@@ -337,7 +338,6 @@ source_secondary_compilation() {
 
 source_config() {
 	clear
-		source_Secondary_compilation_deleteConfig
 		 echo "----------------------------------------------------------------------"
 		 echo "是否要加载你之前保存的配置"
 		 echo "     1.是（加载之前保存的配置）"
