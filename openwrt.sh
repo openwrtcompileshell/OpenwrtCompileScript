@@ -184,7 +184,6 @@ update_lean_package() {
 	ls_file_luci
 	make clean
 	rm -rf package/lean
-	software_lean
 	software_Setting_if
 	echo "插件下载完成"
 	Time
@@ -332,7 +331,6 @@ source_secondary_compilation() {
 		echo "开始清理之前的文件"
 		make clean && rm -rf ./tmp && Time
 		display_git_log_luci
-		update_feeds
 		source_config
 		mk_df
 }
@@ -373,10 +371,12 @@ source_Secondary_compilation_deleteConfig() {
 	echo "-----------------------------------------------------"
 	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
 	if [[ "$git_remote" == "2" ]]; then
+		rm -rf ./feeds/
 		rm -rf package/lean
 		software_Setting_if	
 	else
-		echo  "不是openwrt官方源码"		
+		echo  "不是openwrt官方源码"
+		update_feeds		
 	fi
 	clear
 }
@@ -450,7 +450,7 @@ source_update() {
 			;;
 		esac
 	if [[ "$?" == "0" ]]; then
-		echo -e  "$green源码更新完成$white"
+		echo -e  "$green源码更新完成$white" && Time
 	else
 		echo -e  "$red源码更新失败，重新执行代码$white" && Time
 		source_update
