@@ -506,7 +506,6 @@ description_if() {
 		echo "开始创建主文件夹"
 		mkdir -p $HOME/$fl/$OF/dl
 		mkdir -p $HOME/$fl/$OF/My_config
-		mkdir  $HOME/$fl/$OF/pl
 		cp -r `pwd`/$OCS $HOME/$fl/$OF/
 	fi
 
@@ -1069,72 +1068,23 @@ mk_df() {
 			ln -s  $HOME/$fl/$OF/$OCS/openwrt.sh $HOME/$fl/$file/lede/openwrt.sh
 		fi
 		cd $HOME/$fl/$file/lede
-		dl_detection
 		dl_source
 }
 
-dl_detection() {
-	if [[ -e $HOME/$fl/$OF/pl/download_1150.pl ]]; then
-		echo ""
-	else
-		wget --no-check-certificate https://raw.githubusercontent.com/LGA1150/openwrt/exp/scripts/download.pl -O $HOME/$fl/$OF/pl/download_1150.pl
-		chmod 777 $HOME/$fl/$file/lede/scripts/download.pl
-	fi
-	
-}
-
 dl_source() {
-		clear && echo "选择DL服务器"
-		echo "----------------------------------------"
-		echo " 1.国内DL服务器，下载更快"
-		echo ""
-		echo " 2.官方的DL服务器（需要梯子，不然容易报错）"
-		echo ""
-		echo "----------------------------------------"
-		read -p "请输入你的决定："  DL_so
-			case "$DL_so" in
-				1)
-				domestic_dl
-				dl_download
-				;;
-				2)
-				official_dl
-				dl_download
-				;;
-				*)
-				clear && echo  "Error请输入正确的数字 [1-2]" && Time
-				dl_source
-				;;
-			esac
-}
+	#用于删除之前创建的dl服务器文件
+	if [[ -e $HOME/$fl/$OF/pl ]]; then	
+		rm -rf $HOME/$fl/$OF/pl
+	else	
+		echo ""	
+	fi
 
-domestic_dl() {
-		if [[ -e $HOME/$fl/$file/lede/scripts/download_back.pl ]]; then
-			echo ""
-		else
-			cp $HOME/$fl/$file/lede/scripts/download.pl $HOME/$fl/$file/lede/scripts/download_back.pl
-			rm -rf $HOME/$fl/$file/lede/scripts/download.pl
-			cp $HOME/$fl/$OF/pl/download_1150.pl $HOME/$fl/$file/lede/scripts/download.pl
-		fi
-}
-
-official_dl() {
-		if [[ -e $HOME/$fl/$file/lede/scripts/download_back.pl ]]; then
-			rm -rf $HOME/$fl/$file/lede/scripts/download.pl
-			mv $HOME/$fl/$file/lede/scripts/download_back.pl $HOME/$fl/$file/lede/scripts/download.pl
-		else
-			echo ""
-		fi
-
-}
-
-dl_download() {
 	clear
 	echo "----------------------------------------------"
 	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
 	echo "------------------------------------------"
 	Time
-	make download V=s
+	make download V=s	
 	dl_error
 	
 }
