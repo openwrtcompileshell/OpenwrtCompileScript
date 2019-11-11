@@ -89,6 +89,7 @@ display_git_log_luci() {
 			2)
 			source_config
 			ecc
+			exit 
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -337,6 +338,7 @@ source_secondary_compilation() {
 }
 
 source_config() {
+	software_Setting_Public
 	clear
 		 echo "----------------------------------------------------------------------"
 		 echo "是否要加载你之前保存的配置"
@@ -887,7 +889,7 @@ source_if() {
 
 software_luci() {
 	if [[ -e $HOME/$fl/$file/lede/package/lean ]]; then
-		 software_Setting_Public
+		 echo ""
 	else
 		echo "----------------------------------------------------"
   		echo "检测到你是openwrt官方源码，是否加入lean插件"
@@ -911,6 +913,7 @@ software_luci() {
 }
 
 software_Setting_if() {
+	cd $HOME/$fl/$file/lede
 	if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
 		echo -e  "检查到你的源码是：$green官方源码lede-17.01$white"
 		software_Setting
@@ -943,6 +946,12 @@ software_Setting_18() {
 	#修改exfat支持
 	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$fl/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
 
+	#修改KB成MB
+	sed -i 's/1024) + " <%:k/1048576) + " <%:M/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	sed -i 's/(info.memory/Math.floor(info.memory/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	sed -i 's/(Math.floor/Math.floor(/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	sed -i 's/(info.swap/Math.floor(info.swap/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+
 #以上代码合并自左右	
 }
 
@@ -961,8 +970,6 @@ software_lean() {
 
 software_Setting() {
 		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
-
-		cd $HOME/$fl/$file/lede
 		software_lean
 		echo "开始配置优化"
 			#初始配置
@@ -992,8 +999,7 @@ software_Setting() {
 			#修改frp
 			sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
 		
-			#修改固件生成名字,增加当天日期(by:左右）
-			sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=$(date +%F)-$(VERSION_DIST_SANITIZED)/g' include/image.mk
+			update_feeds
 				
 			#取消官方源码强制https
 			sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
@@ -1002,20 +1008,19 @@ software_Setting() {
 			sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 			sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 			sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
-			
-			software_Setting_Public
 }
 
 #Public配置
 software_Setting_Public() {
-		update_feeds
-		clear
 		echo "Public配置"
 		#隐藏首页显示用户名(by:kokang)
 		sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 		
 		#移动光标至第一格(by:kokang)
 		sed -i "s/'luci_password'/'luci_username'/g" feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
+
+		#修改固件生成名字,增加当天日期(by:左右）
+		sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=$(shell date +%F)-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 	
 }
 
