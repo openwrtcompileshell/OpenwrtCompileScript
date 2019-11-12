@@ -98,6 +98,23 @@ display_git_log_luci() {
 		esac	
 }
 
+source_Secondary_compilation_deleteConfig() {
+	clear
+	echo "-----------------------------------------------------"
+	echo -e "$green检查一下是否openwrt官方源码，用于同步lean插件$white"
+	echo "-----------------------------------------------------"
+	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
+	if [[ "$git_remote" == "2" ]]; then
+		rm -rf ./feeds/
+		rm -rf package/lean
+		software_Setting_if	
+	else
+		echo  "不是openwrt官方源码"
+		update_feeds		
+	fi
+	clear
+}
+
 #倒数专用
 Time() {
 	seconds_left=3
@@ -366,23 +383,6 @@ source_config() {
 			source_config
 			;;
 		esac
-}
-
-source_Secondary_compilation_deleteConfig() {
-	clear
-	echo "-----------------------------------------------------"
-	echo -e "$green检查一下是否openwrt官方源码，用于同步lean插件$white"
-	echo "-----------------------------------------------------"
-	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
-	if [[ "$git_remote" == "2" ]]; then
-		rm -rf ./feeds/
-		rm -rf package/lean
-		software_Setting_if	
-	else
-		echo  "不是openwrt官方源码"
-		update_feeds		
-	fi
-	clear
 }
 
 Save_My_Config_luci() {
@@ -916,6 +916,14 @@ software_luci() {
 
 software_Setting_if() {
 	cd $HOME/$fl/$file/lede
+
+	if [[ -e $HOME/$fl/$file/lede/include/target.mk_back ]]; then
+		echo ""
+	else
+		cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+				
+	fi
+
 	if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
 		echo -e  "检查到你的源码是：$green官方源码lede-17.01$white"
 		software_Setting
@@ -932,34 +940,12 @@ software_Setting_if() {
 		software_Setting
 	else
 		echo -e  "检查到你的源码是：$red未知源码$white"
-	fi
-}
-
-software_Setting_18() {
-	clear
-	echo "针对18.6版本开始配置优化"
-
-	#修改x86启动等待时间成0秒
-	sed -i 's/default "5"/default "0"/g' $HOME/$fl/$file/lede/config/Config-images.in
-
-	#去掉IPV6
-	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$fl/$file/lede/feeds/luci/collections/luci/Makefile
-
-	#修改exfat支持
-	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$fl/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
-
-	#修改KB成MB
-	sed -i 's/1024) + " <%:k/1048576) + " <%:M/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-	sed -i 's/(info.memory/Math.floor(info.memory/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-	sed -i 's/(Math.floor/Math.floor(/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-	sed -i 's/(info.swap/Math.floor(info.swap/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-
-#以上代码合并自左右	
+	fi	
 }
 
 software_lean() {
 	echo ""
-	echo "开始下载lean的软件库"
+	echo -e ">>$green开始下载lean的软件库$white"
 	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
 	if [[ $? -eq 0 ]]; then
 		echo ""
@@ -973,56 +959,92 @@ software_lean() {
 software_Setting() {
 		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
 		software_lean
-		echo "开始配置优化"
-			#初始配置
-			if [[ -e $HOME/$fl/$file/lede/include/target.mk_back ]]; then
-				echo ""
-			else
-				cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
-				
-			fi
-			sed -i "s/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark lm-sensors kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/g"  include/target.mk
-			sed -i 's/block-mount fdisk lsblk mdadm/fdisk lsblk mdadm automount autosamba luci-app-usb-printer /g' include/target.mk
-			
-			sed -i 's/dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr/g' include/target.mk
-			
-			
-			
-			#enable KERNEL_MIPS_FPU_EMULATOR
-			sed -i 's/default y if TARGET_pistachio/default y/g' config/Config-kernel.in
-			
-			#应用fullconenat
-			rm -rf package/network/config/firewall
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/network/config/firewall package/network/config/firewall
-
-			#活动连接数
-			sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
-
-			#修改frp
-			sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
+		echo -e ">>$green开始配置优化$white"
 		
-			update_feeds
+		#(下面两个配置根据自己喜欢开启或关闭，你自己diy也行)
+		#ITdesk
+		default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol luci-app-sqm luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
+		
+		#Lean
+		#default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"	
+			
+		lean_packages_nas="DEFAULT_PACKAGES.nas:fdisk lsblk mdadm automount autosamba  "	
+
+		lean_packages_router="DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr"	
+
+		#17.1 and 18.6 (PACKAGES)
+		sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd/$default_packages/g"  include/target.mk
+
+		#19.7 and master (PACKAGES)
+		sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/$default_packages/g"  include/target.mk
+
+		#17.1-master (PACKAGES.nas)
+		sed -i "s/DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm/$lean_packages_nas/g" include/target.mk
+			
+		#17.1 (PACKAGES.router)
+		sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd odhcp6c/$lean_packages_router/g" include/target.mk
+			
+		#18.6-master (PACKAGES.router)
+		sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/$lean_packages_router/g" include/target.mk
+						
+			
+		#enable KERNEL_MIPS_FPU_EMULATOR
+		sed -i 's/default y if TARGET_pistachio/default y/g' config/Config-kernel.in
+			
+		#应用fullconenat
+		rm -rf package/network/config/firewall
+		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/network/config/firewall package/network/config/firewall
+
+		#活动连接数
+		sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
+
+		#修改frp
+		sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
+		
+		update_feeds
 				
-			#取消官方源码强制https
-			sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
-			sed -i '10s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
-			sed -i 's/option redirect_https\s1/option redirect_https   0/g' package/network/services/uhttpd/files/uhttpd.config
-			sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
-			sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
-			sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+		#取消官方源码强制https
+		sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
+		sed -i '10s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
+		sed -i 's/option redirect_https\s1/option redirect_https   0/g' package/network/services/uhttpd/files/uhttpd.config
+		sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+		sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+		sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+}
+
+
+software_Setting_18() {
+	clear
+	echo -e ">>$green针对18.6版本开始配置优化$white"
+	Time
+
+	#修改x86启动等待时间成0秒(by:左右）
+	sed -i 's/default "5"/default "0"/g' $HOME/$fl/$file/lede/config/Config-images.in
+
+	#去掉IPV6(by:左右）
+	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$fl/$file/lede/feeds/luci/collections/luci/Makefile
+
+	#修改exfat支持(by:左右）
+	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$fl/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
+
+	#修改KB成MB(by:左右）
+	sed -i 's/1024) + " <%:k/1048576) + " <%:M/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	sed -i 's/(info.memory/Math.floor(info.memory/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	sed -i 's/(Math.floor/Math.floor(/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	sed -i 's/(info.swap/Math.floor(info.swap/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm	
 }
 
 #Public配置
 software_Setting_Public() {
-		echo "Public配置"
-		#隐藏首页显示用户名(by:kokang)
-		sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
+	echo -e ">>$green Public配置$white"
+	#隐藏首页显示用户名(by:kokang)
+	sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 		
-		#移动光标至第一格(by:kokang)
-		sed -i "s/'luci_password'/'luci_username'/g" feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
+	#移动光标至第一格(by:kokang)
+	sed -i "s/'luci_password'/'luci_username'/g" feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 
-		#修改固件生成名字,增加当天日期(by:左右）
-		sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=$(shell date +%F)-$(VERSION_DIST_SANITIZED)/g' include/image.mk
+	#修改固件生成名字,增加当天日期(by:左右）
+	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=$(shell date +%F)-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 	
 }
 
