@@ -305,15 +305,17 @@ source_RestoreFactory() {
 	echo ""
 	if [[ -e $HOME/$fl/$file ]]; then
 			cd && cd $HOME/$fl/$file/lede
-			echo "所有编译过的文件全部删除,openwrt源代码保存，回车继续 Ctrl+c取消" && read a
+			echo -e  "危险操作注意：$red所有编译过的文件全部删除,openwrt源代码保存，回车继续$white  $green Ctrl+c取消$white" && read a
+			echo -e ">>$green开始删除$file文件 $white" && Time
+			echo ""
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_secondary_compilation
 		fi
 	make distclean
 	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$file/lede/dl
-	clear && echo ""
-	echo "所有编译过的文件全部删除完成，如依旧编译失败，请重新下载源代码，回车可以开始编译 不需要编译Ctrl+c取消" && read a
+	echo -e ">>$green $file文件删除完成 $white"
+	echo -e "  所有编译过的文件全部删除完成，回车可以开始编译 不需要编译Ctrl+c取消,$red如依旧编译失败，请重新下载源代码$white " && read a
 	update_feeds
 	source_config
 	make menuconfig
