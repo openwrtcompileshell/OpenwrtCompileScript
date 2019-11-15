@@ -14,7 +14,7 @@ yellow="\033[33m"
 white="\033[0m"
 
 #ITdesk
-itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol luci-app-sqm luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
+itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
 		
 #Lean
 lean_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"	
@@ -110,12 +110,12 @@ source_Secondary_compilation_deleteConfig() {
 	echo "-----------------------------------------------------"
 	echo -e "$green检查一下是否openwrt官方源码，用于同步lean插件$white"
 	echo "-----------------------------------------------------"
-	git_remote=$(git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l)
-	if [[ "$git_remote" == "2" ]]; then
+
+	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
 		rm -rf ./feeds/
 		rm -rf package/lean
 		software_Setting_if	
-	elif [[ "$git_remote" == "0" ]]; then
+	elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 
 		if [[ `grep -o "$itdesk_default_packages" include/target.mk ` == "$itdesk_default_packages" ]]; then
 			echo -e "$green lean配置已经修改为itdesk的配置，不做其他操作$white"
@@ -123,6 +123,26 @@ source_Secondary_compilation_deleteConfig() {
 			sed -i '16,21d' include/target.mk
 			sed -i "/# Default packages - the really basic set/ a\\$itdesk_default_packages"  include/target.mk
 		fi
+		
+		#x86_makefile
+		x86_makefile="htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web"
+		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
+			echo -e "$green 配置已经修改，不做其他操作$white"
+		else
+			sed -i '24d' target/linux/x86/Makefile
+			sed -i '24i  htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web \\' target/linux/x86/Makefile
+		fi
+
+		#ipq806_makefile
+		ipq806_makefile="automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server"
+		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
+			echo -e "$green 配置已经修改，不做其他操作$white"
+		else
+			sed -i '28d' target/linux/ipq806x/Makefile
+			sed -i '28i  automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server' target/linux/ipq806x/Makefile	
+			sed -i "28s/^/        /" target/linux/ipq806x/Makefile
+		fi
+
 		update_feeds	
 	else 
 		echo -e  "检查到你的源码是：$red未知源码$white"
