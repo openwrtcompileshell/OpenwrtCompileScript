@@ -13,6 +13,12 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
+#ITdesk
+itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol luci-app-sqm luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
+		
+#Lean
+lean_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"	
+
 
 
 rely_on() {
@@ -109,9 +115,18 @@ source_Secondary_compilation_deleteConfig() {
 		rm -rf ./feeds/
 		rm -rf package/lean
 		software_Setting_if	
-	else
-		echo  "不是openwrt官方源码"
-		update_feeds		
+	elif [[ "$git_remote" == "0" ]]; then
+
+		if [[ `grep -o "$itdesk_default_packages" include/target.mk ` == "$itdesk_default_packages" ]]; then
+			echo -e "$green lean配置已经修改为itdesk的配置，不做其他操作$white"
+		else
+			sed -i '16,21d' include/target.mk
+			sed -i "/# Default packages - the really basic set/ a\\$itdesk_default_packages"  include/target.mk
+		fi
+		update_feeds	
+	else 
+		echo -e  "检查到你的源码是：$red未知源码$white"
+		update_feeds
 	fi
 	clear
 }
@@ -918,13 +933,6 @@ software_luci() {
 software_Setting_if() {
 	cd $HOME/$fl/$file/lede
 
-	if [[ -e $HOME/$fl/$file/lede/include/target.mk_back ]]; then
-		echo ""
-	else
-		cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
-				
-	fi
-
 	if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
 		echo -e  "检查到你的源码是：$green官方源码lede-17.01$white"
 		software_Setting
@@ -961,33 +969,31 @@ software_Setting() {
 		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
 		software_lean
 		echo -e ">>$green开始配置优化$white"
-		
-		#(下面两个配置根据自己喜欢开启或关闭，你自己diy也行)
-		#ITdesk
-		default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol luci-app-sqm luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
-		
-		#Lean
-		#default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates \default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"	
 			
 		lean_packages_nas="DEFAULT_PACKAGES.nas:fdisk lsblk mdadm automount autosamba  "	
 
 		lean_packages_router="DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr"	
-
-		#17.1 and 18.6 (PACKAGES)
-		sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd/$default_packages/g"  include/target.mk
-
-		#19.7 and master (PACKAGES)
-		sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/$default_packages/g"  include/target.mk
+		
+		#(DEFAULT_PACKAGES)
+		if [[ "$(grep -o "urngd" include/target.mk_back )" == "urngd" ]]; then
+			#19.7 and master (PACKAGES)
+			sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/$itdesk_default_packages/g"  include/target.mk
+		else
+			#17.1 and 18.6 (PACKAGES)
+			sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd/$itdesk_default_packages/g"  include/target.mk
+		fi
 
 		#17.1-master (PACKAGES.nas)
 		sed -i "s/DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm/$lean_packages_nas/g" include/target.mk
-			
-		#17.1 (PACKAGES.router)
-		sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd odhcp6c/$lean_packages_router/g" include/target.mk
-			
-		#18.6-master (PACKAGES.router)
-		sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/$lean_packages_router/g" include/target.mk
-						
+		
+		#(PACKAGES.router)
+		if [[ "$(grep -o "kmod-ipt-offload" include/target.mk_back )" == "urngd" ]]; then
+			#18.6-master (PACKAGES.router)
+			sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/$lean_packages_router/g" include/target.mk
+		else
+			#17.1 (PACKAGES.router)
+			sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd odhcp6c/$lean_packages_router/g" include/target.mk
+		fi		
 			
 		#enable KERNEL_MIPS_FPU_EMULATOR
 		sed -i 's/default y if TARGET_pistachio/default y/g' config/Config-kernel.in
@@ -1074,6 +1080,13 @@ mk_df() {
 	echo ""
 	echo "--------------------------"
 		make defconfig
+		if [[ -e $HOME/$fl/$file/lede/include/target.mk_back ]]; then
+			echo ""
+		else
+			cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+				
+		fi
+
 		if [[ -e $HOME/$fl/$OF/description ]]; then
 			echo ""
 		else
