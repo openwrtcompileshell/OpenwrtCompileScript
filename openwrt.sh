@@ -1,4 +1,5 @@
 #!/bin/bash
+set -u
 
 version="2.9"
 OF="Script_File"
@@ -506,7 +507,7 @@ description_if() {
 		echo "-----------------------------------------------------------------------"
 	fi
 
-	if [[ ! -d {$HOME/$fl/$OF/$OSC} ]]; then
+	if [[ ! -d {$HOME/$fl/$OF/$OCS} ]]; then
 		echo "开始创建主文件夹"
 		mkdir -p $HOME/$fl/$OF/dl
 		mkdir -p $HOME/$fl/$OF/My_config
