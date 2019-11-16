@@ -251,7 +251,7 @@ update_lean_package() {
 download_package() {
 	ls_file_luci 
 	if [[ -e package/Extra-plugin ]]; then
-		cd package/Extra-plugin	
+		echo ""	
 	else
 		mkdir package/Extra-plugin
 	fi
@@ -270,6 +270,7 @@ download_package2() {
 
 
 download_package_luci() {
+	cd $HOME/$fl/$file/lede/package/Extra-plugin
 	clear
 	echo "	      -------------------------------------"
 	echo "	      	    【 5.4额外的插件 】"
@@ -303,7 +304,13 @@ download_package_luci() {
 	download_package_luci
 	;;
 esac
-download_package_customize_Decide
+if [[ $? -eq 0 ]]; then
+		download_package_customize_Decide
+	else
+		clear	
+		echo -e "没有下载成功或者插件已经存在，请检查$red package/Extra-plugin $white里面是否已经存在" && Time
+		download_package_customize
+	fi
 }
 
 download_package_customize() {	
@@ -329,9 +336,8 @@ download_package_customize() {
 }
 
 download_package_customize_Decide() {
-	clear
 	echo "----------------------------------------"
-	echo "是否需要继续下载插件"
+	echo -e "$green是否需要继续下载插件$white"
 	echo " 1.继续下载插件"
 	echo " 2.不需要了"
 	echo "----------------------------------------"
@@ -345,7 +351,7 @@ download_package_customize_Decide() {
 		download_package2
 		;;
 		*)
-		clear && echo  "Error请输入正确的数字 [1-2]" && Time
+		clear && echo -e"$red Error请输入正确的数字 [1-2]$white" && Time
 		 clear && download_package_customize_Decide
 		;;
 	esac
