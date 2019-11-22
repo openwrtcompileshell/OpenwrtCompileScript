@@ -91,6 +91,8 @@ display_git_log_luci() {
 		case "$update_soure" in
 			1)
 			source_update
+			rm -rf ./feeds && rm -rf ./tmp
+			update_feeds
 			source_Secondary_compilation_deleteConfig
 			;;
 			2)
@@ -112,7 +114,6 @@ source_Secondary_compilation_deleteConfig() {
 	echo "-----------------------------------------------------"
 
 	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
-		rm -rf ./feeds/
 		rm -rf package/lean
 		software_Setting_if	
 	elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
@@ -1088,6 +1089,31 @@ software_Setting_Public() {
 		sed -i '21a\default y' package/lean/luci-app-ssr-plus/Makefile
 		sed -i "22s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 	fi
+		
+	#替换lean首页文件，添加天气代码(by:冷淡)
+	indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
+	if [[ "$indexif" == "Local Weather" ]]; then
+		echo "已经替换首页文件"
+	else
+		rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+		cp $HOME/$fl/$OF/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+	fi
+	
+	x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/index.htm)
+	if [[ "$x86indexif" == "Local Weather" ]]; then
+		echo "已经替换X86首页文件"
+	else
+		rm -rf package/lean/autocore/files/index.htm
+		cp $HOME/$fl/$OF/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
+	fi
+	
+	base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
+	if [[ "$base_zh_po_if" == "#天气预报" ]]; then
+		echo "已添加天气预报翻译"
+	else
+		rm -rf feeds/luci/modules/luci-base/po/zh-cn/base.po
+		cp $HOME/$fl/$OF/Warehouse/index_Weather/base.po feeds/luci/modules/luci-base/po/zh-cn/base.po
+	fi	
 }
 
 update_feeds() {
