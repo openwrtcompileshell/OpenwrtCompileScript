@@ -1078,7 +1078,16 @@ software_Setting_Public() {
 
 	#修改固件生成名字,增加当天日期(by:左右）
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=$(shell date +%F)-$(VERSION_DIST_SANITIZED)/g' include/image.mk
-	
+
+	#默认选上v2
+	v2if=$(grep -o "#default y if x86_64" package/lean/luci-app-ssr-plus/Makefile)
+	if [[ "$v2if" == "#default y if x86_64" ]]; then
+		echo "已经默认v2了"
+	else
+		sed -i '22s/\(.\{1\}\)/\#/' package/lean/luci-app-ssr-plus/Makefile
+		sed -i '21a\default y' package/lean/luci-app-ssr-plus/Makefile
+		sed -i "22s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+	fi
 }
 
 update_feeds() {
