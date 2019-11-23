@@ -2,8 +2,8 @@
 set -u
 
 version="2.9"
-OF="Script_File"
-fl="Openwrt"
+SF="Script_File"
+OW="Openwrt"
 by="ITdesk"
 OCS="OpenwrtCompileScript"
 
@@ -30,7 +30,7 @@ subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake
 
 #显示编译文件夹
 ls_file() {
-	LF=`ls $HOME/$fl | grep -v $0  | grep -v Script_File`
+	LF=`ls $HOME/$OW | grep -v $0  | grep -v Script_File`
 	echo -e "$green$LF$white"
 	echo ""
 }
@@ -39,7 +39,7 @@ ls_file_luci(){
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
 	read -p "请输入你的文件夹（记得区分大小写）：" file
-	cd && cd $HOME/$fl/$file/lede
+	cd && cd $HOME/$OW/$file/lede
 }
 
 #显示config文件夹
@@ -170,7 +170,7 @@ Time() {
 #选项9.更新update_script
 update_script() {
 	clear
-	cd $HOME/$fl/$OF/$OCS
+	cd $HOME/$OW/$SF/$OCS
 	CheckUrl_github=`curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null www.github.com`
 		if [[ $CheckUrl_github -eq 301 ]]; then
 			git fetch --all
@@ -261,7 +261,7 @@ download_package() {
 }
 
 download_package2() {
-	cd $HOME/$fl/$file/lede 
+	cd $HOME/$OW/$file/lede 
 	rm -rf ./tmp
 	display_git_log_luci
 	update_feeds
@@ -271,7 +271,7 @@ download_package2() {
 
 
 download_package_luci() {
-	cd $HOME/$fl/$file/lede/package/Extra-plugin
+	cd $HOME/$OW/$file/lede/package/Extra-plugin
 	clear
 	echo "	      -------------------------------------"
 	echo "	      	    【 5.4额外的插件 】"
@@ -315,7 +315,7 @@ if [[ $? -eq 0 ]]; then
 }
 
 download_package_customize() {	
-	cd $HOME/$fl/$file/lede/package/Extra-plugin
+	cd $HOME/$OW/$file/lede/package/Extra-plugin
 	clear
 	echo "--------------------------------------------------------------------------------"
 	echo "自定义下载插件"
@@ -326,7 +326,7 @@ download_package_customize() {
 	read -p "请输入你要下载的插件地址："  download_url
 	$download_url
 	if [[ $? -eq 0 ]]; then
-		cd $HOME/$fl/$file/lede
+		cd $HOME/$OW/$file/lede
 	else
 		clear	
 		echo -e "没有下载成功或者插件已经存在，请检查$red package/Extra-plugin $white里面是否已经存在" && Time
@@ -345,7 +345,7 @@ download_package_customize_Decide() {
 	read -p "请输入你的决定：" Decide
 	case "$Decide" in
 		1)
-		cd $HOME/$fl/$file/lede/package/Extra-plugin
+		cd $HOME/$OW/$file/lede/package/Extra-plugin
 		download_package_luci
 		;;
 		2)
@@ -363,8 +363,8 @@ download_package_customize_Decide() {
 source_RestoreFactory() {
 	ls_file_luci 
 	echo ""
-	if [[ -e $HOME/$fl/$file ]]; then
-			cd && cd $HOME/$fl/$file/lede
+	if [[ -e $HOME/$OW/$file ]]; then
+			cd && cd $HOME/$OW/$file/lede
 			echo -e  "危险操作注意：$red所有编译过的文件全部删除,openwrt源代码保存，回车继续$white  $green Ctrl+c取消$white" && read a
 			echo -e ">>$green开始删除$file文件 $white" && Time
 			echo ""
@@ -373,7 +373,7 @@ source_RestoreFactory() {
 			source_secondary_compilation
 		fi
 	make distclean
-	ln -s $HOME/$fl/$OF/dl  $HOME/$fl/$file/lede/dl
+	ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
 	echo -e ">>$green $file文件删除完成 $white"
 	echo -e "  所有编译过的文件全部删除完成，回车可以开始编译 不需要编译Ctrl+c取消,$red如依旧编译失败，请重新下载源代码$white " && read a
 	update_feeds
@@ -386,8 +386,8 @@ source_RestoreFactory() {
 #选项2.二次编译 与 源码更新合并
 source_secondary_compilation() {
 		ls_file_luci
-		if [[ -e $HOME/$fl/$file ]]; then
-			cd && cd $HOME/$fl/$file/lede
+		if [[ -e $HOME/$OW/$file ]]; then
+			cd && cd $HOME/$OW/$file/lede
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_secondary_compilation
@@ -549,11 +549,11 @@ description_if() {
 		echo "-----------------------------------------------------------------------"
 	fi
 
-	if [[ ! -d {$HOME/$fl/$OF/$OCS} ]]; then
+	if [[ ! -d {$HOME/$OW/$SF/$OCS} ]]; then
 		echo "开始创建主文件夹"
-		mkdir -p $HOME/$fl/$OF/dl
-		mkdir -p $HOME/$fl/$OF/My_config
-		cp -r `pwd`/$OCS $HOME/$fl/$OF/
+		mkdir -p $HOME/$OW/$SF/dl
+		mkdir -p $HOME/$OW/$SF/My_config
+		cp -r `pwd`/$OCS $HOME/$OW/$SF/
 	fi
 
 	if [[ -e /etc/apt/sources.list.back ]]; then
@@ -581,7 +581,7 @@ description_if() {
 				echo -e "$green开始替换软件源$white" && Time
 				sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
 				sudo rm -rf /etc/apt/sources.list
-				sudo cp $HOME/$fl/$OF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+				sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
 				;;
 			2)
 				 clear
@@ -607,7 +607,7 @@ description_if() {
 		cd ${HOME}/${fl}
 	fi
 
-	if [[ -e $HOME/$fl/$OF/description ]]; then
+	if [[ -e $HOME/$OW/$SF/description ]]; then
 		self_test
 		main_interface
 	else
@@ -616,7 +616,7 @@ description_if() {
 		echo ""
 		read -p "请输入密码:" ps
 			if [[ $ps = $by ]]; then
-				description >> $HOME/$fl/$OF/description && clear && self_test && main_interface
+				description >> $HOME/$OW/$SF/description && clear && self_test && main_interface
 			else
 				clear && echo "+++++密码错误++++++" && Time && description_if
 			fi
@@ -774,14 +774,14 @@ create_file() {
 	echo ""
 	read -p "请输入你要创建的文件夹名:" file
 
-	if [[ -e $HOME/$fl/$file ]]; then
+	if [[ -e $HOME/$OW/$file ]]; then
 		clear && echo "文件夹已存在，请重新输入文件夹名" && Time
 		create_file
 
 	 else
 		echo "开始创建文件夹"
-			mkdir $HOME/$fl/$file
-			cd $HOME/$fl/$file  && clear
+			mkdir $HOME/$OW/$file
+			cd $HOME/$OW/$file  && clear
 			source_download_select
 	 fi
 }
@@ -891,14 +891,14 @@ source_download_pandorabox_sdk() {
 				mv PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64 lede
 				rm -rf PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64.tar.xz 
 				rm -rf lede/dl
-				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$fl/$file/lede/feeds.conf.default
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/base-files $HOME/$fl/$file/lede/package/base-files
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/boot $HOME/$fl/$file/lede/package/boot	
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/devel $HOME/$fl/$file/lede/package/devel
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/kernel $HOME/$fl/$file/lede/package/kernel
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$fl/$file/lede/package/libs
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$fl/$file/lede/package/system
-				cd $HOME/$fl/$file/lede				
+				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$OW/$file/lede/feeds.conf.default
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/base-files $HOME/$OW/$file/lede/package/base-files
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/boot $HOME/$OW/$file/lede/package/boot	
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/devel $HOME/$OW/$file/lede/package/devel
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/kernel $HOME/$OW/$file/lede/package/kernel
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$OW/$file/lede/package/libs
+				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$OW/$file/lede/package/system
+				cd $HOME/$OW/$file/lede				
 				software_Setting_if
 				update_feeds
 				mk_df
@@ -918,22 +918,22 @@ source_download_pandorabox_sdk() {
 
 source_if() {
 		clear
-		if [[ -e $HOME/$fl/$file/lede ]]; then
+		if [[ -e $HOME/$OW/$file/lede ]]; then
 			cd lede
 			software_luci
-			cd $HOME/$fl/$file/lede
+			cd $HOME/$OW/$file/lede
 			update_feeds
 			mk_df
 		else
 			echo ""
 			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
-			cd $HOME/$fl/$file
+			cd $HOME/$OW/$file
 			source_download_select
 		fi
 }
 
 software_luci() {
-	if [[ -e $HOME/$fl/$file/lede/package/lean ]]; then
+	if [[ -e $HOME/$OW/$file/lede/package/lean ]]; then
 		 echo ""
 	else
 		echo "----------------------------------------------------"
@@ -958,7 +958,7 @@ software_luci() {
 }
 
 software_Setting_if() {
-	cd $HOME/$fl/$file/lede
+	cd $HOME/$OW/$file/lede
 
 	if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
 		echo -e  "检查到你的源码是：$green官方源码lede-17.01$white"
@@ -982,7 +982,7 @@ software_Setting_if() {
 software_lean() {
 	echo ""
 	echo -e ">>$green开始下载lean的软件库$white"
-	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$fl/$file/lede/package/lean
+	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
 	if [[ $? -eq 0 ]]; then
 		echo ""
 	else
@@ -1053,13 +1053,13 @@ software_Setting_18() {
 	Time
 
 	#修改x86启动等待时间成0秒(by:左右）
-	sed -i 's/default "5"/default "0"/g' $HOME/$fl/$file/lede/config/Config-images.in
+	sed -i 's/default "5"/default "0"/g' $HOME/$OW/$file/lede/config/Config-images.in
 
 	#去掉IPV6(by:左右）
-	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$fl/$file/lede/feeds/luci/collections/luci/Makefile
+	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$OW/$file/lede/feeds/luci/collections/luci/Makefile
 
 	#修改exfat支持(by:左右）
-	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$fl/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
+	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$OW/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
 
 	#修改KB成MB(by:左右）
 	sed -i 's/1024) + " <%:k/1048576) + " <%:M/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
@@ -1096,7 +1096,7 @@ software_Setting_Public() {
 		echo "已经替换首页文件"
 	else
 		rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-		cp $HOME/$fl/$OF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+		cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
 	fi
 	
 	x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/index.htm)
@@ -1104,7 +1104,7 @@ software_Setting_Public() {
 		echo "已经替换X86首页文件"
 	else
 		rm -rf package/lean/autocore/files/index.htm
-		cp $HOME/$fl/$OF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
+		cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
 	fi
 	
 	base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
@@ -1112,7 +1112,7 @@ software_Setting_Public() {
 		echo "已添加天气预报翻译"
 	else
 		rm -rf feeds/luci/modules/luci-base/po/zh-cn/base.po
-		cp $HOME/$fl/$OF/$OCS/Warehouse/index_Weather/base.po feeds/luci/modules/luci-base/po/zh-cn/base.po
+		cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/base.po feeds/luci/modules/luci-base/po/zh-cn/base.po
 	fi	
 }
 
@@ -1141,44 +1141,44 @@ mk_df() {
 	echo ""
 	echo "--------------------------"
 		make defconfig
-		if [[ -e $HOME/$fl/$file/lede/include/target.mk_back ]]; then
+		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
 			echo ""
 		else
-			cp $HOME/$fl/$file/lede/include/target.mk  $HOME/$fl/$file/lede/include/target.mk_back
+			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back
 				
 		fi
 
-		if [[ -e $HOME/$fl/$OF/description ]]; then
+		if [[ -e $HOME/$OW/$SF/description ]]; then
 			echo ""
 		else
-			description >> $HOME/$fl/$OF/description
+			description >> $HOME/$OW/$SF/description
 		fi
 		
-		if [[ -e $HOME/$fl/$file/lede/dl ]]; then
+		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
 			echo ""
 		else
-			ln -s  $HOME/$fl/$OF/dl $HOME/$fl/$file/lede/dl
+			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
 		fi
 	
-		if [[ -e $HOME/$fl/$file/lede/My_config ]]; then
+		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
 			echo ""
 		else
-			ln -s  $HOME/$fl/$OF/My_config $HOME/$fl/$file/lede/My_config
+			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
 		fi
 
-		if [[ -e $HOME/$fl/$file/lede/openwrt.sh ]]; then
+		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
 			echo ""
 		else
-			ln -s  $HOME/$fl/$OF/$OCS/openwrt.sh $HOME/$fl/$file/lede/openwrt.sh
+			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
 		fi
-		cd $HOME/$fl/$file/lede
+		cd $HOME/$OW/$file/lede
 		dl_source
 }
 
 dl_source() {
 	#用于删除之前创建的dl服务器文件
-	if [[ -e $HOME/$fl/$OF/pl ]]; then	
-		rm -rf $HOME/$fl/$OF/pl
+	if [[ -e $HOME/$OW/$SF/pl ]]; then	
+		rm -rf $HOME/$OW/$SF/pl
 	else	
 		echo ""	
 	fi
