@@ -1096,7 +1096,7 @@ software_Setting_Public() {
 		echo "已经替换首页文件"
 	else
 		rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-		cp $HOME/$fl/$OF/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+		cp $HOME/$fl/$OF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
 	fi
 	
 	x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/index.htm)
@@ -1104,7 +1104,7 @@ software_Setting_Public() {
 		echo "已经替换X86首页文件"
 	else
 		rm -rf package/lean/autocore/files/index.htm
-		cp $HOME/$fl/$OF/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
+		cp $HOME/$fl/$OF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
 	fi
 	
 	base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
@@ -1112,7 +1112,7 @@ software_Setting_Public() {
 		echo "已添加天气预报翻译"
 	else
 		rm -rf feeds/luci/modules/luci-base/po/zh-cn/base.po
-		cp $HOME/$fl/$OF/Warehouse/index_Weather/base.po feeds/luci/modules/luci-base/po/zh-cn/base.po
+		cp $HOME/$fl/$OF/$OCS/Warehouse/index_Weather/base.po feeds/luci/modules/luci-base/po/zh-cn/base.po
 	fi	
 }
 
