@@ -1111,8 +1111,13 @@ software_Setting_Public() {
 	if [[ "$base_zh_po_if" == "#天气预报" ]]; then
 		echo "已添加天气预报翻译"
 	else
-		rm -rf feeds/luci/modules/luci-base/po/zh-cn/base.po
-		cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/base.po feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a #天气预报' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a msgid "Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a msgstr "天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 	fi	
 }
 
