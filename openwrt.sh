@@ -143,8 +143,21 @@ source_Secondary_compilation_deleteConfig() {
 			sed -i '28i  automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server' target/linux/ipq806x/Makefile	
 			sed -i "28s/^/        /" target/linux/ipq806x/Makefile
 		fi
-
-		update_feeds	
+		
+		#r7800切换ct驱动
+		if [[ `grep -o "kmod-ath10k-ct" target/linux/ipq806x/Makefile | wc -l` == "1" ]]; then
+			echo -e "$green kmod-ath10k已经修改，不做其他操作$white"
+		else
+			sed -i "s/kmod-ath10k/kmod-ath10k-ct/g" target/linux/ipq806x/Makefile
+		fi
+		
+		if [[ `grep -o "ath10k-firmware-qca9984-ct" target/linux/ipq806x/image/Makefile | wc -l` == "1" ]]; then
+			echo -e "$green kmod-ath10k已经修改，不做其他操作$white"
+		else
+			sed -i "s/ath10k-firmware-qca9984/ath10k-firmware-qca9984-ct/g" target/linux/ipq806x/image/Makefile
+		fi
+		update_feeds
+	
 	else 
 		echo -e  "检查到你的源码是：$red未知源码$white"
 		update_feeds
