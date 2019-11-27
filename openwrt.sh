@@ -933,6 +933,7 @@ source_if() {
 		clear
 		if [[ -e $HOME/$OW/$file/lede ]]; then
 			cd lede
+			source_Soft_link
 			software_luci
 			cd $HOME/$OW/$file/lede
 			update_feeds
@@ -942,6 +943,39 @@ source_if() {
 			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
 			cd $HOME/$OW/$file
 			source_download_select
+		fi
+}
+
+source_Soft_link() {
+		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
+			echo ""
+		else
+			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back
+				
+		fi
+
+		if [[ -e $HOME/$OW/$SF/description ]]; then
+			echo ""
+		else
+			description >> $HOME/$OW/$SF/description
+		fi
+		
+		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
+		fi
+	
+		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
+		fi
+
+		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
 		fi
 }
 
@@ -1159,37 +1193,6 @@ make_defconfig() {
 	echo ""
 	echo "--------------------------"
 		make defconfig
-		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
-			echo ""
-		else
-			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back
-				
-		fi
-
-		if [[ -e $HOME/$OW/$SF/description ]]; then
-			echo ""
-		else
-			description >> $HOME/$OW/$SF/description
-		fi
-		
-		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
-			echo ""
-		else
-			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
-		fi
-	
-		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
-			echo ""
-		else
-			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
-		fi
-
-		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
-			echo ""
-		else
-			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
-		fi
-		cd $HOME/$OW/$file/lede
 		dl_download
 }
 
