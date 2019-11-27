@@ -259,7 +259,7 @@ update_lean_package() {
 	display_git_log_luci
 	update_feeds
 	source_config
-	mk_df
+	make_defconfig
 }
 
 download_package() {
@@ -279,7 +279,7 @@ download_package2() {
 	display_git_log_luci
 	update_feeds
 	source_config
-	mk_df
+	make_defconfig
 }
 
 
@@ -409,7 +409,7 @@ source_secondary_compilation() {
 		make clean && rm -rf ./tmp && Time
 		display_git_log_luci
 		source_config
-		mk_df
+		make_defconfig
 }
 
 source_config() {
@@ -914,7 +914,7 @@ source_download_pandorabox_sdk() {
 				cd $HOME/$OW/$file/lede				
 				software_Setting_if
 				update_feeds
-				mk_df
+				make_defconfig
 				;;
 				0)
 				exit
@@ -936,7 +936,7 @@ source_if() {
 			software_luci
 			cd $HOME/$OW/$file/lede
 			update_feeds
-			mk_df
+			make_defconfig
 		else
 			echo ""
 			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
@@ -1149,7 +1149,7 @@ update_feeds() {
 	fi
 }
 
-mk_df() {
+make_defconfig() {
 	clear
 	echo "---------------------------"
 	echo ""
