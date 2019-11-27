@@ -246,7 +246,7 @@ esac
 
 dl_other() {
 	ls_file_luci
-	dl_source
+	dl_download
 }
 
 update_lean_package() {
@@ -1190,10 +1190,10 @@ make_defconfig() {
 			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
 		fi
 		cd $HOME/$OW/$file/lede
-		dl_source
+		dl_download
 }
 
-dl_source() {
+dl_download() {
 	#用于删除之前创建的dl服务器文件
 	if [[ -e $HOME/$OW/$SF/pl ]]; then	
 		rm -rf $HOME/$OW/$SF/pl
