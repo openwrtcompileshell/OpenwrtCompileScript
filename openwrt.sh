@@ -354,7 +354,6 @@ source_secondary_compilation() {
 }
 
 source_config() {
-	source_Setting_Public
 	clear
 		 echo "----------------------------------------------------------------------"
 		 echo "是否要加载你之前保存的配置"
@@ -930,6 +929,7 @@ source_Soft_link() {
 
 Source_judgment() {
 	update_feeds
+	source_Setting_Public
 	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
 		source_openwrt
 	elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
