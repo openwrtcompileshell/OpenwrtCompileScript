@@ -87,13 +87,12 @@ display_git_log_luci() {
 		echo ""
 		display_git_log_if
 		echo ""
-		read -p "是否需要更新源码（1.yes 2.no）：" update_soure
-		case "$update_soure" in
+		read -p "是否需要更新源码（1.yes 2.no）：" update_source
+		case "$update_source" in
 			1)
 			source_update
 			rm -rf ./feeds && rm -rf ./tmp
-			update_feeds
-			source_Secondary_compilation_deleteConfig
+			Source_judgment
 			;;
 			2)
 			source_config
@@ -105,64 +104,6 @@ display_git_log_luci() {
 			display_git_log_luci
 			;;
 		esac	
-}
-
-source_Secondary_compilation_deleteConfig() {
-	clear
-	echo "-----------------------------------------------------"
-	echo -e "$green检查一下是否openwrt官方源码，用于同步lean插件$white"
-	echo "-----------------------------------------------------"
-
-	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
-		rm -rf package/lean
-		software_Setting_if	
-	elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
-
-		if [[ `grep -o "$itdesk_default_packages" include/target.mk ` == "$itdesk_default_packages" ]]; then
-			echo -e "$green lean配置已经修改为itdesk的配置，不做其他操作$white"
-		else
-			sed -i '16,21d' include/target.mk
-			sed -i "/# Default packages - the really basic set/ a\\$itdesk_default_packages"  include/target.mk
-		fi
-		
-		#x86_makefile
-		x86_makefile="htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web"
-		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
-			echo -e "$green 配置已经修改，不做其他操作$white"
-		else
-			sed -i '24d' target/linux/x86/Makefile
-			sed -i '24i  htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web \\' target/linux/x86/Makefile
-		fi
-
-		#ipq806_makefile
-		ipq806_makefile="automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server"
-		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
-			echo -e "$green 配置已经修改，不做其他操作$white"
-		else
-			sed -i '28d' target/linux/ipq806x/Makefile
-			sed -i '28i  automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server' target/linux/ipq806x/Makefile	
-			sed -i "28s/^/        /" target/linux/ipq806x/Makefile
-		fi
-		
-		#r7800切换ct驱动
-		if [[ `grep -o "kmod-ath10k-ct" target/linux/ipq806x/Makefile | wc -l` == "1" ]]; then
-			echo -e "$green kmod-ath10k已经修改，不做其他操作$white"
-		else
-			sed -i "s/kmod-ath10k/kmod-ath10k-ct/g" target/linux/ipq806x/Makefile
-		fi
-		
-		if [[ `grep -o "ath10k-firmware-qca9984-ct" target/linux/ipq806x/image/Makefile | wc -l` == "1" ]]; then
-			echo -e "$green kmod-ath10k已经修改，不做其他操作$white"
-		else
-			sed -i "s/ath10k-firmware-qca9984/ath10k-firmware-qca9984-ct/g" target/linux/ipq806x/image/Makefile
-		fi
-		update_feeds
-	
-	else 
-		echo -e  "检查到你的源码是：$red未知源码$white"
-		update_feeds
-	fi
-	clear
 }
 
 #倒数专用
@@ -192,7 +133,7 @@ update_script() {
 			read a
 			bash ${openwrt}
 		else
-			echo "请检查你的网络!!!!" && read a
+			echo "请检查你的网络，回车重新选择" && read a
 			Time && main_interface
 		fi
 }
@@ -253,7 +194,7 @@ update_lean_package() {
 	ls_file_luci
 	make clean
 	rm -rf package/lean
-	software_Setting_if
+	source_openwrt_Setting
 	echo "插件下载完成"
 	Time
 	display_git_log_luci
@@ -413,7 +354,7 @@ source_secondary_compilation() {
 }
 
 source_config() {
-	software_Setting_Public
+	source_Setting_Public
 	clear
 		 echo "----------------------------------------------------------------------"
 		 echo "是否要加载你之前保存的配置"
@@ -889,7 +830,7 @@ source_download_openwrt() {
 				source_download_openwrt
 				 ;;
 			esac
-			source_if
+			source_download_if
 }
 
 source_download_pandorabox_sdk() {
@@ -923,7 +864,7 @@ source_download_pandorabox_sdk() {
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$OW/$file/lede/package/libs
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$OW/$file/lede/package/system
 				cd $HOME/$OW/$file/lede				
-				software_Setting_if
+				source_openwrt_Setting
 				update_feeds
 				make_defconfig
 				;;
@@ -935,19 +876,16 @@ source_download_pandorabox_sdk() {
 				source_download_pandorabox_sdk
 				 ;;
 			esac
-			source_if
+			source_download_if
 			
 	
 }
 
-source_if() {
-		clear
+source_download_if() {
 		if [[ -e $HOME/$OW/$file/lede ]]; then
-			cd lede
-			source_Soft_link
-			software_luci
 			cd $HOME/$OW/$file/lede
-			update_feeds
+			source_Soft_link
+			Source_judgment
 			make_defconfig
 		else
 			echo ""
@@ -990,71 +928,62 @@ source_Soft_link() {
 		fi
 }
 
-software_luci() {
-	if [[ -e $HOME/$OW/$file/lede/package/lean ]]; then
-		 echo ""
-	else
+Source_judgment() {
+	update_feeds
+	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
+		source_openwrt
+	elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
+		source_lean
+	else 
+		echo -e  "检查到你的源码是：$red未知源码$white"
+		update_feeds
+	fi
+}
+source_openwrt() {
+		#检测源码属于那个版本
+		if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
+			source_type="lede-17.01"
+		elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
+			source_type="openwrt-18.06"
+		elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
+			source_type="openwrt-19.07"
+			software_Setting
+		elif [[ "$(git branch | grep -o master )" == "master" ]]; then
+			source_type="master"
+		else
+			echo -e  "检查到你的源码是：$red未知源码$white"
+		fi
+		clear
 		echo "----------------------------------------------------"
-  		echo "检测到你是openwrt官方源码，是否加入lean插件"
+  		echo -e "检测到你是$green$source_type$white官方源码，是否加入lean插件"
 		echo " 1.添加插件(测试功能会有问题)"
 		echo " 2.不添加插件"
 		echo "----------------------------------------------------"
-		read  -p "请输入你的选择:" software_luci_select
-			case "$software_luci_select" in
+		read  -p "请输入你的选择:" Source_judgment_select
+			case "$Source_judgment_select" in
 				1)
-				software_Setting_if
+				source_openwrt_Setting
 				;;
 				2)
 				echo ""
 				;;
 				*)
 				clear && echo  "请输入正确的数字（1-2）" && Time
-				software_luci_select
+				source_openwrt
 				 ;;
-			esac					
-	fi	
+	esac	
 }
 
-software_Setting_if() {
-	cd $HOME/$OW/$file/lede
-
-	if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
-		echo -e  "检查到你的源码是：$green官方源码lede-17.01$white"
-		software_Setting
-	elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
-		echo -e  "检查到你的源码是：$green官方源码18.06$white"
-		software_Setting
-		software_Setting_18
-	elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
-		echo -e  "检查到你的源码是：$green官方源码openwrt-19.07$white"
-		software_Setting
-		
-	elif [[ "$(git branch | grep -o master )" == "master" ]]; then
-		echo -e  "检查到你的源码是：$green官方源码master$white"
-		software_Setting
-	else
-		echo -e  "检查到你的源码是：$red未知源码$white"
-	fi	
-}
-
-software_lean() {
-	echo ""
-	echo -e ">>$green开始下载lean的软件库$white"
-	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
-	if [[ $? -eq 0 ]]; then
-		echo ""
-	else
-		clear	
-		echo "下载lean插件没有成功，重新执行代码" && Time
-		software_lean
-	fi
-}
-
-software_Setting() {
+source_openwrt_Setting() {
+		if [[ "$source_type" == "openwrt-18.06" ]]; then
+			source_openwrt_Setting_18
+		else
+			echo ""
+		fi
 		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
-		software_lean
+		source_lean_package
 		echo -e ">>$green开始配置优化$white"
-			
+		Time	
 		lean_packages_nas="DEFAULT_PACKAGES.nas:fdisk lsblk mdadm automount autosamba  "	
 
 		lean_packages_router="DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr"	
@@ -1092,8 +1021,6 @@ software_Setting() {
 
 		#修改frp
 		sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
-		
-		update_feeds
 				
 		#取消官方源码强制https
 		sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
@@ -1102,10 +1029,11 @@ software_Setting() {
 		sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+
+		echo -e ">>$green完成$white"
 }
 
-
-software_Setting_18() {
+source_openwrt_Setting_18() {
 	clear
 	echo -e ">>$green针对18.6版本开始配置优化$white"
 	Time
@@ -1124,10 +1052,70 @@ software_Setting_18() {
 	sed -i 's/(info.memory/Math.floor(info.memory/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
 	sed -i 's/(Math.floor/Math.floor(/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
 	sed -i 's/(info.swap/Math.floor(info.swap/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm	
+
+	echo -e ">>$green完成$white"
+}
+
+source_lean() {
+		echo -e ">>$green针对lean版本开始配置优化$white"
+		Time
+		if [[ `grep -o "$itdesk_default_packages" include/target.mk ` == "$itdesk_default_packages" ]]; then
+			echo -e "$green lean配置已经修改为itdesk的配置，不做其他操作$white"
+		else
+			sed -i '16,21d' include/target.mk
+			sed -i "/# Default packages - the really basic set/ a\\$itdesk_default_packages"  include/target.mk
+		fi
+		
+		#x86_makefile
+		x86_makefile="htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web"
+		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
+			echo -e "$green 配置已经修改，不做其他操作$white"
+		else
+			sed -i '24d' target/linux/x86/Makefile
+			sed -i '24i  htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web \\' target/linux/x86/Makefile
+		fi
+
+		#ipq806_makefile
+		ipq806_makefile="automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server"
+		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
+			echo -e "$green 配置已经修改，不做其他操作$white"
+		else
+			sed -i '28d' target/linux/ipq806x/Makefile
+			sed -i '28i  automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server' target/linux/ipq806x/Makefile	
+			sed -i "28s/^/        /" target/linux/ipq806x/Makefile
+		fi
+		
+		#r7800切换ct驱动
+		if [[ `grep -o "kmod-ath10k-ct" target/linux/ipq806x/Makefile | wc -l` == "1" ]]; then
+			echo -e "$green kmod-ath10k已经修改，不做其他操作$white"
+		else
+			sed -i "s/kmod-ath10k/kmod-ath10k-ct/g" target/linux/ipq806x/Makefile
+		fi
+		
+		if [[ `grep -o "ath10k-firmware-qca9984-ct" target/linux/ipq806x/image/Makefile | wc -l` == "1" ]]; then
+			echo -e "$green kmod-ath10k已经修改，不做其他操作$white"
+		else
+			sed -i "s/ath10k-firmware-qca9984/ath10k-firmware-qca9984-ct/g" target/linux/ipq806x/image/Makefile
+		fi
+
+		echo -e ">>$green完成$white"	
+}
+
+source_lean_package() {
+	echo ""
+	echo -e ">>$green开始下载lean的软件库$white"
+	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
+	if [[ $? -eq 0 ]]; then
+		echo -e ">>$green完成$white"
+	else
+		clear	
+		echo "下载lean插件没有成功，重新执行代码" && Time
+		source_lean_package
+	fi
 }
 
 #Public配置
-software_Setting_Public() {
+source_Setting_Public() {
 	echo -e ">>$green Public配置$white"
 	#隐藏首页显示用户名(by:kokang)
 	sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
@@ -1176,7 +1164,9 @@ software_Setting_Public() {
 		sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-	fi	
+	fi
+
+	echo -e ">>$green完成$white"	
 }
 
 update_feeds() {
@@ -1204,15 +1194,25 @@ make_defconfig() {
 	echo ""
 	echo "--------------------------"
 		make defconfig
+		Time
 		dl_download
 }
 
 dl_download() {
+	#检测dl包完整性(by:P3TERX)
+	if [[ -e $HOME/$OW/$file/lede/dl ]]; then
+		cd $HOME/$OW/$file/lede/dl
+		find . -size -1024c -exec ls -l {} \;
+       	 	find . -size -1024c -exec rm -f {} \;
+		cd $HOME/$OW/$file/lede
+	else
+		echo ""
+	fi
 	clear
 	echo "----------------------------------------------"
 	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
 	echo "------------------------------------------"
-	Time
+	Time	
 	make download V=s	
 	dl_error
 	
