@@ -450,9 +450,9 @@ source_update() {
 			;;
 		esac
 	if [[ "$?" == "0" ]]; then
-		echo -e  "$green源码更新完成$white" && Time
+		echo -e  "$green >>源码更新完成$white" && Time
 	else
-		echo -e  "$red源码更新失败，重新执行代码$white" && Time
+		echo -e  "$red >>源码更新失败，重新执行代码$white" && Time
 		source_update
 	fi
 }
@@ -962,6 +962,7 @@ source_openwrt() {
 		read  -p "请输入你的选择:" Source_judgment_select
 			case "$Source_judgment_select" in
 				1)
+				rm -rf package/lean 
 				source_openwrt_Setting
 				;;
 				2)
@@ -982,7 +983,7 @@ source_openwrt_Setting() {
 		fi
 		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
 		source_lean_package
-		echo -e ">>$green开始配置优化$white"
+		echo -e ">>$green openwrt官方源码开始配置优化$white"
 		Time	
 		lean_packages_nas="DEFAULT_PACKAGES.nas:fdisk lsblk mdadm automount autosamba  "	
 
@@ -1030,7 +1031,7 @@ source_openwrt_Setting() {
 		sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 
-		echo -e ">>$green完成$white"
+		echo -e ">>$green openwrt官方源码配置优化完成$white"
 }
 
 source_openwrt_Setting_18() {
@@ -1053,7 +1054,7 @@ source_openwrt_Setting_18() {
 	sed -i 's/(Math.floor/Math.floor(/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
 	sed -i 's/(info.swap/Math.floor(info.swap/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm	
 
-	echo -e ">>$green完成$white"
+	echo -e ">>$green针对18.6版本配置优化完成$white"
 }
 
 source_lean() {
@@ -1098,7 +1099,7 @@ source_lean() {
 			sed -i "s/ath10k-firmware-qca9984/ath10k-firmware-qca9984-ct/g" target/linux/ipq806x/image/Makefile
 		fi
 
-		echo -e ">>$green完成$white"	
+		echo -e ">>$green lean版本配置优化完成$white"	
 }
 
 source_lean_package() {
@@ -1106,7 +1107,7 @@ source_lean_package() {
 	echo -e ">>$green开始下载lean的软件库$white"
 	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
 	if [[ $? -eq 0 ]]; then
-		echo -e ">>$green完成$white"
+		echo -e ">>$green下载lean的软件库完成$white"
 	else
 		clear	
 		echo "下载lean插件没有成功，重新执行代码" && Time
@@ -1116,7 +1117,9 @@ source_lean_package() {
 
 #Public配置
 source_Setting_Public() {
-	echo -e ">>$green Public配置$white"
+	clear
+	echo -e ">>$green Public配置$white" 
+	Time
 	#隐藏首页显示用户名(by:kokang)
 	sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 		
@@ -1166,7 +1169,7 @@ source_Setting_Public() {
 		sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 	fi
 
-	echo -e ">>$green完成$white"	
+	echo -e ">>$green Public配置完成$white"	
 }
 
 update_feeds() {
