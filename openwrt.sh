@@ -1268,10 +1268,10 @@ make_firmware_or_plugin() {
 	read -p "请输入你的决定：" mk_value
 	case "$mk_value" in
 		1)
-		mk_compile_firmware
+		make_compile_firmware
 		;;
 		2)
-		mk_Compile_plugin
+		make_Compile_plugin
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -1282,7 +1282,7 @@ make_firmware_or_plugin() {
 	
 }
 
-mk_compile_firmware() {
+make_compile_firmware() {
 	clear
 	echo  "编译固件是否要使用多线程编译"
 	echo ""
@@ -1306,7 +1306,7 @@ mk_compile_firmware() {
 	#by：BoomLee  ITdesk
 }
 
-mk_Compile_plugin() {
+make_Compile_plugin() {
 	clear
 	echo "--------------------------------------------------------"
 	echo "编译插件"
@@ -1348,7 +1348,7 @@ mk_Continue_compiling_the_plugin() {
 	read -p "请输入你的决定：" mk_value
 	case "$mk_value" in
 		1)
-		mk_Compile_plugin
+		make_Compile_plugin
 		;;
 		2)
 		echo ""
