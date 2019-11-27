@@ -1194,13 +1194,6 @@ make_defconfig() {
 }
 
 dl_download() {
-	#用于删除之前创建的dl服务器文件
-	if [[ -e $HOME/$OW/$SF/pl ]]; then	
-		rm -rf $HOME/$OW/$SF/pl
-	else	
-		echo ""	
-	fi
-
 	clear
 	echo "----------------------------------------------"
 	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
