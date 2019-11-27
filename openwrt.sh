@@ -573,42 +573,42 @@ description_if() {
 		clear && echo -e "$green源码已替换$white"
 	else
 		check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
+		if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
+			clear
+			echo "-----------------------------------------------------------------"
+			echo "+++检测到win10子系统+++"
+			echo ""
+			echo "  win10子系统已知问题"
+			echo "     1.IO很慢，编译很慢，不怕耗时间随意"
+			echo "     2.win10对大小写不敏感，你需要百度如何开启win10子系统大小写敏感"
+			echo "     3.需要替换子系统的linux源（脚本可以帮你搞定）"
+			echo "-----------------------------------------------------------------"
+			echo ""
+			read -p "是否替换软件源然后进行编译（1.yes，2.no）："  win10_select
+				case "$win10_select" in
+				1)
+					clear
+					echo -e "$green开始替换软件源$white" && Time
+					sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
+					sudo rm -rf /etc/apt/sources.list
+					sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+					;;
+				2)
+					 clear
+					 echo "不做任何操作，即将进入主菜单" && Time
+					 ;;
+				*)
+					 clear && echo  "Error请输入正确的数字 [1-2]" && Time
+					 description_if
+					 ;;
+				esac
+			else
+				echo "不是win10系统" && clear
+		fi
 	fi
+	
 	clear
-
-	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
-		clear
-		echo "-----------------------------------------------------------------"
-		echo "+++检测到win10子系统+++"
-		echo ""
-		echo "  win10子系统已知问题"
-		echo "     1.IO很慢，编译很慢，不怕耗时间随意"
-		echo "     2.win10对大小写不敏感，你需要百度如何开启win10子系统大小写敏感"
-		echo "     3.需要替换子系统的linux源（脚本可以帮你搞定）"
-		echo "-----------------------------------------------------------------"
-		echo ""
-		read -p "是否替换软件源然后进行编译（1.yes，2.no）："  win10_select
-			case "$win10_select" in
-			1)
-				clear
-				echo -e "$green开始替换软件源$white" && Time
-				sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
-				sudo rm -rf /etc/apt/sources.list
-				sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
-				;;
-			2)
-				 clear
-				 echo "不做任何操作，即将进入主菜单" && Time
-				 ;;
-			*)
-				 clear && echo  "Error请输入正确的数字 [1-2]" && Time
-				 description_if
-				 ;;
-			esac
-	else
-		echo "不是win10系统" && clear
-	fi
-
+	
 	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
 	if [[ "$?" == "0" ]]; then
 		clear && echo -e  "$green已经安装curl$white"
