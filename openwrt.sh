@@ -659,6 +659,15 @@ self_test() {
 	else
 		Root_run=`echo -e "$green非root运行$white"`
 	fi
+
+	cd $HOME/$OW/$SF/$OCS
+	git_branch=$(git branch -v | grep -o 落后 )
+	if [[ "$git_branch" == "落后" ]]; then
+		Script_status=`echo -e "$red建议更新$white"`
+	else
+		Script_status=`echo -e "$green最新$white"`		
+	fi	
+
 	echo "	      	    -------------------------------------------"
 	echo "	      	  	【  Script Self-Test Program  】"
 	echo ""
@@ -667,6 +676,8 @@ self_test() {
 	echo "		  	检测与DL网络情况： $Check_google "
 	echo "  "
 	echo "		  	检测百度是否正常： $Check_baidu "
+	echo "  "
+	echo "		  	检测脚本是否最新： $Script_status "
 	echo "  "
 	echo "	      	    -------------------------------------------"
 	echo ""
