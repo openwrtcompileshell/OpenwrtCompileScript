@@ -393,7 +393,7 @@ source_RestoreFactory() {
 	source_config
 	make menuconfig
 	Save_My_Config_luci
-	mk_menu
+	make_firmware_or_plugin
 }
 
 #选项2.二次编译 与 源码更新合并
@@ -1248,7 +1248,7 @@ ecc() {
 	make menuconfig
 	if [[ $? -eq 0 ]]; then
 		Save_My_Config_luci
-		mk_menu
+		make_firmware_or_plugin
 	else
 		echo ""
 		echo -e "$redError，请查看上面报错，回车重新执行命令$white"
@@ -1257,7 +1257,7 @@ ecc() {
 	fi
 }
 
-mk_menu() {
+make_firmware_or_plugin() {
 	clear
 	starttime=`date +'%Y-%m-%d %H:%M:%S'`
 	echo "----------------------------------------"
@@ -1275,7 +1275,7 @@ mk_menu() {
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
-		 clear && mk_menu
+		 clear && make_firmware_or_plugin
 		;;
 	esac
 	
