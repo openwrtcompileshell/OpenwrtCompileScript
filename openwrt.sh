@@ -1338,7 +1338,7 @@ make_Compile_plugin() {
 	#by：BoomLee  ITdesk
 }
 
-mk_Continue_compiling_the_plugin() {
+make_Continue_compiling_the_plugin() {
 	clear
 	echo "----------------------------------------"
 	echo "是否需要继续编译插件"
