@@ -472,34 +472,13 @@ description_if() {
 	cd
 	clear
 	echo "开始检测系统"
-	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
-
-	if [[ "${openwrt_script_path}" = "openwrt.sh" ]]; then
-		echo "系统变量存在"
-	else
-		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
-		source /etc/profile
-		clear
-		echo "-----------------------------------------------------------------------"
-		echo ""
-		echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
-		echo ""
-		echo "-----------------------------------------------------------------------"
-	fi
-
 	#添加一下脚本路径
 	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
 	if [[ "${openwrt_shfile_path}" = "shfile" ]]; then
-		echo "系统变量存在"
+		echo "shfile系统变量存在"
 	else
 		echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
-		source /etc/profile
-		clear
-		echo "-----------------------------------------------------------------------"
-		echo ""
-		echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
-		echo ""
-		echo "-----------------------------------------------------------------------"
+		echo -e "$green添加openwrt脚本变量成功,以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
 	fi
 
 	if [[ ! -d {$HOME/$OW/$SF/$OCS} ]]; then
@@ -507,6 +486,25 @@ description_if() {
 		mkdir -p $HOME/$OW/$SF/dl
 		mkdir -p $HOME/$OW/$SF/My_config
 		cp -r `pwd`/$OCS $HOME/$OW/$SF/
+	fi
+
+	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
+	if [[ "${openwrt_script_path}" = "openwrt.sh" ]]; then
+		echo "openwrt.sh系统变量存在"
+	else
+		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
+		clear
+		echo "-----------------------------------------------------------------------"
+		echo ""
+		echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
+		echo ""
+		echo ""
+		echo -e "                    $green回车重启你的操作系统!!!$white"
+		echo "-----------------------------------------------------------------------"
+		read a
+		Time
+		rm -rf `pwd`/$OCS
+		reboot
 	fi
 
 	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
