@@ -509,11 +509,11 @@ description_if() {
 		cp -r `pwd`/$OCS $HOME/$OW/$SF/
 	fi
 
-	if [[ -e /etc/apt/sources.list.back ]]; then
-		clear && echo -e "$green源码已替换$white"
-	else
-		check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
-		if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
+	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
+	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
+		if [[ -e /etc/apt/sources.list.back ]]; then
+			clear && echo -e "$green源码已替换$white"
+		else
 			clear
 			echo "-----------------------------------------------------------------"
 			echo "+++检测到win10子系统+++"
@@ -542,10 +542,11 @@ description_if() {
 					 description_if
 					 ;;
 				esac
-			else
+			
+			fi
+		else
 				echo "不是win10系统" && clear
 		fi
-	fi
 	
 	clear
 	
