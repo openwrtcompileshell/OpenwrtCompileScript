@@ -1063,18 +1063,16 @@ source_lean() {
 			sed -i "s/luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
 			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule/g" include/target.mk
 			sed -i "s/luci-app-usb-printer/ /g" include/target.mk
-			sed -i '$a #配置修改完成' include/target.mk
-
-			
+			sed -i '$a #配置修改完成' include/target.mk	
 		fi
 		
 		#x86_makefile
-		x86_makefile="htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent"
-		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
-			echo -e "$green 配置已经修改，不做其他操作$white"
+		if [[ `grep -o "#配置修改完成" target/linux/x86/Makefile ` == "#配置修改完成" ]]; then
+			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i '24d' target/linux/x86/Makefile
-			sed -i '24i  htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent \\' target/linux/x86/Makefile
+			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-zerotier luci-app-unblockmusic luci-app-transmission luci-app-v2ray-server/luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent/g" target/linux/x86/Makefile
+			sed -i '$a #配置修改完成' target/linux/x86/Makefile
+			
 		fi
 
 		#ipq806_makefile
