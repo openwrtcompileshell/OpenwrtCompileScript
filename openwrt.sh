@@ -1125,7 +1125,7 @@ source_Setting_Public() {
 	sed -i "s/'luci_password'/'luci_username'/g" feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 
 	#修改固件生成名字,增加当天日期(by:左右）
-	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=$(shell date +%F)-$(VERSION_DIST_SANITIZED)/g' include/image.mk
+	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d_%H:%M)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
 	#默认选上v2
 	v2if=$(grep -o "#default y if x86_64" package/lean/luci-app-ssr-plus/Makefile)
