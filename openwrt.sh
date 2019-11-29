@@ -472,6 +472,16 @@ description_if() {
 	cd
 	clear
 	echo "开始检测系统"
+
+	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
+	if [[ "$?" == "0" ]]; then
+		clear && echo -e  "$green已经安装curl$white"
+	else
+		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
+		sudo apt update
+		sudo apt install curl -y
+	fi
+
 	#添加一下脚本路径
 	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
 	if [[ "$openwrt_shfile_path" == "shfile" ]]; then
@@ -547,17 +557,6 @@ description_if() {
 		fi
 	
 	clear
-	
-	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
-	if [[ "$?" == "0" ]]; then
-		clear && echo -e  "$green已经安装curl$white"
-	else
-		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
-		sudo apt update
-		sudo apt install curl -y
-		sudo rm -rf $HOME/$OCS
-		cd $HOME/$OW
-	fi
 
 	if [[ -e $HOME/$OW/$SF/description ]]; then
 		self_test
