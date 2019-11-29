@@ -13,13 +13,11 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
-#ITdesk
+		#ITdesk
 itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget  ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
 		
-#Lean
-lean_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget  ca-certificates default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"	
-
-
+		#Lean
+		lean_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget  ca-certificates default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"
 
 rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
@@ -1057,21 +1055,26 @@ source_openwrt_Setting_18() {
 
 source_lean() {
 		echo -e ">>$green针对lean版本开始配置优化$white"
-		Time
-		if [[ `grep -o "$itdesk_default_packages" include/target.mk ` == "$itdesk_default_packages" ]]; then
-			echo -e "$green lean配置已经修改为itdesk的配置，不做其他操作$white"
+		Time		
+		if [[ `grep -o "#配置修改完成" include/target.mk ` == "#配置修改完成" ]]; then
+			echo -e "$green lean配置已经修改完成，不做其他操作$white"
 		else
-			sed -i '16,21d' include/target.mk
-			sed -i "/# Default packages - the really basic set/ a\\$itdesk_default_packages"  include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
+			sed -i "s/luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule/g" include/target.mk
+			sed -i "s/luci-app-usb-printer/ /g" include/target.mk
+			sed -i '$a #配置修改完成' include/target.mk
+
+			
 		fi
 		
 		#x86_makefile
-		x86_makefile="htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web"
+		x86_makefile="htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
 			sed -i '24d' target/linux/x86/Makefile
-			sed -i '24i  htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web \\' target/linux/x86/Makefile
+			sed -i '24i  htop lm-sensors autocore automount autosamba luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent \\' target/linux/x86/Makefile
 		fi
 
 		#ipq806_makefile
