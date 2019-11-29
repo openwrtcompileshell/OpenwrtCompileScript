@@ -474,14 +474,14 @@ description_if() {
 	echo "开始检测系统"
 	#添加一下脚本路径
 	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
-	if [[ "${openwrt_shfile_path}" = "shfile" ]]; then
+	if [[ "$openwrt_shfile_path" == "shfile" ]]; then
 		echo "shfile系统变量存在"
 	else
 		echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
 		echo -e "$green添加openwrt脚本变量成功,以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
 	fi
 
-	if [[ ! -d {$HOME/$OW/$SF/$OCS} ]]; then
+	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
 		echo "开始创建主文件夹"
 		mkdir -p $HOME/$OW/$SF/dl
 		mkdir -p $HOME/$OW/$SF/My_config
@@ -489,7 +489,7 @@ description_if() {
 	fi
 
 	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
-	if [[ "${openwrt_script_path}" = "openwrt.sh" ]]; then
+	if [[ "$openwrt_script_path" == "openwrt.sh" ]]; then
 		echo "openwrt.sh系统变量存在"
 	else
 		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
@@ -555,8 +555,8 @@ description_if() {
 		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
 		sudo apt update
 		sudo apt install curl -y
-		sudo rm -rf $HOME/${OCS}
-		cd ${HOME}/${fl}
+		sudo rm -rf $HOME/$OCS
+		cd $HOME/$OW
 	fi
 
 	if [[ -e $HOME/$OW/$SF/description ]]; then
@@ -567,7 +567,7 @@ description_if() {
 		description
 		echo ""
 		read -p "请输入密码:" ps
-			if [[ $ps = $by ]]; then
+			if [[ $ps == $by ]]; then
 				description >> $HOME/$OW/$SF/description && clear && self_test && main_interface
 			else
 				clear && echo "+++++密码错误++++++" && Time && description_if
