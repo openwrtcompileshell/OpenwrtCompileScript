@@ -1070,19 +1070,18 @@ source_lean() {
 		if [[ `grep -o "#配置修改完成" target/linux/x86/Makefile ` == "#配置修改完成" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-zerotier luci-app-unblockmusic luci-app-transmission luci-app-v2ray-server/luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent/g" target/linux/x86/Makefile
+			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-zerotier luci-app-unblockmusic luci-app-transmission luci-app-v2ray-server/luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent/g" target/linux/x86/Makefile
 			sed -i '$a #配置修改完成' target/linux/x86/Makefile
 			
 		fi
 
 		#ipq806_makefile
 		ipq806_makefile="automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server"
-		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
+		if [[ `grep -o "#ipq806_makefile配置修改完成" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
-			sed -i '28d' target/linux/ipq806x/Makefile
-			sed -i '28i  automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server' target/linux/ipq806x/Makefile	
-			sed -i "28s/^/        /" target/linux/ipq806x/Makefile
+			sed -i "s/automount autosamba luci-app-ipsec-vpnd luci-app-xlnetacc v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server/automount autosamba luci-app-ipsec-vpnd v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server/g" target/linux/ipq806x/Makefile
+			sed -i '$a #ipq806_makefile配置修改完成' target/linux/ipq806x/Makefile
 		fi
 		
 		#r7800切换ct驱动
@@ -1126,7 +1125,7 @@ source_Setting_Public() {
 	sed -i "s/'luci_password'/'luci_username'/g" feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 
 	#修改固件生成名字,增加当天日期(by:左右）
-	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d_%H:%M)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
+	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
 	#默认选上v2
 	v2if=$(grep -o "#default y if x86_64" package/lean/luci-app-ssr-plus/Makefile)
