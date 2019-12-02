@@ -316,23 +316,22 @@ source_RestoreFactory() {
 	ls_file_luci 
 	echo ""
 	if [[ -e $HOME/$OW/$file ]]; then
-			cd && cd $HOME/$OW/$file/lede
+			cd $HOME/$OW/$file/lede
 			echo -e  "危险操作注意：$red所有编译过的文件全部删除,openwrt源代码保存，回车继续$white  $green Ctrl+c取消$white" && read a
 			echo -e ">>$green开始删除$file文件 $white" && Time
 			echo ""
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
-			source_secondary_compilation
+			source_RestoreFactory
 		fi
 	make distclean
 	ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
 	echo -e ">>$green $file文件删除完成 $white"
-	echo -e "  所有编译过的文件全部删除完成，回车可以开始编译 不需要编译Ctrl+c取消,$red如依旧编译失败，请重新下载源代码$white " && read a
-	update_feeds
+	echo -e "  所有编译过的文件全部删除完成，回车可以开始编译 不需要编译Ctrl+c取消,如依旧编译失败，请重新下载源代码" && read a
+	
+	display_git_log_luci
 	source_config
-	make menuconfig
-	Save_My_Config_luci
-	make_firmware_or_plugin
+	make_defconfig
 }
 
 #选项2.二次编译 与 源码更新合并
