@@ -596,6 +596,7 @@ self_test() {
 	fi
 
 	cd $HOME/$OW/$SF/$OCS
+	clear
 	git fetch
 	git_branch=$(git branch -v | grep -o 落后 )
 	if [[ "$git_branch" == "落后" ]]; then
