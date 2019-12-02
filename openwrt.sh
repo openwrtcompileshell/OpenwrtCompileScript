@@ -597,6 +597,7 @@ self_test() {
 	fi
 
 	cd $HOME/$OW/$SF/$OCS
+	git fetch
 	git_branch=$(git branch -v | grep -o 落后 )
 	if [[ "$git_branch" == "落后" ]]; then
 		Script_status=`echo -e "$red建议更新$white"`
