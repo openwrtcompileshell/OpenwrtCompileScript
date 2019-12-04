@@ -1063,41 +1063,37 @@ source_openwrt_Setting_18() {
 
 source_lean_if() {
 	if [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
+		echo "开始替换"		
 		source_lean
 	else
-		echo ""
+		echo "不替换"
 	fi
 }
 
 source_lean() {
-		echo -e ">>$green针对lean版本开始配置优化$white"
-		Time		
-		if [[ `grep -o "#配置修改完成" include/target.mk ` == "#配置修改完成" ]]; then
-			echo -e "$green lean配置已经修改完成，不做其他操作$white"
-		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
-			sed -i "s/luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
-			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule/g" include/target.mk
-			sed -i "s/luci-app-usb-printer/ /g" include/target.mk
-			sed -i '$a #配置修改完成' include/target.mk	
-		fi
+		clear
+		echo -e ">>$green针对lean版本开始配置优化$white" && Time
+		
+		#target.mk	
+		sed -i "s/default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
+		sed -i "s/luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
+		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule/g" include/target.mk
+		sed -i "s/autosamba luci-app-usb-printer/ /g" include/target.mk
 		
 		#x86_makefile
-		if [[ `grep -o "#配置修改完成" target/linux/x86/Makefile ` == "#配置修改完成" ]]; then
+		x86_makefile="luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent luci-app-cifsd"
+		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-zerotier luci-app-unblockmusic luci-app-transmission luci-app-v2ray-server/luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent/g" target/linux/x86/Makefile
-			sed -i '$a #配置修改完成' target/linux/x86/Makefile
-			
+			sed -i "s/autosamba luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-zerotier luci-app-unblockmusic luci-app-qbittorrent luci-app-v2ray-server /$x86_makefile/g" target/linux/x86/Makefile	
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="automount autosamba  v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server"
-		if [[ `grep -o "#ipq806_makefile配置修改完成" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
+		ipq806_makefile="automount v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent luci-app-cifsd luci-app-unblockmusic fdisk e2fsprogs"
+		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/automount autosamba luci-app-ipsec-vpnd luci-app-xlnetacc v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server/automount autosamba luci-app-ipsec-vpnd v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server/g" target/linux/ipq806x/Makefile
-			sed -i '$a #ipq806_makefile配置修改完成' target/linux/ipq806x/Makefile
+			sed -i "s/automount autosamba luci-app-ipsec-vpnd luci-app-xlnetacc v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server/$ipq806_makefile/g" target/linux/ipq806x/Makefile
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
@@ -1139,6 +1135,9 @@ source_Setting_Public() {
 		sed -i '21a\default y' package/lean/luci-app-ssr-plus/Makefile
 		sed -i "22s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 	fi
+
+	#frpc替换为27版本
+	sed -i "s/PKG_VERSION:=0.30.0/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
 		
 	#替换lean首页文件，添加天气代码(by:冷淡)
 	indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
