@@ -47,63 +47,6 @@ ls_my_config() {
 	echo ""
 }
 
-#显示git log 提交记录
-display_git_log() {
-	git log -3 --graph --all --branches --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(bold green)(%ai)%C(reset) %C(white)%s%C(reset) %C(yellow) - %an%C(reset)%C(auto) %d%C(reset)'
-#参考xueguang668
-}
-
-display_git_log_if() {
-		git_branch=$(git branch -v | grep -o 落后 )
-		if [[ "$git_branch" == "落后" ]]; then
-			echo -e  "自动检测：$red本地源码已经落后远端，建议更新$white"
-		else
-			echo -e  "自动检测：$green本地源码与远端一样$white"
-			
-		fi
-}
-
-display_git_log_luci() {
-	clear
-		echo "稍等一下，正在取回分支，用于比较现在源码，不会更新请放心，速度看你网络"
-		git fetch
-		if [[ $? -eq 0 ]]; then
-			echo ""
-		else
-			echo "取回分支没有成功，重新执行代码" && Time
-			display_git_log_luci
-		fi
-		clear
-		echo "----------------------------------------"
-		echo -e "   $green显示远端仓库最近三条更新内容$white                  "
-		echo "----------------------------------------"
-		echo ""
-		display_git_log
-		echo ""
-		echo ""
-		echo -e "$yellow你现在所用的分支：$white`git branch -v`"
-		echo ""
-		display_git_log_if
-		echo ""
-		read -p "是否需要更新源码（1.yes 2.no）：" update_source
-		case "$update_source" in
-			1)
-			source_update
-			rm -rf ./feeds && rm -rf ./tmp
-			Source_judgment
-			;;
-			2)
-			source_config
-			ecc
-			exit 
-			;;
-			*)
-			clear && echo  "Error请输入正确的数字 [1-2]" && Time
-			display_git_log_luci
-			;;
-		esac	
-}
-
 #倒数专用
 Time() {
 	seconds_left=3
@@ -349,6 +292,70 @@ source_secondary_compilation() {
 		source_config
 		make_defconfig
 }
+
+#显示git log 提交记录
+display_git_log() {
+	git log -3 --graph --all --branches --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(bold green)(%ai)%C(reset) %C(white)%s%C(reset) %C(yellow) - %an%C(reset)%C(auto) %d%C(reset)'
+#参考xueguang668
+}
+
+display_git_log_if() {
+		git_branch=$(git branch -v | grep -o 落后 )
+		if [[ "$git_branch" == "落后" ]]; then
+			echo -e  "自动检测：$red本地源码已经落后远端，建议更新$white"
+		else
+			echo -e  "自动检测：$green本地源码与远端一样$white"
+			
+		fi
+}
+
+display_git_log_luci() {
+	clear
+		echo "稍等一下，正在取回分支，用于比较现在源码，不会更新请放心，速度看你网络"
+		git fetch
+		if [[ $? -eq 0 ]]; then
+			echo ""
+		else
+			echo "取回分支没有成功，重新执行代码" && Time
+			display_git_log_luci
+		fi
+		clear
+		echo "----------------------------------------"
+		echo -e "   $green显示远端仓库最近三条更新内容$white                  "
+		echo "----------------------------------------"
+		echo ""
+		display_git_log
+		echo ""
+		echo ""
+		echo -e "$yellow你现在所用的分支：$white`git branch -v`"
+		echo ""
+		display_git_log_if
+		echo ""
+		read -p "是否需要更新源码（1.yes 2.no）：" update_source
+		case "$update_source" in
+			1)
+			source_update
+			rm -rf ./feeds && rm -rf ./tmp
+			Source_judgment
+			;;
+			2)
+			source_config
+			ecc
+			exit 
+			;;
+			100)
+			source_update
+			rm -rf ./feeds && rm -rf ./tmp
+			Source_judgment
+			source_lean_if
+			;;
+			*)
+			clear && echo  "Error请输入正确的数字 [1-2]" && Time
+			display_git_log_luci
+			;;
+		esac	
+}
+
 
 source_config() {
 	clear
@@ -597,7 +604,9 @@ self_test() {
 
 	cd $HOME/$OW/$SF/$OCS
 	clear
+	echo "稍等一下，正在取回远端脚本源码，用于比较现在脚本源码，速度看你网络"
 	git fetch
+	clear
 	git_branch=$(git branch -v | grep -o 落后 )
 	if [[ "$git_branch" == "落后" ]]; then
 		Script_status=`echo -e "$red建议更新$white"`
@@ -929,8 +938,6 @@ Source_judgment() {
 	source_Setting_Public
 	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
 		source_openwrt
-	elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
-		source_lean
 	else 
 		echo -e  "检查到你的源码是：$red未知源码$white"
 		update_feeds
@@ -1052,6 +1059,14 @@ source_openwrt_Setting_18() {
 	sed -i 's/(info.swap/Math.floor(info.swap/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm	
 
 	echo -e ">>$green针对18.6版本配置优化完成$white"
+}
+
+source_lean_if() {
+	if [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
+		source_lean
+	else
+		echo ""
+	fi
 }
 
 source_lean() {
