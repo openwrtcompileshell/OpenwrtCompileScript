@@ -1212,11 +1212,17 @@ dl_download() {
 		echo ""
 	fi
 	clear
+	cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
 	echo "----------------------------------------------"
 	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
-	echo "------------------------------------------"
+	echo ""
+	echo -e "$green你的CPU核数为：$cpu_cores $white"
+	echo -e "$green自动执行make download -j$cpu_cores  V=s加快下载速度$white"
+	echo ""
+	echo "ps：全速下载可能会导致系统反应慢点，稍等一下就好"	
+	echo "----------------------------------------------"
 	Time	
-	make download V=s	
+	make download -j$cpu_cores V=s	
 	dl_error
 	
 }
