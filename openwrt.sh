@@ -901,35 +901,53 @@ source_download_if() {
 }
 
 source_Soft_link() {
+		#1
 		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
 			echo ""
 		else
-			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back
-				
+			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back		
 		fi
-
+		
+		#2
 		if [[ -e $HOME/$OW/$SF/description ]]; then
 			echo ""
 		else
 			description >> $HOME/$OW/$SF/description
 		fi
-		
+
+		#3		
 		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
 			echo ""
 		else
 			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
 		fi
 	
+		#4
 		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
 			echo ""
 		else
 			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
 		fi
 
+		#5
 		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
 			echo ""
 		else
 			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
+		fi
+		
+		#6
+		if [[ -e $HOME/$OW/$SF/$OCS ]]; then
+			echo ""
+		else
+			cd $HOME/$OW/$SF
+			git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+			if [[ $? -eq 0 ]]; then
+				echo -e ""
+			else
+				source_Soft_link
+			fi
+			cd HOME/$OW/$file/lede	
 		fi
 }
 
