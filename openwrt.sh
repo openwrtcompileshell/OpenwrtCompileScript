@@ -974,10 +974,11 @@ source_openwrt() {
 			source_type="master"
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
+			source_type="unknown"
 		fi
 		clear
 		echo "----------------------------------------------------"
-  		echo -e "检测到你是$green$source_type$white官方源码，是否加入lean插件"
+  		echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
 		echo " 1.添加插件(测试功能会有问题)"
 		echo " 2.不添加插件"
 		echo "----------------------------------------------------"
@@ -1081,7 +1082,8 @@ source_openwrt_Setting_18() {
 
 source_lean_if() {
 	if [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
-		echo "开始替换"		
+		echo "开始替换"	
+		source_type="lean"	
 		source_lean
 	else
 		echo "不替换"
@@ -1369,6 +1371,7 @@ make_Compile_plugin() {
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	if_workspace
 	#by：BoomLee  ITdesk
 }
 
@@ -1392,6 +1395,21 @@ make_Continue_compiling_the_plugin() {
 		 clear && mk_Continue_compiling_the_plugin
 		;;
 	esac
+}
+
+if_workspace() {
+        #给云编译用的，其他不生效
+    	cd
+    	if [[ -e /workspace ]]; then
+        	cd /workspace
+        	l=`ls`
+        	da=`date +%Y%m%d`
+        	cd
+        	cp -r $HOME/$OW/$file/lede/bin /workspace/$l/$da_$soure_type
+        	echo "本次编译完成的固件已经copy到/workspace/$l/$da_$soure_type"
+    	else
+        	echo ""
+    	fi
 }
 
 description_if
