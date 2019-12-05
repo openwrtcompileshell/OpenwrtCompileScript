@@ -947,7 +947,7 @@ source_Soft_link() {
 			else
 				source_Soft_link
 			fi
-			cd HOME/$OW/$file/lede	
+			cd $HOME/$OW/$file/lede	
 		fi
 }
 
