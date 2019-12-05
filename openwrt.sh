@@ -506,19 +506,24 @@ description_if() {
 	if [[ "$openwrt_script_path" == "1" ]]; then
 		echo "openwrt.sh系统变量存在"
 	else
-		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
-		clear
-		echo "-----------------------------------------------------------------------"
-		echo ""
-		echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
-		echo ""
-		echo ""
-		echo -e "                    $green回车重启你的操作系统!!!$white"
-		echo "-----------------------------------------------------------------------"
-		read a
-		Time
-		rm -rf `pwd`/$OCS
-		reboot
+		if [[ -e $HOME/workspace ]]; then
+        		echo "云编译系统"
+    		else
+      			echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
+			clear
+			echo "-----------------------------------------------------------------------"
+			echo ""
+			echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
+			echo ""
+			echo ""
+			echo -e "                    $green回车重启你的操作系统!!!$white"
+			echo "-----------------------------------------------------------------------"
+			read a
+			Time
+			rm -rf `pwd`/$OCS
+			reboot
+    		fi
+		
 	fi
 
 	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
@@ -1371,7 +1376,15 @@ make_Compile_plugin() {
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
-	if_workspace
+    	if [[ -e $HOME/workspace ]]; then
+		workspace_file=`ls $HOME/workspace/`
+        	da=`date +%Y%m%d`
+        	cd
+        	cp -r bin /workspace/$l/$da
+        	echo "本次编译完成的固件已经copy到/workspace/$workspace_file/$da"
+    	else
+        	echo ""
+    	fi
 	#by：BoomLee  ITdesk
 }
 
@@ -1395,21 +1408,6 @@ make_Continue_compiling_the_plugin() {
 		 clear && mk_Continue_compiling_the_plugin
 		;;
 	esac
-}
-
-if_workspace() {
-        #给云编译用的，其他不生效
-    	cd
-    	if [[ -e /workspace ]]; then
-        	cd /workspace
-        	l=`ls`
-        	da=`date +%Y%m%d`
-        	cd
-        	cp -r $HOME/$OW/$file/lede/bin /workspace/$l/$da_$soure_type
-        	echo "本次编译完成的固件已经copy到/workspace/$l/$da_$soure_type"
-    	else
-        	echo ""
-    	fi
 }
 
 description_if
