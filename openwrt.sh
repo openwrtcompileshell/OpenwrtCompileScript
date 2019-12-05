@@ -502,8 +502,8 @@ description_if() {
 		cp -r `pwd`/$OCS $HOME/$OW/$SF/
 	fi
 
-	openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh)
-	if [[ "$openwrt_script_path" == "openwrt.sh" ]]; then
+	openwrt_script_path=$(cat /etc/profile | grep -o openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh | wc -l)
+	if [[ "$openwrt_script_path" == "1" ]]; then
 		echo "openwrt.sh系统变量存在"
 	else
 		echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
