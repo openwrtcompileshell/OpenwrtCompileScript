@@ -37,6 +37,12 @@ ls_file_luci(){
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
 	read -p "请输入你的文件夹（记得区分大小写）：" file
+	if [[ -e $HOME/$OW/$SF/tmp ]]; then
+		rm -rf $HOME/$OW/$SF/tmp/*	
+	else
+		mkdir $HOME/$OW/$SF/tmp
+	fi
+	echo "$file" > $HOME/$OW/$SF/tmp/you_file
 	cd && cd $HOME/$OW/$file/lede
 }
 
@@ -485,16 +491,7 @@ description_if() {
 		sudo apt update
 		sudo apt install curl -y
 	fi
-
-	#添加一下脚本路径
-	openwrt_shfile_path=$(cat /etc/profile | grep -o shfile)
-	if [[ "$openwrt_shfile_path" == "shfile" ]]; then
-		echo "shfile系统变量存在"
-	else
-		echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
-		echo -e "$green添加openwrt脚本变量成功,以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
-	fi
-
+	
 	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
 		echo "开始创建主文件夹"
 		mkdir -p $HOME/$OW/$SF/dl
@@ -502,30 +499,53 @@ description_if() {
 		cp -r `pwd`/$OCS $HOME/$OW/$SF/
 	fi
 
-	openwrt_script_path=$(cat /etc/profile | grep -o openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh | wc -l)
-	if [[ "$openwrt_script_path" == "1" ]]; then
-		echo "openwrt.sh系统变量存在"
-	else
-		if [[ -e $HOME/workspace ]]; then
-        		echo "云编译系统"
-    		else
-      			echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
-			clear
-			echo "-----------------------------------------------------------------------"
-			echo ""
-			echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
-			echo ""
-			echo ""
-			echo -e "                    $green回车重启你的操作系统!!!$white"
-			echo "-----------------------------------------------------------------------"
-			read a
-			Time
-			rm -rf `pwd`/$OCS
-			reboot
-    		fi
-		
-	fi
 
+	#判断是否云编译
+	if [[ `echo "$PWD" | grep -o workspace | wc -l` == "1" ]]; then
+        		echo "云编译系统"
+			if [[ -e $HOME/$OW/$SF/$OCS ]]; then
+				echo "存在"
+			else 
+                mkdir -p $HOME/$OW/$SF/$OCS
+				cd $HOME/$OW/$SF/$OCS
+                git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+			fi
+			
+			Cloud_environment_variables=`echo "env" | grep -o "shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | wc -l`
+			if [[ "$Cloud_environment_variables" == "0" ]]; then
+				export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript
+				export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh
+                echo -e  "系统变量添加完成，老样子启动"
+			fi
+			
+    	else
+			#添加系统变量
+			openwrt_shfile_path=$(cat /etc/profile | grep -o shfile | wc -l)
+			openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh | wc -l)
+			if [[ "$openwrt_shfile_path" == "0" ]]; then
+				echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
+				echo -e "$green添加openwrt脚本变量成功,以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
+				clear
+			elif [[ "$openwrt_script_path" == "0" ]]; then
+				echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
+				clear
+				echo "-----------------------------------------------------------------------"
+				echo ""
+				echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
+				echo ""
+				echo ""
+				echo -e "                    $green回车重启你的操作系统!!!$white"
+				echo "-----------------------------------------------------------------------"
+				read a
+				Time
+				rm -rf `pwd`/$OCS
+				reboot	
+			else
+				echo "系统变量已经添加"
+			fi
+
+	fi
+	
 	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
 	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
 		if [[ -e /etc/apt/sources.list.back ]]; then
@@ -941,19 +961,6 @@ source_Soft_link() {
 			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
 		fi
 		
-		#6
-		if [[ -e $HOME/$OW/$SF/$OCS ]]; then
-			echo ""
-		else
-			cd $HOME/$OW/$SF
-			git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
-			if [[ $? -eq 0 ]]; then
-				echo -e ""
-			else
-				source_Soft_link
-			fi
-			cd $HOME/$OW/$file/lede	
-		fi
 }
 
 Source_judgment() {
@@ -969,17 +976,17 @@ Source_judgment() {
 source_openwrt() {
 		#检测源码属于那个版本
 		if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
-			source_type="lede-17.01"
+			echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_type
 		elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
-			source_type="openwrt-18.06"
+			echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_type
 		elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
-			source_type="openwrt-19.07"
+			echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_type
 			software_Setting
 		elif [[ "$(git branch | grep -o master )" == "master" ]]; then
-			source_type="master"
+			echo "master" > $HOME/$OW/$SF/tmp/source_type
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
-			source_type="unknown"
+			echo "unknown" > $HOME/$OW/$SF/tmp/source_type
 		fi
 		clear
 		echo "----------------------------------------------------"
@@ -1088,7 +1095,7 @@ source_openwrt_Setting_18() {
 source_lean_if() {
 	if [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 		echo "开始替换"	
-		source_type="lean"	
+		echo "lean" > $HOME/$OW/$SF/tmp/source_type	
 		source_lean
 	else
 		echo "不替换"
@@ -1376,12 +1383,12 @@ make_Compile_plugin() {
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
-    	if [[ -e $HOME/workspace ]]; then
-		workspace_file=`ls $HOME/workspace/`
+    	if [[ -e $THEIA_WORKSPACE_ROOT ]]; then
         	da=`date +%Y%m%d`
-        	cd
-        	cp -r bin /workspace/$l/$da
-        	echo "本次编译完成的固件已经copy到/workspace/$workspace_file/$da"
+		you_file=`cat $HOME/$OW/$SF/you_file`
+		source_type=`cat $HOME/$OW/$SF/source_type`
+        	cp -r $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da_$source_type
+        	echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da_$source_type"
     	else
         	echo ""
     	fi
