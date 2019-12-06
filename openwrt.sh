@@ -997,25 +997,30 @@ source_if() {
 }
 source_openwrt() {
 		clear
-		echo "----------------------------------------------------"
-  		echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
-		echo " 1.添加插件(测试功能会有问题)"
-		echo " 2.不添加插件"
-		echo "----------------------------------------------------"
-		read  -p "请输入你的选择:" Source_judgment_select
-			case "$Source_judgment_select" in
-				1)
-				rm -rf package/lean 
-				source_openwrt_Setting
-				;;
-				2)
-				echo ""
-				;;
-				*)
-				clear && echo  "请输入正确的数字（1-2）" && Time
-				source_openwrt
-				 ;;
-	esac	
+		if [[ "$source_type" == "lean" ]]; then
+			echo ""
+		else
+			echo "----------------------------------------------------"
+  			echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
+			echo " 1.添加插件(测试功能会有问题)"
+			echo " 2.不添加插件"
+			echo "----------------------------------------------------"
+			read  -p "请输入你的选择:" Source_judgment_select
+				case "$Source_judgment_select" in
+					1)
+					rm -rf package/lean 
+					source_openwrt_Setting
+					;;
+					2)
+					echo ""
+					;;
+					*)
+					clear && echo  "请输入正确的数字（1-2）" && Time
+					source_openwrt
+					 ;;
+			esac	
+		fi
+		
 }
 
 source_openwrt_Setting() {
