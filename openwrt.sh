@@ -507,7 +507,7 @@ description_if() {
     	Cloud_workspace=`echo "$HOME" | grep -o gitpod | wc -l`
 	if [[ "$Cloud_workspace" == "1" ]]; then
         	echo "云编译系统"
-        rm -rf  $HOME/$OW/$SF/tmp/env_text
+       		rm -rf  $HOME/$OW/$SF/tmp/env_text
 		env > $HOME/$OW/$SF/tmp/env_text
         #添加系统变量待测
 		Cloud_environment_variables=`cat $HOME/$OW/$SF/tmp/env_text | grep -o shfile | wc -l`
@@ -1230,7 +1230,7 @@ make_defconfig() {
 	echo "--------------------------"
 		make defconfig
 		Time
-		dl_download
+		ecc
 }
 
 dl_download() {
@@ -1254,9 +1254,7 @@ dl_download() {
 	echo "ps：全速下载可能会导致系统反应慢点，稍等一下就好"	
 	echo "----------------------------------------------"
 	Time	
-	make download -j$cpu_cores V=s	
-	dl_error
-	
+	make download -j$cpu_cores V=s		
 }
 
 dl_error() {
@@ -1341,6 +1339,7 @@ make_compile_firmware() {
 		clear && echo "开始执行编译" && Time
 		make V=s
 	else
+		dl_download
 		clear
 		echo -e "你输入的线程是：$green$mk_f$white"
 		echo "准备开始执行编译" && Time
