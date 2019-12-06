@@ -6,6 +6,8 @@ SF="Script_File"
 OW="Openwrt"
 by="ITdesk"
 OCS="OpenwrtCompileScript"
+cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
+Cloud_workspace=`echo "$HOME" | grep -o gitpod | wc -l`
 
 #颜色调整参考wen55333
 red="\033[31m"
@@ -130,7 +132,6 @@ esac
 
 dl_other() {
 	ls_file_luci
-	dl_download
 }
 
 update_lean_package() {
@@ -504,21 +505,19 @@ description_if() {
 
 
 	#判断是否云编译
-    	Cloud_workspace=`echo "$HOME" | grep -o gitpod | wc -l`
 	if [[ "$Cloud_workspace" == "1" ]]; then
         	echo "云编译系统"
        		rm -rf  $HOME/$OW/$SF/tmp/env_text
 		env > $HOME/$OW/$SF/tmp/env_text
-        #添加系统变量待测
+       		 #添加系统变量待测
 		Cloud_environment_variables=`cat $HOME/$OW/$SF/tmp/env_text | grep -o shfile | wc -l`
-        if [[ "$Cloud_environment_variables" == "0" ]]; then
-            cd $THEIA_WORKSPACE_ROOT
+       		if [[ "$Cloud_environment_variables" == "0" ]]; then
+           		cd $THEIA_WORKSPACE_ROOT
 			export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript
 			export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh
-            echo -e  "系统变量添加完成，老样子启动"
-            Time
+           		echo -e  "系统变量添加完成，老样子启动"
 		fi
-    else
+   	 else
 		#添加系统变量
 		openwrt_shfile_path=$(cat /etc/profile | grep -o shfile | wc -l)
 		openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh | wc -l)
@@ -1244,7 +1243,6 @@ dl_download() {
 		echo ""
 	fi
 	clear
-	cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
 	echo "----------------------------------------------"
 	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
 	echo ""
@@ -1332,8 +1330,10 @@ make_compile_firmware() {
 	clear
 	echo  "编译固件是否要使用多线程编译"
 	echo ""
-	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s,$green多线程例子：（ make -j4 V=s ）$white  -j（这个值看你电脑），不要随便乱输，电脑炸了不管，如果你不需要多线程编译那么直接回车即可"
+	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s"
+	echo -e "  $green多线程例子：（ make -j4 V=s ）$white  -j（这个值看你电脑），不懂怎么输这个值，直接回车即可"
 	echo ""
+	echo "温馨提醒你的cpu核心数为：$cpu_cores"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
 	if [[ -z "$mk_f" ]];then
 		clear && echo "开始执行编译" && Time
@@ -1350,6 +1350,15 @@ make_compile_firmware() {
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	#复制编译好的固件过去
+	if [[ "$Cloud_workspace" == "1" ]]; then
+		cd
+		da=`date +%Y%m%d`
+		you_file=`cat $HOME/$OW/$SF/you_file`
+		source_type=`cat $HOME/$OW/$SF/source_type`
+		cp -r $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da_$source_type
+		echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da_$source_type"
+	fi
 	#by：BoomLee  ITdesk
 }
 
