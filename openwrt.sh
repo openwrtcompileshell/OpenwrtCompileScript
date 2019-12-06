@@ -479,7 +479,7 @@ source_update_git_pull() {
 #选项1.开始搭建编译环境与主菜单
 #判断代码
 description_if() {
-	cd
+    cd
 	clear
 	echo "开始检测系统"
 
@@ -496,20 +496,21 @@ description_if() {
 		echo "开始创建主文件夹"
 		mkdir -p $HOME/$OW/$SF/dl
 		mkdir -p $HOME/$OW/$SF/My_config
-		cp -r `pwd`/$OCS $HOME/$OW/$SF/
 	fi
 
 
 	#判断是否云编译
-	if [[ `echo "$PWD" | grep -o workspace | wc -l` == "1" ]]; then
+    
+    Cloud_workspace=`echo "$THEIA_WORKSPACE_ROOT" | grep -o workspace | wc -l`
+	if [[ "$Cloud_workspace" == "1" ]]; then
         		echo "云编译系统"
 			if [[ -e $HOME/$OW/$SF/$OCS ]]; then
 				echo "存在"
 			else 
-                mkdir -p $HOME/$OW/$SF/$OCS
-				cd $HOME/$OW/$SF/$OCS
+				cd $HOME/$OW/$SF/
                 git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
 			fi
+
 			
 			Cloud_environment_variables=`echo "env" | grep -o "shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | wc -l`
 			if [[ "$Cloud_environment_variables" == "0" ]]; then
@@ -519,16 +520,17 @@ description_if() {
 			fi
 			
     	else
+            cp -r `pwd` /$OCS $HOME/$OW/$SF/
 			#添加系统变量
 			openwrt_shfile_path=$(cat /etc/profile | grep -o shfile | wc -l)
 			openwrt_script_path=$(cat /etc/profile | grep -o openwrt.sh | wc -l)
 			if [[ "$openwrt_shfile_path" == "0" ]]; then
 				echo "export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript" | sudo tee -a /etc/profile
 				echo -e "$green添加openwrt脚本变量成功,以后无论在那个目录输入 cd \$shfile 都可以进到脚本目录$white"
-				clear
+				#clear
 			elif [[ "$openwrt_script_path" == "0" ]]; then
 				echo "export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh" | sudo tee -a /etc/profile
-				clear
+				#clear
 				echo "-----------------------------------------------------------------------"
 				echo ""
 				echo -e "$green添加openwrt变量成功,重启系统以后无论在那个目录输入 bash \$openwrt 都可以运行脚本$white"
@@ -1418,3 +1420,4 @@ make_Continue_compiling_the_plugin() {
 }
 
 description_if
+
