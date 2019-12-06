@@ -1333,12 +1333,15 @@ make_firmware_or_plugin() {
 
 make_compile_firmware() {
 	clear
-	echo  "编译固件是否要使用多线程编译"
+	echo "--------------------------------------------------------"
+	echo  "++编译固件是否要使用多线程编译++"
 	echo ""
-	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s"
-	echo -e "  $green多线程例子：（ make -j4 V=s ）$white  -j（这个值看你电脑），不懂怎么输这个值，直接回车即可"
+	echo "  首次编译不建议-j，具体用几线程看你电脑j有机会编译失败,"
+	echo "不懂回车默认运行make V=s"
 	echo ""
-	echo "温馨提醒你的cpu核心数为：$cpu_cores"
+	echo -e "多线程例子：$green make -j4 V=s$white"
+	echo -e "温馨提醒你的cpu核心数为：$green $cpu_cores $white"
+	echo "--------------------------------------------------------"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
 	if [[ -z "$mk_f" ]];then
 		clear && echo "开始执行编译" && Time
