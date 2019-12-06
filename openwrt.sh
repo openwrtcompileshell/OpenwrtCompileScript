@@ -7,7 +7,6 @@ OW="Openwrt"
 by="ITdesk"
 OCS="OpenwrtCompileScript"
 cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
-Cloud_workspace=`echo "$HOME" | grep -o gitpod | wc -l`
 you_file=`cat $HOME/$OW/$SF/tmp/you_file`
 source_type=`cat $HOME/$OW/$SF/tmp/source_type`
 
@@ -481,8 +480,15 @@ source_update_git_pull() {
 description_if() {
     cd
 	clear
-	echo "开始检测系统"
+	WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
+	if [[ "$WORKSPACE" == "1" ]]; then
+		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
+		echo "$HOME"
+	else
+		echo "不是云编译主机"
+	fi
 
+	echo "开始检测系统"
 	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
 	if [[ "$?" == "0" ]]; then
 		clear && echo -e  "$green已经安装curl$white"
@@ -510,7 +516,7 @@ description_if() {
     rm -rf $HOME/$OW/$SF/tmp/*
 
 	#判断是否云编译
-	if [[ "$Cloud_workspace" == "1" ]]; then
+	if [[ "$WORKSPACE" == "1" ]]; then
         	echo "云编译系统"
        		rm -rf  $HOME/$OW/$SF/tmp/env_text
 		env > $HOME/$OW/$SF/tmp/env_text
@@ -781,6 +787,7 @@ create_file() {
 		echo "开始创建文件夹"
 			mkdir $HOME/$OW/$file
 			cd $HOME/$OW/$file  && clear
+			echo "$file" > $HOME/$OW/$SF/tmp/you_file
 			source_download_select
 	 fi
 }
@@ -1361,13 +1368,14 @@ make_compile_firmware() {
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 	#复制编译好的固件过去
-    if [[ "$Cloud_workspace" == "1" ]]; then
-		cd
+    if [[ "$WORKSPACE" == "1" ]]; then
 		da=`date +%Y%m%d`
-		\cp -rf $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da-$source_type
+		\cp -rf $HOME/$OW/$you_file/lede/bin  $HOME/$da-$source_type
         
         if [[ -e $THEIA_WORKSPACE_ROOT/$da-$source_type ]]; then
-		echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da-$source_type"
+		echo ""
+		echo -e "本次编译完成的固件已经copy到$green $HOME/$da-$source_type $white"
+		echo ""
         fi
 	fi
 	
