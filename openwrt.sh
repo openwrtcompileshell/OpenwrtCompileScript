@@ -38,8 +38,7 @@ ls_file_luci(){
 	clear && cd
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
-	read -p "请输入你的文件夹（记得区分大小写）：" file
-	rm -rf $HOME/$OW/$SF/tmp/*	
+	read -p "请输入你的文件夹（记得区分大小写）：" file	
 	echo "$file" > $HOME/$OW/$SF/tmp/you_file
 	cd && cd $HOME/$OW/$file/lede
 }
@@ -503,6 +502,8 @@ description_if() {
                 git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
 	fi
 
+    #清理一下之前的编译文件
+    rm -rf $HOME/$OW/$SF/tmp/*
 
 	#判断是否云编译
 	if [[ "$Cloud_workspace" == "1" ]]; then
@@ -1328,16 +1329,12 @@ make_firmware_or_plugin() {
 
 make_compile_firmware() {
 	clear
-	echo "--------------------------------------------------------"
-	echo  "++编译固件是否要使用多线程编译++"
+	echo  "编译固件是否要使用多线程编译"
 	echo ""
-	echo "  首次编译不建议-j，具体用几线程看你电脑j有机会编译失败,"
-	echo "不懂回车默认运行make V=s"
+	echo -e "  首次编译不建议，具体用几线程看你电脑，不懂百度，有机会编译失败,回车默认运行make V=s"
+	echo -e "  $green多线程例子：（ make -j4 V=s ）$white  -j（这个值看你电脑），不懂怎么输这个值，直接回车即可"
 	echo ""
-	echo -e "多线程例子：$green make -j4 V=s$white"
-	echo -e "温馨提醒你的cpu核心数为：$green $cpu_cores $white"
-	echo "--------------------------------------------------------"
-	
+	echo "温馨提醒你的cpu核心数为：$cpu_cores"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
 	if [[ -z "$mk_f" ]];then
 		clear && echo "开始执行编译" && Time
@@ -1355,14 +1352,18 @@ make_compile_firmware() {
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 	#复制编译好的固件过去
-	if [[ "$Cloud_workspace" == "1" ]]; then
+    if [[ "$Cloud_workspace" == "1" ]]; then
 		cd
 		da=`date +%Y%m%d`
-		you_file=`cat $HOME/$OW/$SF/you_file`
-		source_type=`cat $HOME/$OW/$SF/source_type`
-		cp -r $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da_$source_type
-		echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da_$source_type"
+		you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
+		cp -r $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da-$source_type
+        
+        if [[ -e $THEIA_WORKSPACE_ROOT/$da-$source_type ]]; then
+		echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da-$source_type"
+        fi
 	fi
+	
 	#by：BoomLee  ITdesk
 }
 
@@ -1395,15 +1396,6 @@ make_Compile_plugin() {
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
-    	if [[ -e $THEIA_WORKSPACE_ROOT ]]; then
-        	da=`date +%Y%m%d`
-		you_file=`cat $HOME/$OW/$SF/you_file`
-		source_type=`cat $HOME/$OW/$SF/source_type`
-        	cp -r $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da_$source_type
-        	echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da_$source_type"
-    	else
-        	echo ""
-    	fi
 	#by：BoomLee  ITdesk
 }
 
@@ -1430,4 +1422,5 @@ make_Continue_compiling_the_plugin() {
 }
 
 description_if
+
 
