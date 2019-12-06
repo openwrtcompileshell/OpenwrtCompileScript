@@ -8,6 +8,8 @@ by="ITdesk"
 OCS="OpenwrtCompileScript"
 cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
 Cloud_workspace=`echo "$HOME" | grep -o gitpod | wc -l`
+you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+source_type=`cat $HOME/$OW/$SF/tmp/source_type`
 
 #颜色调整参考wen55333
 red="\033[31m"
@@ -341,6 +343,7 @@ display_git_log_luci() {
 			Source_judgment
 			;;
 			2)
+			source_if
 			source_config
 			ecc
 			exit 
@@ -348,6 +351,7 @@ display_git_log_luci() {
 			100)
 			source_update
 			rm -rf ./feeds && rm -rf ./tmp
+			source_if
 			Source_judgment
 			source_lean_if
 			;;
@@ -966,28 +970,32 @@ source_Soft_link() {
 Source_judgment() {
 	update_feeds
 	source_Setting_Public
-	if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
-		source_openwrt
-	else 
-		echo -e  "检查到你的源码是：$red未知源码$white"
-		update_feeds
-	fi
+	source_if
+	source_openwrt
 }
-source_openwrt() {
+source_if() {
 		#检测源码属于那个版本
-		if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
-			echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_type
-		elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
-			echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_type
-		elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
-			echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_type
-			software_Setting
-		elif [[ "$(git branch | grep -o master )" == "master" ]]; then
-			echo "master" > $HOME/$OW/$SF/tmp/source_type
+		if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
+			if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
+				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_type
+			elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
+				echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_type
+			elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
+				echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_type
+			elif [[ "$(git branch | grep -o master )" == "master" ]]; then
+				echo "openwrt-master" > $HOME/$OW/$SF/tmp/source_type
+			else
+				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
+			fi
+		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
+			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
 			echo "unknown" > $HOME/$OW/$SF/tmp/source_type
+			update_feeds
 		fi
+}
+source_openwrt() {
 		clear
 		echo "----------------------------------------------------"
   		echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
@@ -1093,12 +1101,8 @@ source_openwrt_Setting_18() {
 }
 
 source_lean_if() {
-	if [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
-		echo "开始替换"	
-		echo "lean" > $HOME/$OW/$SF/tmp/source_type	
+	if [[ "$source_type" == "lean" ]]; then
 		source_lean
-	else
-		echo "不替换"
 	fi
 }
 
@@ -1355,9 +1359,7 @@ make_compile_firmware() {
     if [[ "$Cloud_workspace" == "1" ]]; then
 		cd
 		da=`date +%Y%m%d`
-		you_file=`cat $HOME/$OW/$SF/tmp/you_file`
-		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
-		cp -r $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da-$source_type
+		\cp -rf $HOME/$OW/$you_file/lede/bin $THEIA_WORKSPACE_ROOT/$da-$source_type
         
         if [[ -e $THEIA_WORKSPACE_ROOT/$da-$source_type ]]; then
 		echo "本次编译完成的固件已经copy到$THEIA_WORKSPACE_ROOT/$da-$source_type"
