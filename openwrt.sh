@@ -353,7 +353,7 @@ display_git_log_luci() {
 			rm -rf ./feeds && rm -rf ./tmp
 			source_if
 			Source_judgment
-			source_lean_if
+			source_lean
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -1105,13 +1105,8 @@ source_openwrt_Setting_18() {
 	echo -e ">>$green针对18.6版本配置优化完成$white"
 }
 
-source_lean_if() {
-	if [[ "$source_type" == "lean" ]]; then
-		source_lean
-	fi
-}
-
 source_lean() {
+	if [[ "$source_type" == "lean" ]]; then
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
@@ -1138,6 +1133,8 @@ source_lean() {
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
+
+	fi
 }
 
 source_lean_package() {
