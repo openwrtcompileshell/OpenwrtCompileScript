@@ -49,7 +49,13 @@ ls_file_luci(){
 	clear && cd
 	echo "***你的openwrt文件夹有以下几个***"
 	ls_file
-	read -p "请输入你的文件夹（记得区分大小写）：" file	
+	read -p "请输入你的文件夹（记得区分大小写）：" file
+	if [[ -e $HOME/$OW/$SF/tmp ]]; then
+		echo ""
+	else
+		mkdir -p $HOME/$OW/$SF/tmp	
+	fi
+	
 	echo "$file" > $HOME/$OW/$SF/tmp/you_file
 	cd && cd $HOME/$OW/$file/lede
 }
