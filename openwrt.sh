@@ -18,8 +18,6 @@ WORKSPACE_patch() {
        			source_type=`cat $HOME/$OW/$SF/tmp/source_type`
         		you_file=`cat $HOME/$OW/$SF/tmp/you_file`
 		fi
-	else
-		echo ""	
 	fi 
 }
 
@@ -1409,7 +1407,7 @@ if_wo() {
 			echo ""
 		else
 			mkdir -p $HOME/bin
-        fi
+        	fi
         cd && cd $HOME
 		\cp -rf $HOME/$OW/$you_file/lede/bin/targets/  $HOME/bin/$da-$source_type
 		echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
