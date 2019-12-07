@@ -10,14 +10,17 @@ cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`
 
 
 WORKSPACE_patch() {
-	WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
-	if [[ "$WORKSPACE" == "1" ]]; then
-		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
-       		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
-        	you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+	workspaace_home=`echo "$HOME" | grep gitpod | wc -l`
+	if [[ "$workspaace_home" == "1" ]]; then
+		WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
+		if [[ "$WORKSPACE" == "1" ]]; then
+			HOME=`echo "$THEIA_WORKSPACE_ROOT"`
+       			source_type=`cat $HOME/$OW/$SF/tmp/source_type`
+        		you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+		fi
 	else
-		HOME=`echo "$HOME"`
-	fi
+		echo ""	
+	fi 
 }
 
 #颜色调整参考wen55333
@@ -530,7 +533,7 @@ description_if() {
     rm -rf $HOME/$OW/$SF/tmp/*
 
 	#判断是否云编译
-	if [[ "$WORKSPACE" == "1" ]]; then
+	if [[ "$workspaace_home" == "1" ]]; then
         	echo "云编译系统"
        		rm -rf  $HOME/$OW/$SF/tmp/env_text
 		env > $HOME/$OW/$SF/tmp/env_text
@@ -1400,7 +1403,7 @@ make_compile_firmware() {
 if_wo() {
 	#复制编译好的固件过去
         WORKSPACE_patch
-    	if [[ "$WORKSPACE" == "1" ]]; then
+    	if [[ "$workspaace_home" == "1" ]]; then
 		da=`date +%Y%m%d`
 		if [[ -e $HOME/bin ]]; then
 			echo ""
