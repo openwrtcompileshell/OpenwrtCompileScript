@@ -7,8 +7,16 @@ OW="Openwrt"
 by="ITdesk"
 OCS="OpenwrtCompileScript"
 cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
-you_file=`cat $HOME/$OW/$SF/tmp/you_file`
-source_type=`cat $HOME/$OW/$SF/tmp/source_type`
+
+
+WORKSPACE_patch() {
+	WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
+	if [[ "$WORKSPACE" == "1" ]]; then
+		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
+       		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
+        	you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+	fi
+}
 
 #颜色调整参考wen55333
 red="\033[31m"
@@ -476,18 +484,12 @@ source_update_git_pull() {
 }
 
 #选项1.开始搭建编译环境与主菜单
+
 #判断代码
 description_if() {
     cd
 	clear
-	WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
-	if [[ "$WORKSPACE" == "1" ]]; then
-		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
-		echo "$HOME"
-	else
-		echo "不是云编译主机"
-	fi
-
+	WORKSPACE_patch
 	echo "开始检测系统"
 	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
 	if [[ "$?" == "0" ]]; then
@@ -1004,7 +1006,8 @@ source_if() {
 }
 source_openwrt() {
 		clear
-		if [[ "$source_type" == "lean" ]]; then
+		WORKSPACE_patch
+		if [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
 			echo ""
 		else
 			echo "----------------------------------------------------"
@@ -1026,8 +1029,7 @@ source_openwrt() {
 					source_openwrt
 					 ;;
 			esac	
-		fi
-		
+		fi	
 }
 
 source_openwrt_Setting() {
@@ -1368,13 +1370,14 @@ make_compile_firmware() {
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 	#复制编译好的固件过去
+    WORKSPACE_patch
     if [[ "$WORKSPACE" == "1" ]]; then
 		da=`date +%Y%m%d`
-		\cp -rf $HOME/$OW/$you_file/lede/bin  $HOME/$da-$source_type
+		\cp -rf $HOME/$OW/$you_file/lede/bin  $HOME/bin/$da-$source_type
         
-        if [[ -e $THEIA_WORKSPACE_ROOT/$da-$source_type ]]; then
+        if [[ -e $HOME/$da-$source_type ]]; then
 		echo ""
-		echo -e "本次编译完成的固件已经copy到$green $HOME/$da-$source_type $white"
+		echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
 		echo ""
         fi
 	fi
