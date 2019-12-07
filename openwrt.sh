@@ -1387,22 +1387,24 @@ make_compile_firmware() {
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+   	if_wo
+	#by：BoomLee  ITdesk
+}
+
+if_wo() {
 	#复制编译好的固件过去
-   	WORKSPACE_patch
+        WORKSPACE_patch
     	if [[ "$WORKSPACE" == "1" ]]; then
 		da=`date +%Y%m%d`
 		if [[ -e $HOME/bin ]]; then
 			echo ""
 		else
-			mkdir $HOME/bin
-        	fi
-		\cp -rf $HOME/$OW/$you_file/lede/bin  $HOME/bin/$da-$source_type
+			mkdir -p $HOME/bin
+        fi
+        cd && cd $HOME
+		\cp -rf $HOME/$OW/$you_file/lede/bin/targets/  $HOME/bin/$da-$source_type
 		echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
-        
-       		
-	fi
-	
-	#by：BoomLee  ITdesk
+        fi
 }
 
 make_Compile_plugin() {
