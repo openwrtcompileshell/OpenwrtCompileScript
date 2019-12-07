@@ -8,19 +8,6 @@ by="ITdesk"
 OCS="OpenwrtCompileScript"
 cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
 
-
-WORKSPACE_patch() {
-	workspace_home=`echo "$HOME" | grep gitpod | wc -l`
-	if [[ "$workspace_home" == "1" ]]; then
-		WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
-		if [[ "$WORKSPACE" == "1" ]]; then
-			HOME=`echo "$THEIA_WORKSPACE_ROOT"`
-       			source_type=`cat $HOME/$OW/$SF/tmp/source_type`
-        		you_file=`cat $HOME/$OW/$SF/tmp/you_file`
-		fi
-	fi 
-}
-
 #颜色调整参考wen55333
 red="\033[31m"
 green="\033[32m"
@@ -531,10 +518,12 @@ description_if(){
    	rm -rf $HOME/$OW/$SF/tmp/*
 
 	#判断是否云编译
+	workspace_home=`echo "$HOME" | grep gitpod | wc -l`
 	if [[ "$workspace_home" == "1" ]]; then
         	echo "云编译系统"
        		rm -rf  $HOME/$OW/$SF/tmp/env_text
 		env > $HOME/$OW/$SF/tmp/env_text
+		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
        		 #添加系统变量待测
 		Cloud_environment_variables=`cat $HOME/$OW/$SF/tmp/env_text | grep -o shfile | wc -l`
        		if [[ "$Cloud_environment_variables" == "0" ]]; then
@@ -1047,10 +1036,6 @@ source_openwrt() {
 		elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
 			
 			echo ""
-
-		#elif [[ `echo "$HOME" | grep gitpod | wc -l` == "1" ]]; then
-
-		#	WORKSPACE_patch
 		else
 			echo ""
 		fi
@@ -1403,6 +1388,9 @@ if_wo() {
         workspace_if=`echo $HOME | grep workspace | wc -l `
     	if [[ "$workspace_if" == "1" ]]; then
 		da=`date +%Y%m%d`
+		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
+       		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
+        	you_file=`cat $HOME/$OW/$SF/tmp/you_file`
 		if [[ -e $HOME/bin ]]; then
 			echo ""
 		else
