@@ -15,6 +15,8 @@ WORKSPACE_patch() {
 		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
        		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
         	you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+	else
+		HOME=`echo "$HOME"`
 	fi
 }
 
@@ -512,6 +514,10 @@ description_if() {
 	else 
 		cd $HOME/$OW/$SF/
                 git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+		cd 
+		rm -rf `pwd`/$OCS
+		cd $HOME/$OW/$SF/$OCS
+		bash openwrt.sh
 	fi
 
     #清理一下之前的编译文件
