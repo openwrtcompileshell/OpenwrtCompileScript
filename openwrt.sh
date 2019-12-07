@@ -10,8 +10,8 @@ cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`
 
 
 WORKSPACE_patch() {
-	workspaace_home=`echo "$HOME" | grep gitpod | wc -l`
-	if [[ "$workspaace_home" == "1" ]]; then
+	workspace_home=`echo "$HOME" | grep gitpod | wc -l`
+	if [[ "$workspace_home" == "1" ]]; then
 		WORKSPACE=`echo  "$THEIA_WORKSPACE_ROOT" | grep workspace | wc -l`
 		if [[ "$WORKSPACE" == "1" ]]; then
 			HOME=`echo "$THEIA_WORKSPACE_ROOT"`
@@ -495,8 +495,8 @@ source_update_git_pull() {
 #选项1.开始搭建编译环境与主菜单
 
 #判断代码
-description_if() {
-    cd
+description_if(){
+   	cd
 	clear
 	WORKSPACE_patch
 	echo "开始检测系统"
@@ -527,11 +527,11 @@ description_if() {
 		bash openwrt.sh
 	fi
 
-    #清理一下之前的编译文件
-    rm -rf $HOME/$OW/$SF/tmp/*
+  	#清理一下之前的编译文件
+   	rm -rf $HOME/$OW/$SF/tmp/*
 
 	#判断是否云编译
-	if [[ "$workspaace_home" == "1" ]]; then
+	if [[ "$workspace_home" == "1" ]]; then
         	echo "云编译系统"
        		rm -rf  $HOME/$OW/$SF/tmp/env_text
 		env > $HOME/$OW/$SF/tmp/env_text
@@ -570,7 +570,7 @@ description_if() {
 		fi
 
 	fi
-	
+
 	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
 	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
 		if [[ -e /etc/apt/sources.list.back ]]; then
@@ -1048,9 +1048,9 @@ source_openwrt() {
 			
 			echo ""
 
-		elif [[ `echo "$HOME" | grep gitpod | wc -l` == "1" ]]; then
+		#elif [[ `echo "$HOME" | grep gitpod | wc -l` == "1" ]]; then
 
-			WORKSPACE_patch
+		#	WORKSPACE_patch
 		else
 			echo ""
 		fi
@@ -1400,15 +1400,15 @@ make_compile_firmware() {
 
 if_wo() {
 	#复制编译好的固件过去
-        WORKSPACE_patch
-    	if [[ "$workspaace_home" == "1" ]]; then
+        workspace_if=`echo $HOME | grep workspace | wc -l `
+    	if [[ "$workspace_if" == "1" ]]; then
 		da=`date +%Y%m%d`
 		if [[ -e $HOME/bin ]]; then
 			echo ""
 		else
 			mkdir -p $HOME/bin
-        	fi
-        cd && cd $HOME
+        fi
+        	cd && cd $HOME
 		\cp -rf $HOME/$OW/$you_file/lede/bin/targets/  $HOME/bin/$da-$source_type
 		echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
         fi
