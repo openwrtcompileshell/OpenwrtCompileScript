@@ -899,16 +899,18 @@ source_download_pandorabox_sdk() {
 				mv PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64 lede
 				rm -rf PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64.tar.xz 
 				rm -rf lede/dl
+				ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
 				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$OW/$file/lede/feeds.conf.default
+				source_lean_package
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/base-files $HOME/$OW/$file/lede/package/base-files
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/boot $HOME/$OW/$file/lede/package/boot	
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/devel $HOME/$OW/$file/lede/package/devel
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/kernel $HOME/$OW/$file/lede/package/kernel
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$OW/$file/lede/package/libs
 				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$OW/$file/lede/package/system
-				cd $HOME/$OW/$file/lede				
-				source_openwrt_Setting
-				update_feeds
+				cd $HOME/$OW/$file/lede	
+				source_Soft_link			
+				Source_judgment
 				make_defconfig
 				;;
 				0)
@@ -986,7 +988,7 @@ source_if() {
 		#检测源码属于那个版本
 		if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
 			if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
-				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_type
+				echo "openwrt-17.01" > $HOME/$OW/$SF/tmp/source_type
 			elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
 				echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_type
 			elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
@@ -1004,12 +1006,12 @@ source_if() {
 			update_feeds
 		fi
 }
+
+
+
 source_openwrt() {
 		clear
-		WORKSPACE_patch
-		if [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-			echo ""
-		else
+		if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
 			echo "----------------------------------------------------"
   			echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
 			echo " 1.添加插件(测试功能会有问题)"
@@ -1028,8 +1030,18 @@ source_openwrt() {
 					clear && echo  "请输入正确的数字（1-2）" && Time
 					source_openwrt
 					 ;;
-			esac	
-		fi	
+			esac
+		elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
+			
+			echo ""
+
+		elif [[ `echo "$HOME" | grep gitpod | wc -l` == "1" ]]; then
+
+			WORKSPACE_patch
+		else
+			echo ""
+		fi
+			
 }
 
 source_openwrt_Setting() {
@@ -1370,16 +1382,18 @@ make_compile_firmware() {
 	end_seconds=$(date --date="$endtime" +%s);
 	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 	#复制编译好的固件过去
-    WORKSPACE_patch
-    if [[ "$WORKSPACE" == "1" ]]; then
+   	WORKSPACE_patch
+    	if [[ "$WORKSPACE" == "1" ]]; then
 		da=`date +%Y%m%d`
+		if [[ -e $HOME/bin ]]; then
+			echo ""
+		else
+			mkdir $HOME/bin
+        	fi
 		\cp -rf $HOME/$OW/$you_file/lede/bin  $HOME/bin/$da-$source_type
-        
-        if [[ -e $HOME/$da-$source_type ]]; then
-		echo ""
 		echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
-		echo ""
-        fi
+        
+       		
 	fi
 	
 	#by：BoomLee  ITdesk
