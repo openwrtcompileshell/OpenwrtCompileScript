@@ -295,7 +295,15 @@ source_secondary_compilation() {
 		fi
 		echo "开始清理之前的文件"
 		make clean && rm -rf ./tmp && Time
-		display_git_log_luci
+		if [[ `grep -o "PandoraBox" .config | wc -l` == "2" ]]; then
+				echo "检测到PandoraBox源码，开始更新"				
+				rm -rf package/lean && rm -rf ./feeds
+				source_lean_package
+				source_Soft_link			
+				update_feeds
+	 	 else
+			display_git_log_luci
+		fi
 		source_config
 		make_defconfig
 }
@@ -903,15 +911,9 @@ source_download_pandorabox_sdk() {
 				ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
 				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$OW/$file/lede/feeds.conf.default
 				source_lean_package
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/base-files $HOME/$OW/$file/lede/package/base-files
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/boot $HOME/$OW/$file/lede/package/boot	
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/devel $HOME/$OW/$file/lede/package/devel
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/kernel $HOME/$OW/$file/lede/package/kernel
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/libs $HOME/$OW/$file/lede/package/libs
-				svn checkout https://github.com/coolsnowwolf/lede/trunk/package/system $HOME/$OW/$file/lede/package/system
 				cd $HOME/$OW/$file/lede	
 				source_Soft_link			
-				Source_judgment
+				update_feeds
 				make_defconfig
 				;;
 				0)
@@ -1425,7 +1427,7 @@ make_Compile_plugin() {
 	echo ""
 	echo "---------------------------------------------------------------------"	
 	read a
-	mk_Continue_compiling_the_plugin
+	make_Continue_compiling_the_plugin
 	endtime=`date +'%Y-%m-%d %H:%M:%S'`
 	start_seconds=$(date --date="$starttime" +%s);
 	end_seconds=$(date --date="$endtime" +%s);
@@ -1450,7 +1452,7 @@ make_Continue_compiling_the_plugin() {
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
-		 clear && mk_Continue_compiling_the_plugin
+		 clear && make_Continue_compiling_the_plugin
 		;;
 	esac
 }
