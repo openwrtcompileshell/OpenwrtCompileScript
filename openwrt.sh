@@ -648,9 +648,10 @@ self_test() {
 		Root_run=`echo -e "$green非root运行$white"`
 	fi
 
-	cd $HOME/$OW/$SF/$OCS
+	
 	clear
 	echo "稍等一下，正在取回远端脚本源码，用于比较现在脚本源码，速度看你网络"
+	cd && cd $HOME/$OW/$SF/$OCS
 	git fetch
 	clear
 	git_branch=$(git branch -v | grep -o 落后 )
