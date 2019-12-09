@@ -510,17 +510,6 @@ description_if(){
 		mkdir -p $HOME/$OW/$SF/tmp
 	fi
 
-	if [[ -e $HOME/$OW/$SF/$OCS ]]; then
-		echo "存在"
-	else 
-		cd $HOME/$OW/$SF/
-                git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
-		cd 
-		rm -rf `pwd`/$OCS
-		cd $HOME/$OW/$SF/$OCS
-		bash openwrt.sh
-	fi
-
   	#清理一下之前的编译文件
    	rm -rf $HOME/$OW/$SF/tmp/*
 
@@ -565,6 +554,17 @@ description_if(){
 			echo "系统变量已经添加"
 		fi
 
+	fi
+
+	if [[ -e $HOME/$OW/$SF/$OCS ]]; then
+		echo "存在"
+	else 
+		cd $HOME/$OW/$SF/
+                git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+		cd 
+		rm -rf `pwd`/$OCS
+		cd $HOME/$OW/$SF/$OCS
+		bash openwrt.sh
 	fi
 
 	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
