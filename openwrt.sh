@@ -485,7 +485,6 @@ source_update_git_pull() {
 description_if(){
    	cd
 	clear
-	WORKSPACE_patch
 	echo "开始检测系统"
 	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
 	if [[ "$?" == "0" ]]; then
