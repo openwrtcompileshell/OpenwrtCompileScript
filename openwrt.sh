@@ -861,7 +861,7 @@ source_download_openwrt() {
 				git clone https://github.com/coolsnowwolf/openwrt.git lede
 				;;
 				2)
-				git clone https://github.com/coolsnowwolf/lede.git lede
+				git clone https://github.com/xiaoluoabc123/lede.git lede
 				;;
 				3)
 				git clone -b lede-17.01 https://github.com/openwrt/openwrt.git lede
@@ -1002,7 +1002,7 @@ source_if() {
 			else
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 			fi
-		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
+		elif [[ `git remote -v | grep -o https://github.com/xiaoluoabc123/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
