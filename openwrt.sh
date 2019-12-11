@@ -560,7 +560,7 @@ description_if(){
 		echo "存在"
 	else 
 		cd $HOME/$OW/$SF/
-                git clone https://github.com//OpenwrtCompileScript.git
+                git clone https://github.com/xiaoluoabc123/OpenwrtCompileScript.git
 		cd 
 		rm -rf `pwd`/$OCS
 		cd $HOME/$OW/$SF/$OCS
