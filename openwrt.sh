@@ -1199,7 +1199,7 @@ source_Setting_Public() {
 	sed -i "s/PKG_VERSION:=0.30.0/PKG_VERSION:=0.30.0/g" package/lean/frpc/Makefile
 	
 	#npc替换为25版本
-	sed -i "s/PKG_VERSION:=0.23.2/PKG_VERSION:=0.25.0/g" package/lean/npc/Makefile
+	sed -i "s/PKG_VERSION:=0.23.2/PKG_VERSION:=0.25.1/g" package/lean/npc/Makefile
 		
 	#替换lean首页文件，添加天气代码(by:冷淡)
 	indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
