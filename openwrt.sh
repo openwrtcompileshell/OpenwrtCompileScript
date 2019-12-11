@@ -516,18 +516,15 @@ description_if(){
 	#判断是否云编译
 	workspace_home=`echo "$HOME" | grep gitpod | wc -l`
 	if [[ "$workspace_home" == "1" ]]; then
-        	echo "云编译系统"
-       		rm -rf  $HOME/$OW/$SF/tmp/env_text
-		env > $HOME/$OW/$SF/tmp/env_text
-		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
-       		 #添加系统变量待测
-		Cloud_environment_variables=`cat $HOME/$OW/$SF/tmp/env_text | grep -o shfile | wc -l`
-       		if [[ "$Cloud_environment_variables" == "0" ]]; then
-           		cd $THEIA_WORKSPACE_ROOT
-			export shfile=$HOME/Openwrt/Script_File/OpenwrtCompileScript
-			export openwrt=$HOME/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh
-           		echo -e  "系统变量添加完成，老样子启动"
+        	echo "开始添加云编译系统变量"
+		Cloud_env=`gp env | grep -o "shfile" | wc -l `
+       		if [[ "$Cloud_env" == "0" ]]; then
+           		eval $(gp env -e openwrt=$THEIA_WORKSPACE_ROOT/Openwrt/Script_File/OpenwrtCompileScript/openwrt.sh)
+			eval $(gp env -e shfile=$THEIA_WORKSPACE_ROOT/Openwrt/Script_File/OpenwrtCompileScript)
+           		echo -e  "系统变量添加完成，老样子启动  bash \$openwrt"
+			Time
 		fi
+		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
    	 else
 		#添加系统变量
 		openwrt_shfile_path=$(cat /etc/profile | grep -o shfile | wc -l)
