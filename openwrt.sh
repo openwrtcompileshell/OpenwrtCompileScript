@@ -14,11 +14,9 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
-		#ITdesk
+#ITdesk
 itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget  ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
 		
-		#Lean
-		lean_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget  ca-certificates default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd ddns-scripts_aliyun luci-app-ssr-plus luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-usb-printer luci-app-accesscontrol luci-app-zerotier luci-app-xlnetacc"
 
 rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
@@ -361,8 +359,7 @@ display_git_log_luci() {
 			;;
 			100)
 			source_update
-			rm -rf ./feeds && rm -rf ./tmp
-			source_if
+			rm -rf ./feeds && rm -rf ./tmp	
 			Source_judgment
 			source_lean
 			;;
@@ -1012,6 +1009,7 @@ source_if() {
 
 source_openwrt() {
 		clear
+		source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 		if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
 			echo "----------------------------------------------------"
   			echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
@@ -1042,6 +1040,7 @@ source_openwrt() {
 }
 
 source_openwrt_Setting() {
+		source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 		if [[ "$source_type" == "openwrt-18.06" ]]; then
 			source_openwrt_Setting_18
 		else
@@ -1124,6 +1123,7 @@ source_openwrt_Setting_18() {
 }
 
 source_lean() {
+	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 	if [[ "$source_type" == "lean" ]]; then
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
@@ -1135,15 +1135,15 @@ source_lean() {
 		sed -i "s/autosamba luci-app-usb-printer/ /g" include/target.mk
 		
 		#x86_makefile
-		x86_makefile="luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent luci-app-cifsd"
+		x86_makefile="autosamba luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/autosamba luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-zerotier luci-app-unblockmusic luci-app-qbittorrent luci-app-v2ray-server /$x86_makefile/g" target/linux/x86/Makefile	
+			sed -i "s/autosamba luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-qbittorrent luci-app-v2ray-server /$x86_makefile/g" target/linux/x86/Makefile	
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="automount v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server luci-app-aria2 luci-app-baidupcs-web luci-app-qbittorrent luci-app-cifsd luci-app-unblockmusic fdisk e2fsprogs"
+		ipq806_makefile="automount v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
@@ -1187,9 +1187,10 @@ source_Setting_Public() {
 	if [[ "$v2if" == "#default y if x86_64" ]]; then
 		echo "已经默认v2了"
 	else
-		sed -i '22s/\(.\{1\}\)/\#/' package/lean/luci-app-ssr-plus/Makefile
-		sed -i '21a\default y' package/lean/luci-app-ssr-plus/Makefile
-		sed -i "22s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		sed -i '23s/\(.\{1\}\)/\#/' package/lean/luci-app-ssr-plus/Makefile
+		sed -i '23a\default y' package/lean/luci-app-ssr-plus/Makefile
+		sed -i "23s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		sed -i "24s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 	fi
 
 	#frpc替换为27版本
