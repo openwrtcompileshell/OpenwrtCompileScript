@@ -1183,14 +1183,24 @@ source_Setting_Public() {
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
 	#默认选上v2
-	v2if=$(grep -o "#default y if x86_64" package/lean/luci-app-ssr-plus/Makefile)
-	if [[ "$v2if" == "#default y if x86_64" ]]; then
-		echo "已经默认v2了"
+	v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+	if [[ "$v2if" == "1" ]]; then
+		echo "v2设置完成"
 	else
-		sed -i '23s/\(.\{1\}\)/\#/' package/lean/luci-app-ssr-plus/Makefile
+		sed -i '23s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
 		sed -i '23a\default y' package/lean/luci-app-ssr-plus/Makefile
 		sed -i "23s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 		sed -i "24s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+	fi
+
+	trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+	if [[ "$trojanif" == "1" ]]; then
+		echo "Trojan设置完成"
+	else
+		sed -i '28s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
+		sed -i '28a\default y' package/lean/luci-app-ssr-plus/Makefile
+		sed -i "28s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		sed -i "29s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 	fi
 
 	#frpc替换为27版本
