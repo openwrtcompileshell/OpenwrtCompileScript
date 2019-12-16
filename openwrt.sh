@@ -182,6 +182,10 @@ download_package_luci() {
 	echo ""
 	echo "		  2. luci-app-oaf （测试中）"
 	echo ""
+	echo "		  3. smartdns （测试中）"
+	echo ""
+	echo "		  4. luci-app-smartdns （测试中）"
+	echo ""
 	echo "		  99. 自定义下载插件 "
 	echo ""
 	echo "		  0. 回到上一级菜单"
@@ -195,6 +199,12 @@ download_package_luci() {
 		;;
 		2)
 		git clone https://github.com/destan19/OpenAppFilter.git
+		;;
+		3)
+		git clone https://github.com/pymumu/smartdns.git
+		;;
+		4)
+		git clone https://github.com/pymumu/luci-app-smartdns.git
 		;;
 		99)
 		download_package_customize
