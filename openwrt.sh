@@ -1375,7 +1375,7 @@ make_compile_firmware() {
 	echo "  首次编译不建议-j，具体用几线程看你电脑j有机会编译失败,"
 	echo "不懂回车默认运行make V=s"
 	echo ""
-	echo -e "多线程例子：$green make -j4 V=s$white"
+	echo -e "多线程例子：$green make -j16 V=s$white"
 	echo -e "温馨提醒你的cpu核心数为：$green $cpu_cores $white"
 	echo "--------------------------------------------------------"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
