@@ -1135,7 +1135,7 @@ source_lean() {
 		sed -i "s/autosamba luci-app-usb-printer/ /g" include/target.mk
 		
 		#x86_makefile
-		x86_makefile=" luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
+		x86_makefile=" luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web uci-app-sqm luci-app-smartdns ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
