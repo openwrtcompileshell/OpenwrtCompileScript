@@ -1143,11 +1143,13 @@ source_lean() {
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="automount autosamba v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
+		ipq806_makefile="uboot-envtools automount autosamba luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/automount autosamba luci-app-ipsec-vpnd luci-app-xlnetacc v2ray shadowsocks-libev-ss-redir shadowsocksr-libev-server/$ipq806_makefile/g" target/linux/ipq806x/Makefile
+			sed -i "s/uboot-envtools/$ipq806_makefile/g" target/linux/ipq806x/Makefile
+			sed -i "s/kmod-ath10k-ct/kmod-ath10k/g" target/linux/ipq806x/Makefile
+			sed -i "s/ath10k-firmware-qca9984-ct/ath10k-firmware-qca9984/g" target/linux/ipq806x/image/Makefile
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
