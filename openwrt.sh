@@ -868,13 +868,15 @@ source_download_openwrt() {
 		echo ""
 		echo " 	2.Lean_R9(Trunk)_source"
 		echo ""
-		echo "	3.openwrt17.1(stable version)_source"
+		echo " 	3.Lienol(my-19.07-full)_source"
 		echo ""
-		echo "	4.openwrt18.6(stable version)_source"
+		echo "	4.openwrt17.1(stable version)_source"
 		echo ""
-		echo "	5.openwrt19.7(stable version)_source"
+		echo "	5.openwrt18.6(stable version)_source"
 		echo ""
-		echo "	6.openwrt(Trunk)_source"
+		echo "	6.openwrt19.7(stable version)_source"
+		echo ""
+		echo "	7.openwrt(Trunk)_source"
 		echo ""
 		echo "	0.exit"
 		echo ""
@@ -889,15 +891,18 @@ source_download_openwrt() {
 				git clone https://github.com/coolsnowwolf/lede.git lede
 				;;
 				3)
-				git clone -b lede-17.01 https://github.com/openwrt/openwrt.git lede
+				git clone https://github.com/Lienol/openwrt.git lede
 				;;
 				4)
-				git clone -b openwrt-18.06 https://github.com/openwrt/openwrt.git lede
+				git clone -b lede-17.01 https://github.com/openwrt/openwrt.git lede
 				;;
 				5)
-				git clone -b openwrt-19.07 https://github.com/openwrt/openwrt.git lede
+				git clone -b openwrt-18.06 https://github.com/openwrt/openwrt.git lede
 				;;
 				6)
+				git clone -b openwrt-19.07 https://github.com/openwrt/openwrt.git lede
+				;;
+				7)
 				git clone  https://github.com/openwrt/openwrt.git lede
 				;;
 				0)
@@ -1026,6 +1031,8 @@ source_if() {
 			fi
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
+		elif [[ `git remote -v | grep -o https://github.com/Lienol/openwrt.git | wc -l` == "2" ]]; then
+			echo "Lienol" > $HOME/$OW/$SF/tmp/source_type
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
 			echo -e  "是否继续运行脚本！！！运行请回车，不运行请终止脚本"
