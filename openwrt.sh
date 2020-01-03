@@ -300,10 +300,9 @@ source_secondary_compilation() {
 				source_Soft_link			
 				update_feeds
 	 	 else
+			source_if
 			display_git_log_luci
 		fi
-		source_config
-		make_defconfig
 }
 
 #显示git log 提交记录
@@ -315,10 +314,9 @@ display_git_log() {
 display_git_log_if() {
 		git_branch=$(git branch -v | grep -o 落后 )
 		if [[ "$git_branch" == "落后" ]]; then
-			echo -e  "自动检测：$red本地源码已经落后远端，建议更新$white"
+			echo -e  "$yellow自动检测：$white $red本地源码已经落后远端，建议更新$white"
 		else
-			echo -e  "自动检测：$green本地源码与远端一样$white"
-			
+			echo -e  "$yellow自动检测：$white $green本地源码与远端一样$white"
 		fi
 }
 
@@ -339,37 +337,70 @@ display_git_log_luci() {
 		echo ""
 		display_git_log
 		echo ""
-		echo ""
-		echo -e "$yellow你现在所用的分支：$white`git branch -v`"
-		echo ""
+		echo -e "$yellow你所在的文件夹：$white $green $file $white"
 		display_git_log_if
+		echo -e "$yellow你现在所用的分支版本：$white`git branch -v`"
 		echo ""
-		read -p "是否需要更新源码（1.yes 2.no）：" update_source
+		read -p "是否需要更新源码（1.yes 2.no 3.退到/进到某个版本）：" update_source
 		case "$update_source" in
 			1)
-			source_update
-			rm -rf ./feeds && rm -rf ./tmp
-			Source_judgment
+			source_update && rm -rf ./feeds && rm -rf ./tmp && update_feeds
 			;;
 			2)
-			source_if
-			source_config
-			ecc
-			exit 
+			echo ""
 			;;
-			100)
-			source_update
-			rm -rf ./feeds && rm -rf ./tmp	
-			Source_judgment
-			source_lean
+			3)
+			git_reset && update_feeds
+			;;
+			11)
+			source_update && rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean
+			;;
+			12)
+			rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
 			display_git_log_luci
 			;;
-		esac	
+		esac
+		if [[ "$?" == "0" ]]; then
+			source_Setting_Public
+			source_openwrt	
+			source_config
+			make_defconfig
+		else
+			echo -e  "$red >>命令错误或者网络不好，重新执行代码$white" && Time
+			display_git_log_luci
+		fi
+		
 }
 
+
+git_reset() {
+	clear
+		echo "----------------------------------------"
+		echo -e "   $green Git reset 回退到某个版本$white      "
+		echo "----------------------------------------"
+		echo -e "$green >>例子$white"
+		echo -e "  git reset --hard HEAD^         $green回退到上个版本$white"
+		echo -e "  git reset --hard HEAD~3        $green回退到前3次提交之前，以此类推$white"
+		echo -e "  git reset --hard (commit_id)   $green退到/进到 指定commit的sha码(不会的百度)$white"
+		echo ""
+		echo -e "$yellow你所在的文件夹：$white $green $file $white"
+		echo -e "$yellow你现在所用的分支版本：$white`git branch -v`"
+		echo ""
+		read -p "请输入你的命令（手动敲别偷懒）：" git_reset_read
+		$git_reset_read
+		if [[ "$?" == "0" ]]; then
+			echo ""
+			echo ""
+			echo -e  "$green >>命令执行完成$white"
+			echo -e "$yellow你现在所用的分支版本：$white`git branch -v`" && Time
+		else
+			echo -e  "$red >>命令错误或者网络不好，重新执行代码$white" && Time
+			git_reset
+		fi
+}
 
 source_config() {
 	clear
@@ -379,7 +410,7 @@ source_config() {
 		 echo "     2.否（以全新的config进行编译）"
 		 echo "     3.继续上次的编译（不对配置做任何操作）"
 		 echo ""
-		 echo "PS:如果源码进行过重大更新，建议直接选择2.以全新config进行编译，以减少报错"
+		 echo -e "$yellow PS:如果源码进行过重大更新，建议直接选择2.以全新config进行编译，以减少报错$white"
 		 echo "----------------------------------------------------------------------"
 	read -p "请输入你的决定："  config
 		case "$config" in
@@ -928,7 +959,10 @@ source_download_if() {
 		if [[ -e $HOME/$OW/$file/lede ]]; then
 			cd $HOME/$OW/$file/lede
 			source_Soft_link
-			Source_judgment
+			update_feeds
+			source_Setting_Public
+			source_if
+			source_openwrt
 			make_defconfig
 		else
 			echo ""
@@ -976,12 +1010,6 @@ source_Soft_link() {
 		
 }
 
-Source_judgment() {
-	update_feeds
-	source_Setting_Public
-	source_if
-	source_openwrt
-}
 source_if() {
 		#检测源码属于那个版本
 		if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
@@ -1000,8 +1028,9 @@ source_if() {
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
+			echo -e  "是否继续运行脚本！！！运行请回车，不运行请终止脚本"
 			echo "unknown" > $HOME/$OW/$SF/tmp/source_type
-			update_feeds
+			read a
 		fi
 }
 
@@ -1031,7 +1060,6 @@ source_openwrt() {
 					 ;;
 			esac
 		elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-			
 			echo ""
 		else
 			echo ""
@@ -1174,7 +1202,6 @@ source_lean_package() {
 source_Setting_Public() {
 	clear
 	echo -e ">>$green Public配置$white" 
-	Time
 	#隐藏首页显示用户名(by:kokang)
 	sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
 		
