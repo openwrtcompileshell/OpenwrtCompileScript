@@ -356,7 +356,7 @@ display_git_log_luci() {
 			source_update && rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean
 			;;
 			12)
-			rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean
+			update_feeds &&  source_lean
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -364,8 +364,7 @@ display_git_log_luci() {
 			;;
 		esac
 		if [[ "$?" == "0" ]]; then
-			source_Setting_Public
-			source_openwrt	
+			source_Setting_Public	
 			source_config
 			make_defconfig
 		else
@@ -967,7 +966,6 @@ source_download_if() {
 			update_feeds
 			source_Setting_Public
 			source_if
-			source_openwrt
 			make_defconfig
 		else
 			echo ""
@@ -1029,10 +1027,12 @@ source_if() {
 			else
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 			fi
+			source_openwrt
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 		elif [[ `git remote -v | grep -o https://github.com/Lienol/openwrt.git | wc -l` == "2" ]]; then
-			echo "Lienol" > $HOME/$OW/$SF/tmp/source_type
+			echo "lienol" > $HOME/$OW/$SF/tmp/source_type
+			source_lienol
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
 			echo -e  "是否继续运行脚本！！！运行请回车，不运行请终止脚本"
@@ -1170,7 +1170,7 @@ source_lean() {
 		sed -i "s/autosamba luci-app-usb-printer/ /g" include/target.mk
 		
 		#x86_makefile
-		x86_makefile=" luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web uci-app-sqm luci-app-dnscrypt-proxy ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
+		x86_makefile=" luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web uci-app-sqm  ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1178,7 +1178,7 @@ source_lean() {
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="uboot-envtools automount autosamba luci-app-dnscrypt-proxy luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
+		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
@@ -1202,6 +1202,41 @@ source_lean_package() {
 		clear	
 		echo "下载lean插件没有成功，重新执行代码" && Time
 		source_lean_package
+	fi
+}
+
+source_lienol() {
+	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
+	if [[ "$source_type" == "lienol" ]]; then
+		clear
+		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
+		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-accesscontrol $HOME/$OW/$file/lede/package/lean
+		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean
+		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-watchcat $HOME/$OW/$file/lede/package/lean	
+		#lienol_target.mk
+		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay /luci-theme-bootstrap-mod luci-app-adbyby-plus luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat /g" include/target.mk
+		sed -i "s/ip6tables/ /g" include/target.mk
+		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
+		
+		
+		#lienol_x86_makefile
+		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-sqm"
+		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
+			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/luci-app-v2ray-server luci-app-trojan-server/$x86_makefile/g" target/linux/x86/Makefile	
+		fi
+
+		#lienol_ipq806_makefile
+		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
+		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
+			echo -e "$green 配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/uboot-envtools/$ipq806_makefile/g" target/linux/ipq806x/Makefile
+		fi
+
+		echo -e ">>$green lean版本配置优化完成$white"	
+
 	fi
 }
 
