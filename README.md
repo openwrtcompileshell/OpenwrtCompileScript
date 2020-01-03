@@ -1,5 +1,6 @@
 # OpenwrtCompileScript
 
+![CompileScript](doc/CompileScript.PNG) 
 ## 序言
 
 用于辅助Openwrt编译，但不会帮你完成整个编译过程，需要一点Openwrt编译基础
