@@ -1033,32 +1033,33 @@ source_Soft_link() {
 
 source_if() {
 		#检测源码属于那个版本
+		source_git_branch=$(git branch | sed 's/* //g')
 		if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
-			if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
+			if [[ $source_git_branch == "lede-17.01" ]]; then
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_branch
-			elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
+			elif [[ $source_git_branch == "openwrt-18.06" ]]; then
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_branch
-			elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
+			elif [[ $source_git_branch == "openwrt-19.07" ]]; then
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_branch
-			elif [[ "$(git branch | grep -o master )" == "master" ]]; then
+			elif [[ $source_git_branch == "master" ]]; then
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "master" > $HOME/$OW/$SF/tmp/source_branch
 			fi
 			source_openwrt
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
-			if [[ "$(git branch | grep -o master )" == "master" ]]; then
+			if [[ $source_git_branch == "master" ]]; then
 				echo "master" > $HOME/$OW/$SF/tmp/source_branch
-			elif [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
+			elif [[ $source_git_branch == "lede-17.01" ]]; then
 				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_branch
 			fi
 
 		elif [[ `git remote -v | grep -o https://github.com/Lienol/openwrt.git | wc -l` == "2" ]]; then
 			echo "lienol" > $HOME/$OW/$SF/tmp/source_type
-			if [[ "$(git branch | grep -o my-19.07-full )" == "my-19.07-full" ]]; then
+			if [[ $source_git_branch == "my-19.07-full" ]]; then
 				echo "my-19.07-full" > $HOME/$OW/$SF/tmp/source_branch
 			fi
 
@@ -1067,7 +1068,7 @@ source_if() {
 			echo -e  "是否继续运行脚本！！！运行请回车，不运行请终止脚本"
 			echo "unknown" > $HOME/$OW/$SF/tmp/source_type
 			read a
-		fi
+		fi 
 }
 
 
