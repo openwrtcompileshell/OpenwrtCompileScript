@@ -353,10 +353,10 @@ display_git_log_luci() {
 			git_reset && update_feeds
 			;;
 			11)
-			source_update && rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean
+			source_update && rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean && source_lienol
 			;;
 			12)
-			update_feeds &&  source_lean
+			update_feeds &&  source_lean && source_lienol
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -1032,7 +1032,6 @@ source_if() {
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 		elif [[ `git remote -v | grep -o https://github.com/Lienol/openwrt.git | wc -l` == "2" ]]; then
 			echo "lienol" > $HOME/$OW/$SF/tmp/source_type
-			source_lienol
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
 			echo -e  "是否继续运行脚本！！！运行请回车，不运行请终止脚本"
@@ -1189,6 +1188,56 @@ source_lean() {
 
 		echo -e ">>$green lean版本配置优化完成$white"	
 
+		#默认选上v2
+		v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+		if [[ "$v2if" == "1" ]]; then
+			echo "v2设置完成"
+		else
+			sed -i '23s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
+			sed -i '23a\default y' package/lean/luci-app-ssr-plus/Makefile
+			sed -i "23s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i "24s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		fi
+
+		trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+		if [[ "$trojanif" == "1" ]]; then
+			echo "Trojan设置完成"
+		else
+			sed -i '28s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
+			sed -i '28a\default y' package/lean/luci-app-ssr-plus/Makefile
+			sed -i "28s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i "29s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		fi
+		
+		#替换lean首页文件，添加天气代码(by:冷淡)
+		indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
+		if [[ "$indexif" == "Local Weather" ]]; then
+			echo "已经替换首页文件"
+		else
+			rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+		fi
+	
+		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/index.htm)
+		if [[ "$x86indexif" == "Local Weather" ]]; then
+			echo "已经替换X86首页文件"
+		else
+			rm -rf package/lean/autocore/files/index.htm
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
+		fi
+	
+		base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
+		if [[ "$base_zh_po_if" == "#天气预报" ]]; then
+			echo "已添加天气预报翻译"
+		else
+			sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a #天气预报' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a msgid "Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a msgstr "天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		fi
 	fi
 }
 
@@ -1210,17 +1259,36 @@ source_lienol() {
 	if [[ "$source_type" == "lienol" ]]; then
 		clear
 		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
-		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-accesscontrol $HOME/$OW/$file/lede/package/lean
-		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean
-		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-watchcat $HOME/$OW/$file/lede/package/lean	
+		
+		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-accesscontrol ]]; then
+			echo ""		
+		else
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-accesscontrol $HOME/$OW/$file/lede/package/lean/luci-app-accesscontrol
+		fi
+		
+		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-ttyd ]]; then
+			echo ""		
+		else
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean/luci-app-ttyd
+		fi
+
+		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-watchcat ]]; then
+			echo ""		
+		else
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-watchcat $HOME/$OW/$file/lede/package/lean/luci-app-watchcat	
+			
+		fi
+		
+		./scripts/feeds install -a
+				
 		#lienol_target.mk
-		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay /luci-theme-bootstrap-mod luci-app-adbyby-plus luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat /g" include/target.mk
+		sed -i "s/luci-app-pptp-vpnserver-manyusers/luci-app-pppoe-server luci-app-pppoe-relay luci-theme-bootstrap-mod luci-app-adbyby-plus luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-arpbind /g" include/target.mk
 		sed -i "s/ip6tables/ /g" include/target.mk
 		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
 		
 		
 		#lienol_x86_makefile
-		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-sqm"
+		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-sqm "
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1228,7 +1296,7 @@ source_lienol() {
 		fi
 
 		#lienol_ipq806_makefile
-		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs"
+		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic luci-app-sqm luci-app-wifischedule fdisk e2fsprogs"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
@@ -1236,6 +1304,17 @@ source_lienol() {
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
+
+		#默认选上tj
+		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
+		if [[ "$trojanif" == "1" ]]; then
+			echo "Trojan设置完成"
+		else
+			sed -i '45s/\(.\{1\}\)/\#tj/' feeds/lienol/lienol/luci-app-passwall/Makefile
+			sed -i '45a\default y' feeds/lienol/lienol/luci-app-passwall/Makefile
+			sed -i "45s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
+			sed -i "46s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
+		fi
 
 	fi
 }
@@ -1253,59 +1332,8 @@ source_Setting_Public() {
 	#修改固件生成名字,增加当天日期(by:左右）
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
-	#默认选上v2
-	v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-	if [[ "$v2if" == "1" ]]; then
-		echo "v2设置完成"
-	else
-		sed -i '23s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
-		sed -i '23a\default y' package/lean/luci-app-ssr-plus/Makefile
-		sed -i "23s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		sed -i "24s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-	fi
-
-	trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-	if [[ "$trojanif" == "1" ]]; then
-		echo "Trojan设置完成"
-	else
-		sed -i '28s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
-		sed -i '28a\default y' package/lean/luci-app-ssr-plus/Makefile
-		sed -i "28s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		sed -i "29s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-	fi
-
 	#frpc替换为27版本
 	sed -i "s/PKG_VERSION:=0.30.0/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
-		
-	#替换lean首页文件，添加天气代码(by:冷淡)
-	indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
-	if [[ "$indexif" == "Local Weather" ]]; then
-		echo "已经替换首页文件"
-	else
-		rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-		cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-	fi
-	
-	x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/index.htm)
-	if [[ "$x86indexif" == "Local Weather" ]]; then
-		echo "已经替换X86首页文件"
-	else
-		rm -rf package/lean/autocore/files/index.htm
-		cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
-	fi
-	
-	base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
-	if [[ "$base_zh_po_if" == "#天气预报" ]]; then
-		echo "已添加天气预报翻译"
-	else
-		sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
-		sed -i '$a #天气预报' feeds/luci/modules/luci-base/po/zh-cn/base.po
-		sed -i '$a msgid "Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-		sed -i '$a msgstr "天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-		sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
-		sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-		sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-	fi
 
 	echo -e ">>$green Public配置完成$white"	
 }
