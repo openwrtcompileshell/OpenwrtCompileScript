@@ -76,12 +76,17 @@ update_script() {
 		if [[ $CheckUrl_github -eq 301 ]]; then
 			git fetch --all
 			git reset --hard origin/master
-			echo "回车进入编译菜单"
-			read a
-			bash ${openwrt}
+			if [[ $? -eq 0 ]]; then
+				echo -e "$green>> 源码更新成功回车进入编译菜单$white"
+				read a
+				bash ${openwrt}
+			else
+				echo -e "$red>> 源码更新失败，重新执行代码$white"
+				update_script
+			fi
+			
 		else
-			echo "请检查你的网络，回车重新选择" && read a
-			Time && main_interface
+			echo -e "$red>>请检查你的网络，回车重新选择$white" && read a && Time && main_interface	
 		fi
 }
 
@@ -327,7 +332,7 @@ display_git_log_luci() {
 		if [[ $? -eq 0 ]]; then
 			echo ""
 		else
-			echo "取回分支没有成功，重新执行代码" && Time
+			echo -e "$red>> 取回分支没有成功，重新执行代码$white" && Time
 			display_git_log_luci
 		fi
 		clear
@@ -503,10 +508,22 @@ source_update_No_git_pull() {
 	source_branch=`cat "$HOME/$OW/$SF/tmp/source_branch"`
 	git fetch --all
 	git reset --hard origin/$source_branch
+	if [[ $? -eq 0 ]]; then
+		echo ""
+	else
+		echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
+		source_update_No_git_pull
+	fi
 }
 
 source_update_git_pull() {
 	git pull
+	if [[ $? -eq 0 ]]; then
+		echo ""
+	else
+		echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
+		source_update_git_pull
+	fi
 }
 
 #选项1.开始搭建编译环境与主菜单
@@ -672,6 +689,12 @@ self_test() {
 	echo "稍等一下，正在取回远端脚本源码，用于比较现在脚本源码，速度看你网络"
 	cd && cd $HOME/$OW/$SF/$OCS
 	git fetch
+	if [[ $? -eq 0 ]]; then
+		echo ""
+	else
+		echo -e "$red>> 取回分支没有成功，重新执行代码$white" && Time
+		self_test
+	fi
 	clear
 	git_branch=$(git branch -v | grep -o 落后 )
 	if [[ "$git_branch" == "落后" ]]; then
