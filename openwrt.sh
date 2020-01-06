@@ -344,19 +344,13 @@ display_git_log_luci() {
 		read -p "是否需要更新源码（1.yes 2.no 3.退到/进到某个版本）：" update_source
 		case "$update_source" in
 			1)
-			source_update && rm -rf ./feeds && rm -rf ./tmp && update_feeds
+			rm -rf ./feeds && source_update && rm -rf ./tmp	&& update_feeds &&  source_lean && source_lienol
 			;;
 			2)
-			echo ""
+			update_feeds &&  source_lean && source_lienol
 			;;
 			3)
 			git_reset && update_feeds
-			;;
-			11)
-			source_update && rm -rf ./feeds && rm -rf ./tmp	&& update_feeds &&  source_lean && source_lienol
-			;;
-			12)
-			update_feeds &&  source_lean && source_lienol
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -506,8 +500,9 @@ source_update() {
 }
 
 source_update_No_git_pull() {
+	source_branch=`cat "$HOME/$OW/$SF/tmp/source_branch"`
 	git fetch --all
-	git reset --hard origin/master
+	git reset --hard origin/$source_branch
 }
 
 source_update_git_pull() {
@@ -962,10 +957,10 @@ source_download_pandorabox_sdk() {
 source_download_if() {
 		if [[ -e $HOME/$OW/$file/lede ]]; then
 			cd $HOME/$OW/$file/lede
+			source_if
 			source_Soft_link
 			update_feeds
 			source_Setting_Public
-			source_if
 			make_defconfig
 		else
 			echo ""
@@ -1017,21 +1012,33 @@ source_if() {
 		#检测源码属于那个版本
 		if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
 			if [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
-				echo "openwrt-17.01" > $HOME/$OW/$SF/tmp/source_type
-			elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
-				echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_type
-			elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
-				echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_type
-			elif [[ "$(git branch | grep -o master )" == "master" ]]; then
-				echo "openwrt-master" > $HOME/$OW/$SF/tmp/source_type
-			else
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
+				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_branch
+			elif [[ "$(git branch | grep -o openwrt-18.06 )" == "openwrt-18.06" ]]; then
+				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
+				echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_branch
+			elif [[ "$(git branch | grep -o openwrt-19.07 )" == "openwrt-19.07" ]]; then
+				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
+				echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_branch
+			elif [[ "$(git branch | grep -o master )" == "master" ]]; then
+				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
+				echo "master" > $HOME/$OW/$SF/tmp/source_branch
 			fi
 			source_openwrt
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
+			if [[ "$(git branch | grep -o master )" == "master" ]]; then
+				echo "master" > $HOME/$OW/$SF/tmp/source_branch
+			elif [[ "$(git branch | grep -o lede-17.01 )" == "lede-17.01" ]]; then
+				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_branch
+			fi
+
 		elif [[ `git remote -v | grep -o https://github.com/Lienol/openwrt.git | wc -l` == "2" ]]; then
 			echo "lienol" > $HOME/$OW/$SF/tmp/source_type
+			if [[ "$(git branch | grep -o my-19.07-full )" == "my-19.07-full" ]]; then
+				echo "my-19.07-full" > $HOME/$OW/$SF/tmp/source_branch
+			fi
+
 		else
 			echo -e  "检查到你的源码是：$red未知源码$white"
 			echo -e  "是否继续运行脚本！！！运行请回车，不运行请终止脚本"
@@ -1260,32 +1267,23 @@ source_lienol() {
 		clear
 		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
 		
-		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-accesscontrol ]]; then
-			echo ""		
-		else
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-accesscontrol $HOME/$OW/$file/lede/package/lean/luci-app-accesscontrol
-		fi
-		
 		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-ttyd ]]; then
 			echo ""		
 		else
 			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean/luci-app-ttyd
 		fi
 
-		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-watchcat ]]; then
-			echo ""		
-		else
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-watchcat $HOME/$OW/$file/lede/package/lean/luci-app-watchcat	
-			
-		fi
-		
 		./scripts/feeds install -a
-				
+			
 		#lienol_target.mk
-		sed -i "s/luci-app-pptp-vpnserver-manyusers/luci-app-pppoe-server luci-app-pppoe-relay luci-theme-bootstrap-mod luci-app-adbyby-plus luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-arpbind /g" include/target.mk
+		sed -i "s/luci-app-ddns/ /g" include/target.mk
+		sed -i "s/luci-theme-bootstrap-mod/ /g" include/target.mk 
+		sed -i "s/luci-app-pptp-vpnserver-manyusers/luci-app-pppoe-server luci-app-pppoe-relay luci-app-adbyby-plus  luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
 		sed -i "s/ip6tables/ /g" include/target.mk
 		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
 		
+		#x86禁用gzip压缩		
+		sed -i "s/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS || TARGET_x86/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS #|| TARGET_x86/g" config/Config-images.in
 		
 		#lienol_x86_makefile
 		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web luci-app-sqm "
@@ -1382,7 +1380,7 @@ dl_download() {
 	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
 	echo ""
 	echo -e "$green你的CPU核数为：$cpu_cores $white"
-	echo -e "$green自动执行make download -j$cpu_cores  V=s加快下载速度$white"
+	echo -e "$yellow自动执行make download -j$cpu_cores  V=s加快下载速度$white"
 	echo ""
 	echo "ps：全速下载可能会导致系统反应慢点，稍等一下就好"	
 	echo "----------------------------------------------"
@@ -1469,7 +1467,7 @@ make_compile_firmware() {
 	echo "  首次编译不建议-j，具体用几线程看你电脑j有机会编译失败,"
 	echo "不懂回车默认运行make V=s"
 	echo ""
-	echo -e "多线程例子：$green make -j4 V=s$white"
+	echo -e "多线程例子：$yellow make -j4 V=s$white"
 	echo -e "温馨提醒你的cpu核心数为：$green $cpu_cores $white"
 	echo "--------------------------------------------------------"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
@@ -1516,7 +1514,7 @@ make_Compile_plugin() {
 	echo "--------------------------------------------------------"
 	echo "编译插件"
 	echo ""
-	echo -e "$green例子：make package/插件名字/compile V=99$white" 
+	echo -e "$yellow例子：make package/插件名字/compile V=99$white" 
 	echo ""
 	echo "PS:Openwrt首次git clone仓库不要用此功能，绝对失败!!!"
 	echo "--------------------------------------------------------"
@@ -1529,7 +1527,7 @@ make_Compile_plugin() {
 	echo "" 
 	echo "---------------------------------------------------------------------"
 	echo ""
-	echo -e "  潘多拉编译完成的插件在$green/Openwrt/文件名/lede/bin/packages/你的平台/base$white,如果还是找不到的话，看下有没有报错，善用搜索 "
+	echo -e "  潘多拉编译完成的插件在$yellow/Openwrt/文件名/lede/bin/packages/你的平台/base$white,如果还是找不到的话，看下有没有报错，善用搜索 "
 	echo ""
 	echo "回车可以继续编译插件，或者Ctrl + c终止操作"
 	echo ""
