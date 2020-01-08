@@ -1301,7 +1301,7 @@ source_lienol() {
 			
 		#lienol_target.mk
 		sed -i "s/luci-app-ddns/ /g" include/target.mk
-		sed -i "s/luci-theme-bootstrap-mod/luci-theme-argon-mod/g" include/target.mk 
+		sed -i "s/luci-theme-bootstrap-mod/ /g" include/target.mk 
 		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay/luci-app-adbyby-plus  luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
 		sed -i "s/ip6tables/ /g" include/target.mk
 		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
