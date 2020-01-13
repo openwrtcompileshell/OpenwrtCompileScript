@@ -1371,7 +1371,7 @@ source_Setting_Public() {
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
 	#frpc替换为27版本
-	sed -i "s/PKG_VERSION:=0.30.0/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
+	sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
 
 	echo -e ">>$green Public配置完成$white"	
 }
