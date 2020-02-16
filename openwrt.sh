@@ -1199,7 +1199,8 @@ source_lean() {
 		sed -i "s/default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci-app-adbyby-plus luci-app-autoreboot luci-app-sqm/g" include/target.mk
 		sed -i "s/luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
 		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial/g" include/target.mk
-		sed -i "s/autosamba luci-app-usb-printer/ /g" include/target.mk
+		sed -i "s/luci-app-usb-printer/ /g" include/target.mk
+		sed -i "s/luci-app-ddns/ /g" include/target.mk
 		
 		#x86_makefile
 		x86_makefile=" luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web uci-app-sqm  ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
@@ -1224,20 +1225,20 @@ source_lean() {
 		if [[ "$v2if" == "1" ]]; then
 			echo "v2设置完成"
 		else
-			sed -i '24s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
-			sed -i '24a\default y' package/lean/luci-app-ssr-plus/Makefile
-			sed -i "24s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i '25s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
+			sed -i '25a\default y' package/lean/luci-app-ssr-plus/Makefile
 			sed -i "25s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i "26s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 		fi
 
 		trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
 		if [[ "$trojanif" == "1" ]]; then
 			echo "Trojan设置完成"
 		else
-			sed -i '29s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
-			sed -i '29a\default y' package/lean/luci-app-ssr-plus/Makefile
-			sed -i "29s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i '30s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
+			sed -i '30a\default y' package/lean/luci-app-ssr-plus/Makefile
 			sed -i "30s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 		fi
 		
 		#替换lean首页文件，添加天气代码(by:冷淡)
