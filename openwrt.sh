@@ -14,10 +14,6 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
-#ITdesk
-itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget  ca-certificates default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-arpbind luci-app-filetransfer luci-app-vsftpd  luci-app-ssr-plus  luci-app-vlmcsd luci-app-wifischedule luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-frpc luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-unblockmusic luci-app-watchcat "
-		
-
 rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
 g++ gawk gcc gcc-multilib gettext git git-core help2man htop lib32gcc1 libc6-dev-i386 libglib2.0-dev libncurses5-dev \
@@ -349,13 +345,13 @@ display_git_log_luci() {
 		read -p "是否需要更新源码（1.yes 2.no 3.退到/进到某个版本）：" update_source
 		case "$update_source" in
 			1)
-			rm -rf ./feeds && source_update && rm -rf ./tmp	&& update_feeds 
+			rm -rf ./feeds && source_update && rm -rf ./tmp	&& source_openwrt && update_feeds 
 			;;
 			2)
-			update_feeds 
+			source_openwrt && update_feeds 
 			;;
 			3)
-			git_reset && update_feeds
+			git_reset && source_openwrt && update_feeds
 			;;
 			*)
 			clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -995,36 +991,29 @@ source_download_if() {
 		fi
 }
 
-source_Soft_link() {
+source_Soft_link() {		
 		#1
-		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
-			echo ""
-		else
-			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back		
-		fi
-		
-		#2
 		if [[ -e $HOME/$OW/$SF/description ]]; then
 			echo ""
 		else
 			description >> $HOME/$OW/$SF/description
 		fi
 
-		#3		
+		#2		
 		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
 			echo ""
 		else
 			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
 		fi
 	
-		#4
+		#3
 		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
 			echo ""
 		else
 			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
 		fi
 
-		#5
+		#4
 		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
 			echo ""
 		else
@@ -1050,7 +1039,6 @@ source_if() {
 				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "master" > $HOME/$OW/$SF/tmp/source_branch
 			fi
-			source_openwrt
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 			if [[ $source_git_branch == "master" ]]; then
@@ -1116,8 +1104,17 @@ source_openwrt_Setting() {
 		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
 		source_lean_package
 		echo -e ">>$green openwrt官方源码开始配置优化$white"
-		Time	
-		lean_packages_nas="DEFAULT_PACKAGES.nas:fdisk lsblk mdadm automount autosamba  "	
+		Time
+		
+		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
+			echo ""
+		else
+			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back		
+		fi			
+
+		itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-proto-relay   luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial ddns-scripts_aliyun ddns-scripts_dnspod"	#luci-app-frpc	
+	
+		lean_packages_nas="DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba"	
 
 		lean_packages_router="DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr"	
 		
@@ -1134,11 +1131,12 @@ source_openwrt_Setting() {
 		sed -i "s/DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm/$lean_packages_nas/g" include/target.mk
 		
 		#(PACKAGES.router)
-		if [[ "$(grep -o "kmod-ipt-offload" include/target.mk_back )" == "urngd" ]]; then
+		if [[ "$(grep -o "kmod-ipt-offload" include/target.mk_back )" == "kmod-ipt-offload" ]]; then
 			#18.6-master (PACKAGES.router)
 			sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/$lean_packages_router/g" include/target.mk
+
 		else
-			#17.1 (PACKAGES.router)
+		#17.1 (PACKAGES.router)
 			sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd odhcp6c/$lean_packages_router/g" include/target.mk
 		fi		
 			
@@ -1162,6 +1160,38 @@ source_openwrt_Setting() {
 		sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
+
+
+		#默认选上v2
+		v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+		if [[ "$v2if" == "1" ]]; then
+			echo "v2设置完成"
+		else
+			sed -i '25s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
+			sed -i '25a\default y' package/lean/luci-app-ssr-plus/Makefile
+			sed -i "25s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i "26s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		fi
+
+		trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+		if [[ "$trojanif" == "1" ]]; then
+			echo "Trojan设置完成"
+		else
+			sed -i '30s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
+			sed -i '30a\default y' package/lean/luci-app-ssr-plus/Makefile
+			sed -i "30s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+			sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		fi
+		
+		#upx ucl 
+		if [[ $(grep -o "upx" tools/Makefile | wc -l)  == "1" ]]; then
+			echo ""
+		else
+			sed -i '31a\tools-y += ucl upx' tools/Makefile
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/upx  $HOME/$OW/$file/lede/tools/upx
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/ucl  $HOME/$OW/$file/lede/tools/ucl
+			
+		fi 
 
 		echo -e ">>$green openwrt官方源码配置优化完成$white"
 }
