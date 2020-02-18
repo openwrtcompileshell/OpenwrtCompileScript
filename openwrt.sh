@@ -980,6 +980,7 @@ source_download_if() {
 			cd $HOME/$OW/$file/lede
 			source_if
 			source_Soft_link
+			source_openwrt			
 			update_feeds
 			source_Setting_Public
 			make_defconfig
@@ -1060,8 +1061,6 @@ source_if() {
 			read a
 		fi 
 }
-
-
 
 source_openwrt() {
 		clear
