@@ -1111,7 +1111,7 @@ source_openwrt_Setting() {
 			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back		
 		fi			
 
-		itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-proto-relay   luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial ddns-scripts_aliyun ddns-scripts_dnspod"	#luci-app-frpc	
+		itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-proto-relay   luci-app-sqm  luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial luci-app-frpc ddns-scripts_aliyun ddns-scripts_dnspod"
 	
 		lean_packages_nas="DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba"	
 
@@ -1149,8 +1149,9 @@ source_openwrt_Setting() {
 		#活动连接数
 		sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
 
-		#修改frp
-		sed -i 's/local e=require("luci.model.ipkg")/-- local e=require("luci.model.ipkg")--/g' package/lean/luci-app-frpc/luasrc/model/cbi/frp/frp.lua
+		#删除lean_frp
+		rm -rf package/lean/frpc
+		rm -rf package/lean/luci-app-frpc		
 				
 		#取消官方源码强制https
 		sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
@@ -1401,7 +1402,12 @@ source_Setting_Public() {
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
 	#frpc替换为27版本
-	sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
+	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
+	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
+		sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
+	else
+		sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
+	fi
 
 	echo -e ">>$green Public配置完成$white"	
 }
