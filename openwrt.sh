@@ -1086,7 +1086,7 @@ source_openwrt() {
 					 ;;
 			esac
 		elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-			echo ""
+			source_lean
 		else
 			echo ""
 		fi
@@ -1211,7 +1211,7 @@ source_lean() {
 		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial/g" include/target.mk
 		
 		#x86_makefile
-		x86_makefile="luci-proto-bonding luci-app-aria2 luci-app-baidupcs-web uci-app-sqm  ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
+		x86_makefile="luci-proto-bonding luci-app-aria2 luci-app-baidupcs-web ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
