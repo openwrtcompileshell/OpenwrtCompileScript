@@ -1160,28 +1160,6 @@ source_openwrt_Setting() {
 		sed -i '46s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '47s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
 		sed -i '53s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.init
-
-
-		#默认选上v2
-		v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-		if [[ "$v2if" == "1" ]]; then
-			echo "v2设置完成"
-		else
-			sed -i '25s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
-			sed -i '25a\default y' package/lean/luci-app-ssr-plus/Makefile
-			sed -i "25s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-			sed -i "26s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		fi
-
-		trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-		if [[ "$trojanif" == "1" ]]; then
-			echo "Trojan设置完成"
-		else
-			sed -i '30s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
-			sed -i '30a\default y' package/lean/luci-app-ssr-plus/Makefile
-			sed -i "30s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-			sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		fi
 		
 		#upx ucl 
 		if [[ $(grep -o "upx" tools/Makefile | wc -l)  == "1" ]]; then
@@ -1226,18 +1204,18 @@ source_lean() {
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
 		#target.mk	
-		sed -i "s/default-settings luci luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci-app-adbyby-plus luci-app-autoreboot luci-app-sqm/g" include/target.mk
-		sed -i "s/luci-app-pptp-server luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
+		sed -i "s/default-settings luci luci-proto-relay luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-proto-relay luci-app-sqm luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
+
+		sed -i "s/luci-app-zerotier luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
+
 		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial/g" include/target.mk
-		sed -i "s/luci-app-usb-printer/ /g" include/target.mk
-		sed -i "s/luci-app-ddns/ /g" include/target.mk
 		
 		#x86_makefile
-		x86_makefile=" luci-proto-bonding luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web uci-app-sqm  ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
+		x86_makefile="luci-proto-bonding luci-app-aria2 luci-app-baidupcs-web uci-app-sqm  ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-app-pptp-server luci-proto-bonding luci-app-unblockmusic luci-app-qbittorrent luci-app-v2ray-server luci-app-zerotier luci-app-xlnetacc ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates/$x86_makefile/g" target/linux/x86/Makefile	
+			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-proto-bonding luci-app-v2ray-server luci-app-zerotier luci-app-xlnetacc ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates/$x86_makefile/g" target/linux/x86/Makefile	
 		fi
 
 		#ipq806_makefile
@@ -1246,29 +1224,6 @@ source_lean() {
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
 			sed -i "s/luci-app-ipsec-vpnd luci-app-unblockmusic luci-app-zerotier ca-certificates/$ipq806_makefile/g" target/linux/ipq806x/Makefile
-		fi
-
-		echo -e ">>$green lean版本配置优化完成$white"	
-
-		#默认选上v2
-		v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-		if [[ "$v2if" == "1" ]]; then
-			echo "v2设置完成"
-		else
-			sed -i '25s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
-			sed -i '25a\default y' package/lean/luci-app-ssr-plus/Makefile
-			sed -i "25s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-			sed -i "26s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		fi
-
-		trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-		if [[ "$trojanif" == "1" ]]; then
-			echo "Trojan设置完成"
-		else
-			sed -i '30s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
-			sed -i '30a\default y' package/lean/luci-app-ssr-plus/Makefile
-			sed -i "30s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-			sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 		fi
 		
 		#替换lean首页文件，添加天气代码(by:冷淡)
@@ -1301,6 +1256,7 @@ source_lean() {
 			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		fi
 	fi
+		echo -e ">>$green lean版本配置优化完成$white"	
 }
 
 source_lean_package() {
@@ -1409,6 +1365,26 @@ source_Setting_Public() {
 		sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
 	fi
 
+	#默认选上v2
+	v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+	if [[ "$v2if" == "1" ]]; then
+		echo "v2设置完成"
+	else
+		sed -i '26s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
+		sed -i '26a\default y' package/lean/luci-app-ssr-plus/Makefile
+		sed -i "26s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		sed -i "27s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+	fi
+
+	trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+	if [[ "$trojanif" == "1" ]]; then
+		echo "Trojan设置完成"
+	else
+		sed -i '31s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
+		sed -i '31a\default y' package/lean/luci-app-ssr-plus/Makefile
+		sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+		sed -i "32s/^/        /" package/lean/luci-app-ssr-plus/Makefile
+	fi
 	echo -e ">>$green Public配置完成$white"	
 }
 
