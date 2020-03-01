@@ -18,7 +18,7 @@ rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
 g++ gawk gcc gcc-multilib gettext git git-core help2man htop lib32gcc1 libc6-dev-i386 libglib2.0-dev libncurses5-dev \
 libssl-dev libtool libz-dev libelf-dev make msmtp ncurses-term ocaml-nox p7zip p7zip-full patch qemu-utils sharutils \
-subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake
+subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake device-tree-compiler  g++-multilib  linux-libc-dev:i386 python3.5 
 }
 
 #显示编译文件夹
@@ -1094,7 +1094,7 @@ source_openwrt() {
 					 ;;
 			esac
 		elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-			source_lean
+			echo ""
 		else
 			echo ""
 		fi
@@ -1211,12 +1211,17 @@ source_lean() {
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
-		#target.mk	
-		sed -i "s/default-settings luci luci-proto-relay luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-proto-relay luci-app-sqm luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
+		#target.mk
+		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
+			echo ""
+		else
+			sed -i "s/default-settings luci luci-proto-relay luci-app-ddns luci-app-sqm luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-proto-relay luci-app-sqm luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
 
 		sed -i "s/luci-app-zerotier luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
 
-		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial/g" include/target.mk
+		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial #tr_ok/g" include/target.mk
+		fi	
+		
 		
 		#x86_makefile
 		x86_makefile="luci-proto-bonding luci-app-aria2 luci-app-baidupcs-web ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
@@ -1368,9 +1373,9 @@ source_Setting_Public() {
 	#frpc替换为27版本
 	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
-		sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
+		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
 	else
-		sed -i "s/PKG_VERSION:=0.31.1/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
+		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
 	fi
 
 	#默认选上v2
