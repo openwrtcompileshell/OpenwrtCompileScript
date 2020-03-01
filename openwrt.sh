@@ -277,10 +277,8 @@ source_RestoreFactory() {
 	ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
 	echo -e ">>$green $file文件删除完成 $white"
 	echo -e "  所有编译过的文件全部删除完成，回车可以开始编译 不需要编译Ctrl+c取消,如依旧编译失败，请重新下载源代码" && read a
-	
-	display_git_log_luci
-	source_config
-	make_defconfig
+	source_if
+	display_git_log_luci	
 }
 
 #选项2.二次编译 与 源码更新合并
