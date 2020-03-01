@@ -115,6 +115,7 @@ other() {
 		echo "环境搭建完成，请自行创建文件夹和git"
 		;;
 		2)
+		ls_file_luci
 		dl_other
 		;;
 		3)
@@ -134,7 +135,16 @@ esac
 }
 
 dl_other() {
-	ls_file_luci
+	dl_download
+	if [[ $? -eq 0 ]]; then
+		echo ""
+		echo -e ">>$green dl已经单独下载完成$white"
+	else
+		clear	
+		echo -e "$red dl没有下载成功,重新执行下载代码 $white" && Time
+		dl_other
+	fi
+	 
 }
 
 update_lean_package() {
@@ -1435,7 +1445,7 @@ dl_download() {
 	echo "ps：全速下载可能会导致系统反应慢点，稍等一下就好"	
 	echo "----------------------------------------------"
 	Time	
-	make download -j$cpu_cores V=s		
+	make download -j$cpu_cores V=s
 }
 
 dl_error() {
