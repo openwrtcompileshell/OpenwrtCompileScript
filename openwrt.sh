@@ -632,6 +632,7 @@ description_if(){
 					sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
 					sudo rm -rf /etc/apt/sources.list
 					sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+					sudo apt-get install git-core build-essential libssl-dev libncurses5-dev unzip
 					;;
 				2)
 					 clear
