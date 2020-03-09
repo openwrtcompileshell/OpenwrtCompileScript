@@ -613,7 +613,9 @@ description_if(){
 	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
 		if [[ -e /etc/apt/sources.list.back ]]; then
 			clear && echo -e "$green源码已替换$white"
+			export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 		else
+			export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 			clear
 			echo "-----------------------------------------------------------------"
 			echo "+++检测到win10子系统+++"
@@ -632,6 +634,7 @@ description_if(){
 					sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
 					sudo rm -rf /etc/apt/sources.list
 					sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+					sudo apt-get install git-core build-essential libssl-dev libncurses5-dev unzip
 					;;
 				2)
 					 clear
