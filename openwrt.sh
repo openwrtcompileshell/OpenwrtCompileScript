@@ -1231,11 +1231,11 @@ source_lean() {
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-proto-bonding luci-app-v2ray-server luci-app-zerotier luci-app-xlnetacc ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates/$x86_makefile/g" target/linux/x86/Makefile	
+			sed -i "s/luci-app-zerotier luci-app-ipsec-vpnd luci-proto-bonding luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates/$x86_makefile/g" target/linux/x86/Makefile	
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic fdisk e2fsprogs ca-certificates"
+		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-dockerman luci-app-kodexplorer luci-app-hd-idle luci-app-minidlna fdisk e2fsprogs ca-certificates"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
