@@ -1380,6 +1380,7 @@ source_Setting_Public() {
 		echo ""
 	fi
 
+<<COMMENT
 	#默认选上v2
 	v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
 	if [[ "$v2if" == "1" ]]; then
@@ -1400,6 +1401,7 @@ source_Setting_Public() {
 		sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 		sed -i "32s/^/        /" package/lean/luci-app-ssr-plus/Makefile
 	fi
+COMMENT
 	echo -e ">>$green Public配置完成$white"	
 }
 
