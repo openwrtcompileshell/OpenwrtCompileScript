@@ -891,7 +891,7 @@ source_download_openwrt() {
 		echo ""
 		echo " 	2.Lean_R9(Trunk)_source"
 		echo ""
-		echo " 	3.Lienol(my-19.07-full)_source"
+		echo " 	3.Lienol(dev-19.07)_source"
 		echo ""
 		echo "	4.openwrt17.1(stable version)_source"
 		echo ""
@@ -1158,7 +1158,7 @@ source_openwrt_Setting() {
 		sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
 
 		#删除lean_frp
-		rm -rf package/lean/frpc
+		rm -rf package/lean/frp
 		rm -rf package/lean/luci-app-frpc		
 				
 		#取消官方源码强制https
@@ -1374,8 +1374,10 @@ source_Setting_Public() {
 	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
 		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
+	elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
+		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" package/lean/frp/Makefile
 	else
-		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" package/lean/frpc/Makefile
+		echo ""
 	fi
 
 	#默认选上v2
