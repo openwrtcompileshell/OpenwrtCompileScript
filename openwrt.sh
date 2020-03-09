@@ -1219,7 +1219,7 @@ source_lean() {
 
 		sed -i "s/luci-app-zerotier luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
 
-		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial #tr_ok/g" include/target.mk
+		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial luci-app-cpufreq  #tr_ok/g" include/target.mk
 		fi	
 		
 		
@@ -1380,9 +1380,10 @@ source_Setting_Public() {
 		echo ""
 	fi
 
-<<COMMENT
+:<<'COMMENT'
 	#默认选上v2
 	v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
+	
 	if [[ "$v2if" == "1" ]]; then
 		echo "v2设置完成"
 	else
