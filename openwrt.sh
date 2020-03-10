@@ -634,6 +634,7 @@ description_if(){
 					sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
 					sudo rm -rf /etc/apt/sources.list
 					sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+					sudo apt-get update
 					sudo apt-get install git-core build-essential libssl-dev libncurses5-dev unzip
 					;;
 				2)
@@ -829,7 +830,7 @@ update_system() {
 	else
 		clear	
 		echo "依赖没有更新或安装成功，重新执行代码" && Time
-		rely_on
+		update_system
 	fi
 }
 
