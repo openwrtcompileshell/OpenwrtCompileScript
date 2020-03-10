@@ -18,7 +18,7 @@ rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
 g++ gawk gcc gcc-multilib gettext git git-core help2man htop lib32gcc1 libc6-dev-i386 libglib2.0-dev libncurses5-dev \
 libssl-dev libtool libz-dev libelf-dev make msmtp ncurses-term ocaml-nox p7zip p7zip-full patch qemu-utils sharutils \
-subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake device-tree-compiler  g++-multilib  linux-libc-dev:i386 python3.5 
+subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake device-tree-compiler  g++-multilib  python3.5  #linux-libc-dev:i386
 }
 
 #显示编译文件夹
@@ -609,13 +609,40 @@ description_if(){
 		bash openwrt.sh
 	fi
 
-	check_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
-	if [[ "$check_system" == "Microsoft@Microsoft.com" ]]; then
+	#win10
+	check_win10_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
+	check_win10_system01=$(cat /proc/version |grep -o microsoft-standard)
+	if [[ "$check_win10_system" == "Microsoft@Microsoft.com" ]]; then
+		win10
+	elif [[ "$check_win10_system01" == "microsoft-standard" ]]; then
+		win10
+	else
+		echo "不是win10系统" && clear
+	fi
+	
+	clear
+
+	if [[ -e $HOME/$OW/$SF/description ]]; then
+		self_test
+		main_interface
+	else
+		clear
+		description
+		echo ""
+		read -p "请输入密码:" ps
+			if [[ $ps == $by ]]; then
+				description >> $HOME/$OW/$SF/description && clear && self_test && main_interface
+			else
+				clear && echo "+++++密码错误++++++" && Time && description_if
+			fi
+	fi
+}
+
+win10() {
+		export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 		if [[ -e /etc/apt/sources.list.back ]]; then
 			clear && echo -e "$green源码已替换$white"
-			export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 		else
-			export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 			clear
 			echo "-----------------------------------------------------------------"
 			echo "+++检测到win10子系统+++"
@@ -648,26 +675,6 @@ description_if(){
 				esac
 			
 			fi
-		else
-				echo "不是win10系统" && clear
-		fi
-	
-	clear
-
-	if [[ -e $HOME/$OW/$SF/description ]]; then
-		self_test
-		main_interface
-	else
-		clear
-		description
-		echo ""
-		read -p "请输入密码:" ps
-			if [[ $ps == $by ]]; then
-				description >> $HOME/$OW/$SF/description && clear && self_test && main_interface
-			else
-				clear && echo "+++++密码错误++++++" && Time && description_if
-			fi
-	fi
 }
 
 self_test() {
