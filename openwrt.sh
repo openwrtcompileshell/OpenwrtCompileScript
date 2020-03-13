@@ -1468,6 +1468,7 @@ dl_download() {
 	echo "----------------------------------------------"
 	Time	
 	make download -j$cpu_cores V=s
+	dl_error
 }
 
 dl_error() {
@@ -1482,7 +1483,7 @@ dl_error() {
 		dl_download
 		;;
 		2)
-		ecc
+		echo ""
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
