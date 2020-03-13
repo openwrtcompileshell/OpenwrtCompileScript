@@ -70,7 +70,7 @@ https://www.right.com.cn/forum/thread-345378-1-1.html
 
 ### ++2.7版本
 
-1. 修改脚本名字为《openwr.sh》不再以版本命名，以后执行脚本bash openwrt.sh即可
+1. 修改脚本名字为《openwrt.sh》不再以版本命名，以后执行脚本bash openwrt.sh即可
 2. 加入if判断是否源码下载成功
 3. Dl服务器下载增加一个参数，解决证书不信任问题
 4. 增加脚本描述文本
