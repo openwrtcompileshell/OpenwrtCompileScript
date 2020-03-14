@@ -1386,8 +1386,8 @@ source_Setting_Public() {
 	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
 		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
 	elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-		sed -i "s/PKG_VERSION:=0.31.2/PKG_VERSION:=0.27.0/g" package/lean/frp/Makefile
-		sed -i "s/PKG_HASH:=790a18f5651cc645a3d73fc147c719f5b212fc21db0c51c620011ee836b7a28f/PKG_HASH:=5d2efd5d924c7a7f84a9f2838de6ab9b7d5ca070ab243edd404a5ca80237607c/g" package/lean/frp/Makefile
+		sed -i "s/PKG_VERSION:=0.32.0/PKG_VERSION:=0.27.0/g" package/lean/frp/Makefile
+		sed -i "s/PKG_HASH:=39162780b28c0019207d83919530b573fac0bef8df30f1b6a5860886b0616c67/PKG_HASH:=5d2efd5d924c7a7f84a9f2838de6ab9b7d5ca070ab243edd404a5ca80237607c/g" package/lean/frp/Makefile
 	else
 		echo ""
 	fi
