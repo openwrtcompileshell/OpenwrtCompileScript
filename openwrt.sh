@@ -549,7 +549,7 @@ description_if(){
 	fi
 
 	#添加hosts(解决golang下载慢的问题)
-	if [[ -e "/etc/hosts_back" ]]; then
+	if [[ $(grep -o "34.64.4.113 proxy.golang.org" /etc/hosts | wc -l) == "1" ]]; then
 		echo "hosts设置完成"
 	else
 		clear
