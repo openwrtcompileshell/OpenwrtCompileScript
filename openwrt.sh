@@ -1240,12 +1240,12 @@ source_lean() {
 
 		sed -i "s/luci-app-zerotier luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree/g" include/target.mk
 
-		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata luci-app-syncdial luci-app-cpufreq  #tr_ok/g" include/target.mk
+		sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-watchcat  luci-app-netdata luci-app-syncdial luci-app-cpufreq  #tr_ok/g" include/target.mk
 		fi	
 		
 		
 		#x86_makefile
-		x86_makefile="luci-proto-bonding luci-app-aria2 luci-app-baidupcs-web ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
+		x86_makefile="luci-proto-bonding luci-app-aria2 luci-app-baidupcs-web luci-app-dockerman luci-app-frps luci-app-hd-idle luci-app-kodexplorer luci-app-minidlna ddns-scripts_aliyun ddns-scripts_dnspod ca-certificates"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1253,7 +1253,7 @@ source_lean() {
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-dockerman luci-app-kodexplorer luci-app-hd-idle luci-app-minidlna fdisk e2fsprogs ca-certificates"
+		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web  luci-app-wifischedule fdisk e2fsprogs ca-certificates"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
