@@ -547,6 +547,16 @@ description_if(){
 		sudo apt update
 		sudo apt install curl -y
 	fi
+
+	#添加hosts(解决golang下载慢的问题)
+	if [[ -e "/etc/hosts_back" ]]; then
+		echo "hosts设置完成"
+	else
+		clear
+		echo "添加hosts(解决golang下载慢的问题)"
+		sudo cp  /etc/hosts /etc/hosts_back
+		sudo sed -i '3a\34.64.4.113 proxy.golang.org' /etc/hosts
+	fi
 	
 	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
 		echo "开始创建主文件夹"
@@ -1339,7 +1349,7 @@ source_lienol() {
 		echo -e ">>$green lean版本配置优化完成$white"	
 
 		#默认选上tj
-		trojanif=$(grep -o "#tj" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
+		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
 		if [[ "$trojanif" == "1" ]]; then
 			echo "Trojan设置完成"
 		else
