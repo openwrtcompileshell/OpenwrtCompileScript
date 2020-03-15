@@ -395,8 +395,9 @@ git_reset() {
 		echo ""
 		read -p "请输入你的命令（手动敲别偷懒）：" git_reset_read
 		$git_reset_read
+		rm -rf ./feeds &&  rm -rf ./tmp
 		if [[ "$?" == "0" ]]; then
-			echo ""
+			clear
 			echo ""
 			echo -e  "$green >>命令执行完成$white"
 			echo -e "$yellow你现在所用的分支版本：$white`git branch -v`" && Time
