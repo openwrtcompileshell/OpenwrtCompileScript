@@ -1339,7 +1339,7 @@ source_lienol() {
 		echo -e ">>$green lean版本配置优化完成$white"	
 
 		#默认选上tj
-		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
+		trojanif=$(grep -o "#tj" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
 		if [[ "$trojanif" == "1" ]]; then
 			echo "Trojan设置完成"
 		else
