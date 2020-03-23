@@ -18,7 +18,7 @@ rely_on() {
 	sudo apt-get -y install asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache flex \
 g++ gawk gcc gcc-multilib gettext git git-core help2man htop lib32gcc1 libc6-dev-i386 libglib2.0-dev libncurses5-dev \
 libssl-dev libtool libz-dev libelf-dev make msmtp ncurses-term ocaml-nox p7zip p7zip-full patch qemu-utils sharutils \
-subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake device-tree-compiler  g++-multilib  python3.5  #linux-libc-dev:i386
+subversion texinfo uglifyjs unzip upx xmlto yui-compressor zlib1g-dev make cmake device-tree-compiler  g++-multilib  python3.5  
 }
 
 #显示编译文件夹
@@ -911,7 +911,7 @@ source_download_openwrt() {
 		echo ""
 		echo "	1.Lean_R8(stable version)_source"
 		echo ""
-		echo " 	2.Lean_R9(Trunk)_source"
+		echo " 	2.Lean_R20(Trunk)_source"
 		echo ""
 		echo " 	3.Lienol(dev-19.07)_source"
 		echo ""
