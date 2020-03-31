@@ -1583,22 +1583,28 @@ make_compile_firmware() {
 }
 
 if_wo() {
-	#复制编译好的固件过去
-        workspace_if=`echo $HOME | grep workspace | wc -l `
-    	if [[ "$workspace_if" == "1" ]]; then
-		da=`date +%Y%m%d`
-		HOME=`echo "$THEIA_WORKSPACE_ROOT"`
-       		source_type=`cat $HOME/$OW/$SF/tmp/source_type`
-        	you_file=`cat $HOME/$OW/$SF/tmp/you_file`
-		if [[ -e $HOME/bin ]]; then
-			echo ""
-		else
-			mkdir -p $HOME/bin
-        fi
-        	cd && cd $HOME
-		\cp -rf $HOME/$OW/$you_file/lede/bin/targets/  $HOME/bin/$da-$source_type
-		echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
-        fi
+	if [[ $? -eq 0 ]]; then
+		#复制编译好的固件过去
+		workspace_if=`echo $HOME | grep workspace | wc -l `
+		if [[ "$workspace_if" == "1" ]]; then
+			da=`date +%Y%m%d`
+			HOME=`echo "$THEIA_WORKSPACE_ROOT"`
+			source_type=`cat $HOME/$OW/$SF/tmp/source_type`
+			you_file=`cat $HOME/$OW/$SF/tmp/you_file`
+
+			if [[ -e $HOME/bin ]]; then
+				echo ""
+			else
+				mkdir -p $HOME/bin
+			fi
+
+			cd && cd $HOME
+			\cp -rf $HOME/$OW/$you_file/lede/bin/targets/  $HOME/bin/$da-$source_type
+			echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
+		fi
+	else
+		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
+	fi
 }
 
 make_Compile_plugin() {
