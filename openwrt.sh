@@ -1237,7 +1237,7 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot/g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman/g" include/target.mk
 
 			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-netdata #tr_ok/g" include/target.mk
 
@@ -1298,6 +1298,9 @@ source_lean() {
 			mkdir package/other-plugins
 			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
 		fi
+
+		#将diskman选项启用
+		sed -i "s/default n/default y/g" package/lean/luci-app-diskman/Makefile
 
 		echo -e ">>$green lean版本配置优化完成$white"	
 }
