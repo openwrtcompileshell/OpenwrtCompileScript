@@ -157,7 +157,6 @@ update_lean_package() {
 	display_git_log_luci
 	update_feeds
 	source_config
-	make_defconfig
 }
 
 download_package() {
@@ -177,7 +176,6 @@ download_package2() {
 	display_git_log_luci
 	update_feeds
 	source_config
-	make_defconfig
 }
 
 
@@ -371,7 +369,6 @@ display_git_log_luci() {
 			source_lienol
 			source_Setting_Public	
 			source_config
-			make_defconfig
 		else
 			echo -e  "$red >>命令错误或者网络不好，重新执行代码$white" && Time
 			display_git_log_luci
@@ -433,6 +430,7 @@ source_config() {
 			source_config
 			;;
 		esac
+			make_defconfig
 }
 
 Save_My_Config_luci() {
@@ -1547,6 +1545,7 @@ make_firmware_or_plugin() {
 	echo "请选择编译固件 OR 编译插件"
 	echo " 1.编译固件"
 	echo " 2.编译插件"
+	echo " 3.回退到加载配置选项（可以重新选择你的配置）"
 	echo "----------------------------------------"
 	read -p "请输入你的决定：" mk_value
 	case "$mk_value" in
@@ -1555,6 +1554,9 @@ make_firmware_or_plugin() {
 		;;
 		2)
 		make_Compile_plugin
+		;;
+		3)
+		source_config
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -1588,10 +1590,15 @@ make_compile_firmware() {
 		$mk_f
 	fi
 	
-	endtime=`date +'%Y-%m-%d %H:%M:%S'`
-	start_seconds=$(date --date="$starttime" +%s);
-	end_seconds=$(date --date="$endtime" +%s);
-	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	if [[ $? -eq 0 ]]; then
+		endtime=`date +'%Y-%m-%d %H:%M:%S'`
+		start_seconds=$(date --date="$starttime" +%s);
+		end_seconds=$(date --date="$endtime" +%s);
+		echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	else
+		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
+		make_continue_to_compile
+	fi
    	if_wo
 	#by：BoomLee  ITdesk
 }
@@ -1618,6 +1625,7 @@ if_wo() {
 		fi
 	else
 		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
+		make_continue_to_compile
 	fi
 }
 
@@ -1635,21 +1643,27 @@ make_Compile_plugin() {
 		echo -e "你输入的参数是：$green$mk_p$white"
 		echo "准备开始执行编译" && Time
 		$mk_p
-	echo ""
-	echo "" 
-	echo "---------------------------------------------------------------------"
-	echo ""
-	echo -e "  潘多拉编译完成的插件在$yellow/Openwrt/文件名/lede/bin/packages/你的平台/base$white,如果还是找不到的话，看下有没有报错，善用搜索 "
-	echo ""
-	echo "回车可以继续编译插件，或者Ctrl + c终止操作"
-	echo ""
-	echo "---------------------------------------------------------------------"	
-	read a
-	make_Continue_compiling_the_plugin
-	endtime=`date +'%Y-%m-%d %H:%M:%S'`
-	start_seconds=$(date --date="$starttime" +%s);
-	end_seconds=$(date --date="$endtime" +%s);
-	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	
+	if [[ $? -eq 0 ]]; then
+		echo ""
+		echo ""
+		echo "---------------------------------------------------------------------"
+		echo ""
+		echo -e "  潘多拉编译完成的插件在$yellow/Openwrt/文件名/lede/bin/packages/你的平台/base$white,如果还是找不到的话，看下有没有报错，善用搜索 "
+		echo ""
+		echo "回车可以继续编译插件，或者Ctrl + c终止操作"
+		echo ""
+		echo "---------------------------------------------------------------------"
+			read a
+			make_Continue_compiling_the_plugin
+			endtime=`date +'%Y-%m-%d %H:%M:%S'`
+			start_seconds=$(date --date="$starttime" +%s);
+			end_seconds=$(date --date="$endtime" +%s);
+			echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+		else
+			echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
+			make_continue_to_compile
+		fi
 	#by：BoomLee  ITdesk
 }
 
@@ -1666,7 +1680,7 @@ make_Continue_compiling_the_plugin() {
 		make_Compile_plugin
 		;;
 		2)
-		echo ""
+		exit
 		;;
 		*)
 		clear && echo  "Error请输入正确的数字 [1-2]" && Time
@@ -1674,6 +1688,36 @@ make_Continue_compiling_the_plugin() {
 		;;
 	esac
 }
+
+make_continue_to_compile() {
+	echo "---------------------------------------------------------------------"
+	echo -e "你的编译出错了是否要继续编译"
+	echo ""
+	echo -e "$green 1.是（回到编译固件 OR 编译插件界面，直接选择编译固件还是插件即可）$white"
+	echo ""
+	echo -e "$red 2.否 （直接退出脚本）$white"
+	echo ""
+	echo -e "$yellow 3.回到配置加载（回到之前选择配置界面，重新选择配置或者取消某些包来完成编译）$white"
+	echo "---------------------------------------------------------------------"
+	read  -p "请输入你的决定:" continue_to_compile
+		case "$continue_to_compile" in
+		1)
+		cd $HOME/$OW/$file/lede
+		make_firmware_or_plugin
+		;;
+		2)
+		exit
+		;;
+		3)
+		source_config
+		;;
+		*)
+		clear && echo  "Error请输入正确的数字 [1-3]" && Time
+		clear && make_continue_to_compile
+		;;
+	esac
+}
+
 
 description_if
 
