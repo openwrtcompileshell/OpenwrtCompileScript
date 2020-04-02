@@ -1289,8 +1289,19 @@ source_lean() {
 			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		fi
 	fi
+		#下载一下微信推送插件
+		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
+			cd  package/other-plugins/luci-app-serverchan
+			git pull
+			cd $HOME/$OW/$file/lede/
+		else
+			mkdir package/other-plugins
+			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
+		fi
+
 		echo -e ">>$green lean版本配置优化完成$white"	
 }
+
 
 source_lean_package() {
 	echo ""
