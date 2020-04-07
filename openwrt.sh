@@ -1239,7 +1239,7 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman/g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall/g" include/target.mk
 
 			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-netdata #tr_ok/g" include/target.mk
 
@@ -1299,6 +1299,41 @@ source_lean() {
 		else
 			mkdir package/other-plugins
 			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
+		fi
+
+		#下载lienol的passwall
+		if [[ -e package/other-plugins/luci-app-passwall ]]; then
+			rm -rf   package/other-plugins/luci-app-passwall
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
+		else
+			mkdir package/other-plugins
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
+		fi
+
+		#passwall默认选上tj
+		trojanif=$(grep -o "#tjdefault n" package/other-plugins/luci-app-passwall/Makefile | wc -l)
+		if [[ "$trojanif" == "1" ]]; then
+			echo "Trojan设置完成"
+		else
+			sed -i '46s/\(.\{1\}\)/\#tj/' package/other-plugins/luci-app-passwall/Makefile
+			sed -i '46a\default y' package/other-plugins/luci-app-passwall/Makefile
+			sed -i "46s/^/        /" package/other-plugins/luci-app-passwall/Makefile
+			sed -i "47s/^/        /" package/other-plugins/luci-app-passwall/Makefile
+		fi
+
+		#更改passwall的dns
+		passwall_dns=$(grep -o "option up_china_dns 'default'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
+		if [[ "$passwall_dns" == "1" ]]; then
+			sed -i "s/option up_china_dns 'default'/option up_china_dns '223.5.5.5'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
+		fi
+
+		#更改passwall显示位置
+		passwall_display=$(grep -o "vpn" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
+		if [[ "$passwall_display" == "0" ]]; then
+			echo ""
+		else
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
+			sed -i "s/VPN/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
 		fi
 
 		#将diskman选项启用
