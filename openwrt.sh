@@ -1305,9 +1305,12 @@ source_lean() {
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
 			rm -rf   package/other-plugins/luci-app-passwall
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/tcping package/other-plugins/tcping
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
 		else
-			mkdir package/other-plugins
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/tcping package/other-plugins/tcping
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
 		fi
 
 		#passwall默认选上tj
