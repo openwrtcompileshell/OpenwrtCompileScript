@@ -1330,15 +1330,6 @@ source_lean() {
 			sed -i "s/option up_china_dns 'default'/option up_china_dns '223.5.5.5'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
 		fi
 
-		#更改passwall显示位置
-		passwall_display=$(grep -o "vpn" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
-		if [[ "$passwall_display" == "0" ]]; then
-			echo ""
-		else
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
-			sed -i "s/VPN/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
-		fi
-
 		#将diskman选项启用
 		sed -i "s/default n/default y/g" package/lean/luci-app-diskman/Makefile
 
@@ -1417,17 +1408,6 @@ source_lienol() {
 		if [[ "$passwall_dns" == "1" ]]; then
 			sed -i "s/option up_china_dns '114.114.114.114'/option up_china_dns '223.5.5.5'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
 		fi
-	
-		#更改passwall显示位置
-		passwall_display=$(grep -o "vpn" feeds/lienol/lienol/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)	
-		if [[ "$passwall_display" == "0" ]]; then
-			echo ""
-		else
-			sed -i "s/vpn/services/g" feeds/lienol/lienol/luci-app-passwall/luasrc/controller/passwall.lua
-			sed -i "s/VPN/services/g" feeds/lienol/lienol/luci-app-passwall/luasrc/controller/passwall.lua
-		fi	
-
-
 	fi
 }
 
