@@ -7,6 +7,7 @@ OW="Openwrt"
 by="ITdesk"
 OCS="OpenwrtCompileScript"
 cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
+workspace_home=`echo "$HOME" | grep gitpod | wc -l`
 
 #颜色调整参考wen55333
 red="\033[31m"
@@ -565,7 +566,6 @@ description_if(){
    	rm -rf $HOME/$OW/$SF/tmp/*
 
 	#判断是否云编译
-	workspace_home=`echo "$HOME" | grep gitpod | wc -l`
 	if [[ "$workspace_home" == "1" ]]; then
         	echo "开始添加云编译系统变量"
 		Cloud_env=`gp env | grep -o "shfile" | wc -l `
@@ -833,17 +833,23 @@ system_install() {
 
 update_system() {
 	clear
-	clear && echo "准备更新系统"	&& Time
+	clear && echo -e "$green >>准备更新系统 $white"	&& Time
 	sudo apt-get update
 	clear
 	echo "准备安装依赖" && Time
-	rely_on
-	if [[ $? -eq 0 ]]; then
-		echo "安装完成" && Time
+	if [[ "$workspace_home" == "1" ]]; then
+		clear
+		echo -e "$green >>检测到你是gitpod云编译主机，不需要安装依赖，直接创建文件夹即可 $white"
+		create_file
 	else
-		clear	
-		echo "依赖没有更新或安装成功，重新执行代码" && Time
-		update_system
+		rely_on
+		if [[ $? -eq 0 ]]; then
+			echo -e "$green >>安装完成 $white" && Time
+		else
+			clear
+			echo "$red 依赖没有更新或安装成功，重新执行代码 $white" && Time
+			update_system
+		fi
 	fi
 }
 
