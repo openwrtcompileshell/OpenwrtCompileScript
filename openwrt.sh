@@ -836,10 +836,10 @@ update_system() {
 	clear && echo -e "$green >>准备更新系统 $white"	&& Time
 	sudo apt-get update
 	clear
-	echo "准备安装依赖" && Time
+	echo -e "$green >>准备安装依赖 $white" && Time
 	if [[ "$workspace_home" == "1" ]]; then
 		clear
-		echo -e "$green >>检测到你是gitpod云编译主机，不需要安装依赖，直接创建文件夹即可 $white"
+		echo -e "$green >>检测到你是gitpod云编译主机，不需要安装依赖，直接创建文件夹即可 $white" && Time
 		create_file
 	else
 		rely_on
