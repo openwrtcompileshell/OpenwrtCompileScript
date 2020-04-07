@@ -836,13 +836,13 @@ update_system() {
 	clear && echo -e "$green >>准备更新系统 $white"	&& Time
 	sudo apt-get update
 	clear
-	echo -e "$green >>准备安装依赖 $white" && Time
-	java_home=`echo "$JAVA_HOME" | grep gitpod | wc -l`
-	if [[ "$JAVA_HOME" == "1" ]]; then
+	javahome=`echo "$JAVA_HOME" | grep gitpod | wc -l`
+	if [[ "$javahome" == "1" ]]; then
 		clear
 		echo -e "$green >>检测到你是gitpod云编译主机，不需要安装依赖，直接创建文件夹即可 $white" && Time
 		create_file
 	else
+		echo -e "$green >>准备安装依赖 $white" && Time
 		rely_on
 		if [[ $? -eq 0 ]]; then
 			echo -e "$green >>安装完成 $white" && Time
