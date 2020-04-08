@@ -14,6 +14,10 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
+prompt() {
+	echo  -e " $yellow温馨提示，最近的编译依赖有变动，如果你最近一直编译失败，建议使用脚本5.其他选项 --- 1.只搭建编译环境功能 $white"
+}
+
 rely_on() {
 	sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3.5 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf bison g++ gcc help2man htop ncurses-term ocaml-nox sharutils yui-compressor make cmake 
 }
@@ -1734,6 +1738,8 @@ make_continue_to_compile() {
 	echo -e "$red 2.否 （直接退出脚本）$white"
 	echo ""
 	echo -e "$yellow 3.回到配置加载（回到之前选择配置界面，重新选择配置或者取消某些包来完成编译）$white"
+	echo ""
+		prompt
 	echo "---------------------------------------------------------------------"
 	read  -p "请输入你的决定:" continue_to_compile
 		case "$continue_to_compile" in
