@@ -1324,11 +1324,18 @@ source_lean() {
 			sed -i "47s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 		fi
 
-		#更改passwall的dns
+		#更改passwall国内的dns
 		passwall_dns=$(grep -o "option up_china_dns 'default'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
 		if [[ "$passwall_dns" == "1" ]]; then
 			sed -i "s/option up_china_dns 'default'/option up_china_dns '223.5.5.5'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
 		fi
+
+		#更改passwall的dns模式
+		dns_mode=$(grep -o "option dns_mode 'pdnsd'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
+		if [[ "$dns_mode" == "1" ]]; then
+			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
+		fi
+
 
 		#将diskman选项启用
 		sed -i "s/default n/default y/g" package/lean/luci-app-diskman/Makefile
@@ -1403,11 +1410,18 @@ source_lienol() {
 			sed -i "46s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
 		fi
 
-		#更改passwall的dns
+		#更改passwall国内的dns
 		passwall_dns=$(grep -o "option up_china_dns '114.114.114.114'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
 		if [[ "$passwall_dns" == "1" ]]; then
 			sed -i "s/option up_china_dns '114.114.114.114'/option up_china_dns '223.5.5.5'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
 		fi
+
+		#更改passwall的dns模式
+		dns_mode=$(grep -o "option dns_mode 'pdnsd'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
+		if [[ "$dns_mode" == "1" ]]; then
+			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
+		fi
+
 	fi
 }
 
