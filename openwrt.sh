@@ -1344,22 +1344,36 @@ source_lean() {
 			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
 		fi
 
+		#更改passwall显示位置
+		passwall_display=$(grep -o "nas" package/other-plugins/luci-app-passwall/luasrc/controller/fileassistant.lua | wc -l)
+		if [[ "$fileassistant_display" == "0" ]]; then
+			echo ""
+		else
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
+			sed -i "s/VPN/Services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_config.lua
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_list.lua
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_subscribe.lua
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/haproxy/status.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/view/passwall/log/log.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/view/passwall/global/tips.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status2.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/node_list.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/link_add_node.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/rule_version.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/brook_version.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/v2ray_version.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/kcptun_version.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/passwall_version.htm
+		fi
+
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
 			rm -rf   package/other-plugins/luci-app-passwall
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		else
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
-		fi
-
-		#更改fileassistant显示位置
-		fileassistant_display=$(grep -o "nas" package/other-plugins/luci-app-fileassistant/luasrc/controller/fileassistant.lua | wc -l)
-		if [[ "$fileassistant_display" == "0" ]]; then
-			echo ""
-		else
-			sed -i "s/nas/services/g" package/other-plugins/luci-app-fileassistant/luasrc/controller/fileassistant.lua
-			sed -i "s/NAS/Services/g" package/other-plugins/luci-app-fileassistant/luasrc/controller/fileassistant.lua
-			sed -i "s/nas/services/g" package/other-plugins/luci-app-fileassistant/htdocs/luci-static/resources/fileassistant/fb.js
 		fi
 
 		#将diskman选项启用
