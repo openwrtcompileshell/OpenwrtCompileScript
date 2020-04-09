@@ -1243,7 +1243,7 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall/g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant/g" include/target.mk
 
 			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-netdata #tr_ok/g" include/target.mk
 
@@ -1344,6 +1344,23 @@ source_lean() {
 			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
 		fi
 
+		#下载lienol的fileassistant
+		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
+			rm -rf   package/other-plugins/luci-app-passwall
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
+		else
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
+		fi
+
+		#更改fileassistant显示位置
+		fileassistant_display=$(grep -o "nas" package/other-plugins/luci-app-fileassistant/luasrc/controller/fileassistant.lua | wc -l)
+		if [[ "$fileassistant_display" == "0" ]]; then
+			echo ""
+		else
+			sed -i "s/nas/services/g" package/other-plugins/luci-app-fileassistant/luasrc/controller/fileassistant.lua
+			sed -i "s/NAS/Services/g" package/other-plugins/luci-app-fileassistant/luasrc/controller/fileassistant.lua
+			sed -i "s/nas/services/g" package/other-plugins/luci-app-fileassistant/htdocs/luci-static/resources/fileassistant/fb.js
+		fi
 
 		#将diskman选项启用
 		sed -i "s/default n/default y/g" package/lean/luci-app-diskman/Makefile
