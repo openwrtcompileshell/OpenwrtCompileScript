@@ -1345,8 +1345,8 @@ source_lean() {
 		fi
 
 		#更改passwall显示位置
-		passwall_display=$(grep -o "nas" package/other-plugins/luci-app-passwall/luasrc/controller/fileassistant.lua | wc -l)
-		if [[ "$fileassistant_display" == "0" ]]; then
+		passwall_display=$(grep -o "nas" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
+		if [[ "$passwall_display" == "0" ]]; then
 			echo ""
 		else
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
@@ -1370,7 +1370,7 @@ source_lean() {
 
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
-			rm -rf   package/other-plugins/luci-app-passwall
+			rm -rf   package/other-plugins/luci-app-fileassistant
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		else
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
