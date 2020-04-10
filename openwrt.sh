@@ -1345,7 +1345,7 @@ source_lean() {
 		fi
 
 		#更改passwall显示位置
-		passwall_display=$(grep -o "nas" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
+		passwall_display=$(grep -o "vpn" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
 		if [[ "$passwall_display" == "0" ]]; then
 			echo ""
 		else
@@ -1355,8 +1355,8 @@ source_lean() {
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_list.lua
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_subscribe.lua
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/haproxy/status.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/view/passwall/log/log.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/view/passwall/global/tips.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/log/log.htm
+			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/tips.htm
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status.htm
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status2.htm
 			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/node_list.htm
