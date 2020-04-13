@@ -21,6 +21,7 @@ The script is made to work on these OS :
 - Ubuntu 18.4 （首选，脚本基于此版本编写测试）
 - win10子系统（ubuntu 18.04 LTS）
 - Github Gitpod云编译(参考：https://www.right.com.cn/forum/thread-1573038-1-1.html)
+- Deepin 15.11桌面版（群友测试ok）
 
 ## Usage 使用方法
 
