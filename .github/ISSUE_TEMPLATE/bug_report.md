@@ -1,22 +1,20 @@
----
-name: Bug report
-about: Create a report to help us improve
+反馈bug/问题模板，提建议请删除
 
+## 一.关于你要提交的问题
 
----
+Q：是否搜索了issue (使用 "x" 选择)
+* [ ] 没有类似的issue
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## 二. 详细叙述
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+### (1) 具体问题
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+A：
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+### (2) 步骤重现
+
+A：
+
+### (3) 无法描述清楚，请图片或者视频
+
+A：
