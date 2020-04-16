@@ -807,6 +807,10 @@ main_interface() {
 		9)
 		update_script
 		;;
+		99)
+		cd $HOME/$OW/lean/lede/
+		n1_builder
+		;;
 		0)
 		exit
 		;;
@@ -1239,6 +1243,10 @@ source_lean() {
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
+		sed -i "s/#src-git helloworld https://github.com/fw876/helloworld/src-git helloworld https://github.com/fw876/helloworld/g" feeds.conf.default 
+		read a
+		update_feeds
+
 		#target.mk
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
@@ -1666,6 +1674,8 @@ make_compile_firmware() {
 	fi
 	
 	if [[ $? -eq 0 ]]; then
+		n1_builder
+		if_wo
 		endtime=`date +'%Y-%m-%d %H:%M:%S'`
 		start_seconds=$(date --date="$starttime" +%s);
 		end_seconds=$(date --date="$endtime" +%s);
@@ -1674,7 +1684,6 @@ make_compile_firmware() {
 		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
 		make_continue_to_compile
 	fi
-   	if_wo
 	#by：BoomLee  ITdesk
 }
 
@@ -1703,6 +1712,56 @@ if_wo() {
 		make_continue_to_compile
 	fi
 }
+
+n1_builder() {
+	if [[ -e $HOME/$OW/$SF/n1 ]]; then
+		echo ""
+	else
+		mkdir $HOME/$OW/$SF/n1
+		n1_builder
+	fi
+
+	builder_patch="$HOME/$OW/$SF/n1/PHICOMM-N1-OpenWRT-Image-Builder"
+	if [[ -e bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz ]]; then
+		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
+		if [[ -e $builder_patch ]]; then
+			cd  $builder_patch
+			git pull
+			cd $HOME/$OW/$file/lede/
+		else
+			git clone https://github.com/sean-liang/PHICOMM-N1-OpenWRT-Image-Builder $builder_patch
+		fi
+
+		if [[ -e $builder_patch/armbian.img ]]; then
+			echo -e "$green >>armbin.img存在，复制固件$white"
+			if [[ -e $builder_patch/openwrt.img ]]; then
+				rm -rf $builder_patch/openwrt.img
+				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patchopenwrt.img
+			else
+				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt.img
+			fi
+
+			bash $builder_patch/build.sh
+				if [[ $? -eq 0 ]]; then
+					cp $builder_patch/n1-firmware.img.gz bin/targets/armvirt/64/n1-firmware.img.gz
+					echo -e "$green >>N1镜像制作完成,你的固件在：bin/targets/armvirt/64/n1-firmware.img.gz$white"
+				else
+					echo "$red >>N1固件制作失败，重新执行代码 $white" && Time
+					n1_builder
+				fi
+
+		else
+			echo -e "$yellow >>检查到没有armbin.img,请将你的armbin镜像放到：$builder_patch $white"
+			echo -e "$green >>存放完成以后，回车继续制作N1固件$white"
+			read a
+			n1_builder
+		fi
+
+	else
+		echo "找不到N1固件"
+	fi
+}
+
 
 make_Compile_plugin() {
 	clear
