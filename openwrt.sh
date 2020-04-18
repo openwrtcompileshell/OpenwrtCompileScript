@@ -1243,8 +1243,7 @@ source_lean() {
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
-		sed -i "s/#src-git helloworld https://github.com/fw876/helloworld/src-git helloworld https://github.com/fw876/helloworld/g" feeds.conf.default 
-		read a
+		sed -i "s/#src-git helloworld/src-git helloworld/g" feeds.conf.default 
 		update_feeds
 
 		#target.mk
@@ -1317,63 +1316,55 @@ source_lean() {
 			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
 		fi
 
-		#下载lienol的passwall
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
-			rm -rf   package/other-plugins/luci-app-passwall
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/tcping package/other-plugins/tcping
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
+			#**默认选上tj
+			trojanif=$(grep -o "#tjdefault n" package/other-plugins/luci-app-passwall/Makefile | wc -l)
+			if [[ "$trojanif" == "1" ]]; then
+				echo "Trojan设置完成"
+			else
+				sed -i '46s/\(.\{1\}\)/\#tj/' package/other-plugins/luci-app-passwall/Makefile
+				sed -i '46a\default y' package/other-plugins/luci-app-passwall/Makefile
+				sed -i "46s/^/        /" package/other-plugins/luci-app-passwall/Makefile
+				sed -i "47s/^/        /" package/other-plugins/luci-app-passwall/Makefile
+			fi
+
+			#更改**国内的dns
+			passwall_dns=$(grep -o "option up_china_dns 'default'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
+			if [[ "$passwall_dns" == "1" ]]; then
+				sed -i "s/option up_china_dns 'default'/option up_china_dns '223.5.5.5'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
+			fi
+
+			#更改**的dns模式
+			dns_mode=$(grep -o "option dns_mode 'pdnsd'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
+			if [[ "$dns_mode" == "1" ]]; then
+				sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
+			fi
+
+			#更改**显示位置
+			passwall_display=$(grep -o "vpn" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
+			if [[ "$passwall_display" == "0" ]]; then
+				echo ""
+			else
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
+				sed -i "s/VPN/Services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_config.lua
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_list.lua
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_subscribe.lua
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/haproxy/status.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/log/log.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/tips.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status2.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/node_list.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/link_add_node.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/rule_version.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/brook_version.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/v2ray_version.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/kcptun_version.htm
+				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/passwall_version.htm
+			fi
 		else
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/tcping package/other-plugins/tcping
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
-		fi
-
-		#passwall默认选上tj
-		trojanif=$(grep -o "#tjdefault n" package/other-plugins/luci-app-passwall/Makefile | wc -l)
-		if [[ "$trojanif" == "1" ]]; then
-			echo "Trojan设置完成"
-		else
-			sed -i '46s/\(.\{1\}\)/\#tj/' package/other-plugins/luci-app-passwall/Makefile
-			sed -i '46a\default y' package/other-plugins/luci-app-passwall/Makefile
-			sed -i "46s/^/        /" package/other-plugins/luci-app-passwall/Makefile
-			sed -i "47s/^/        /" package/other-plugins/luci-app-passwall/Makefile
-		fi
-
-		#更改passwall国内的dns
-		passwall_dns=$(grep -o "option up_china_dns 'default'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
-		if [[ "$passwall_dns" == "1" ]]; then
-			sed -i "s/option up_china_dns 'default'/option up_china_dns '223.5.5.5'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
-		fi
-
-		#更改passwall的dns模式
-		dns_mode=$(grep -o "option dns_mode 'pdnsd'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
-		if [[ "$dns_mode" == "1" ]]; then
-			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" package/other-plugins/luci-app-passwall/root/etc/config/passwall
-		fi
-
-		#更改passwall显示位置
-		passwall_display=$(grep -o "vpn" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua | wc -l)
-		if [[ "$passwall_display" == "0" ]]; then
 			echo ""
-		else
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
-			sed -i "s/VPN/Services/g" package/other-plugins/luci-app-passwall/luasrc/controller/passwall.lua
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_config.lua
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_list.lua
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/model/cbi/passwall/node_subscribe.lua
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/haproxy/status.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/log/log.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/tips.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/global/status2.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/node_list.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/node_list/link_add_node.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/rule_version.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/brook_version.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/v2ray_version.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/kcptun_version.htm
-			sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/passwall_version.htm
 		fi
 
 		#下载lienol的fileassistant
@@ -1445,7 +1436,7 @@ source_lienol() {
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
-
+:<<'COMMENT'
 		#默认选上tj
 		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
 		if [[ "$trojanif" == "1" ]]; then
@@ -1468,7 +1459,7 @@ source_lienol() {
 		if [[ "$dns_mode" == "1" ]]; then
 			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
 		fi
-
+COMMENT
 	fi
 }
 
@@ -1758,7 +1749,7 @@ n1_builder() {
 		fi
 
 	else
-		echo "找不到N1固件"
+		echo ""
 	fi
 }
 
