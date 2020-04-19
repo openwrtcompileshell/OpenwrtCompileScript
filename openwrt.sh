@@ -1269,7 +1269,7 @@ source_lean() {
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web  luci-app-wifischedule fdisk e2fsprogs ca-certificates"
+		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-wifischedule luci-app-amule luci-app-cifs-mount fdisk e2fsprogs ca-certificates"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
