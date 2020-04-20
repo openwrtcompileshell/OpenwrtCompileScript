@@ -1020,8 +1020,10 @@ source_download_if() {
 			cd $HOME/$OW/$file/lede
 			source_if
 			source_Soft_link
-			source_openwrt			
 			update_feeds
+			source_openwrt
+			source_lean
+			source_lienol
 			source_Setting_Public
 			make_defconfig
 		else
@@ -1032,52 +1034,18 @@ source_download_if() {
 		fi
 }
 
-source_Soft_link() {		
-		#1
-		if [[ -e $HOME/$OW/$SF/description ]]; then
-			echo ""
-		else
-			description >> $HOME/$OW/$SF/description
-		fi
-
-		#2		
-		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
-			echo ""
-		else
-			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
-		fi
-	
-		#3
-		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
-			echo ""
-		else
-			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
-		fi
-
-		#4
-		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
-			echo ""
-		else
-			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
-		fi
-		
-}
-
 source_if() {
 		#检测源码属于那个版本
 		source_git_branch=$(git branch | sed 's/* //g')
 		if [[ `git remote -v | grep -o https://github.com/openwrt/openwrt.git | wc -l` == "2" ]]; then
+			echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 			if [[ $source_git_branch == "lede-17.01" ]]; then
-				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_branch
 			elif [[ $source_git_branch == "openwrt-18.06" ]]; then
-				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "openwrt-18.06" > $HOME/$OW/$SF/tmp/source_branch
 			elif [[ $source_git_branch == "openwrt-19.07" ]]; then
-				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "openwrt-19.07" > $HOME/$OW/$SF/tmp/source_branch
 			elif [[ $source_git_branch == "master" ]]; then
-				echo "openwrt" > $HOME/$OW/$SF/tmp/source_type
 				echo "master" > $HOME/$OW/$SF/tmp/source_branch
 			fi
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
@@ -1102,6 +1070,39 @@ source_if() {
 		fi 
 }
 
+
+source_Soft_link() {
+		#1
+		if [[ -e $HOME/$OW/$SF/description ]]; then
+			echo ""
+		else
+			description >> $HOME/$OW/$SF/description
+		fi
+
+		#2
+		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
+		fi
+
+		#3
+		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
+		fi
+
+		#4
+		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
+			echo ""
+		else
+			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
+		fi
+
+}
+
+
 source_openwrt() {
 		clear
 		source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
@@ -1116,6 +1117,7 @@ source_openwrt() {
 					1)
 					rm -rf package/lean 
 					source_openwrt_Setting
+					source_lean_package
 					;;
 					2)
 					echo ""
