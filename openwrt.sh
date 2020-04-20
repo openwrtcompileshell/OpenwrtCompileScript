@@ -1655,6 +1655,7 @@ make_compile_firmware() {
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
 	if [[ -z "$mk_f" ]];then
 		clear && echo "开始执行编译" && Time
+		dl_download
 		make V=s
 	else
 		dl_download
