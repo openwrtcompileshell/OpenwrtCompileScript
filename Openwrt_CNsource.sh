@@ -616,7 +616,7 @@ description_if(){
 		cd 
 		rm -rf `pwd`/$OCS
 		cd $HOME/$OW/$SF/$OCS
-		bash openwrt.sh
+		bash Openwrt_CNsource.sh
 	fi
 
 	#win10
