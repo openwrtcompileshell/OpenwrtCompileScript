@@ -18,6 +18,40 @@ prompt() {
 	echo  -e " $yellow温馨提示，最近的编译依赖有变动，如果你最近一直编译失败，建议使用脚本5.其他选项 --- 1.只搭建编译环境功能 $white"
 }
 
+source_make_clean() {
+	clear
+	echo "--------------------------------------------------------"
+	echo -e "$green++是否执行make clean清理固件++$white"
+	echo ""
+	echo "  1.执行make clean"
+	echo ""
+	echo "  2.不执行make clean"
+	echo ""
+	echo -e "$yellow  温馨提醒make clean会清理掉之前编译的固件，为了编译成功 $white"
+	echo -e "$yellow率建议执行make clean，虽然编译时间会比较久$white"
+	echo "--------------------------------------------------------"
+	read  -p "请输入你的参数(回车默认：make clean)：" mk_c
+	if [[ -z "$mk_c" ]];then
+		clear && echo -e "$green开始执行make clean $white"
+		make clean
+	else
+		case "$mk_c" in
+		1)
+		clear && echo -e "$green开始执行make clean $white"
+		make clean
+		;;
+		2)
+		clear && echo -e "$green不执行make clean $white"
+		;;
+		*)
+		clear && echo  "Error请输入正确的数字 [1-2]" && Time
+		 clear && source_make_clean
+		;;
+	esac
+	fi
+
+}
+
 rely_on() {
 	sudo apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3.5 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf bison g++ gcc help2man htop ncurses-term ocaml-nox sharutils yui-compressor make cmake 
 }
@@ -150,7 +184,7 @@ dl_other() {
 
 update_lean_package() {
 	ls_file_luci
-	make clean
+	source_make_clean
 	rm -rf package/lean
 	source_openwrt_Setting
 	echo "插件下载完成"
@@ -300,7 +334,7 @@ source_secondary_compilation() {
 			source_secondary_compilation
 		fi
 		echo "开始清理之前的文件"
-		make clean && rm -rf ./tmp && Time
+		source_make_clean && rm -rf ./tmp && Time
 		if [[ `grep -o "PandoraBox" .config | wc -l` == "2" ]]; then
 				echo "检测到PandoraBox源码，开始更新"				
 				rm -rf package/lean && rm -rf ./feeds
