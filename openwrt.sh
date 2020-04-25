@@ -1288,7 +1288,7 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant/g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata lm-sensors autocore #tr_ok/g" include/target.mk
 
 		fi	
 		
@@ -1342,6 +1342,19 @@ source_lean() {
 			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		fi
 	fi
+
+		#增加首页温度显示
+		temperature_if=$(grep -o "@TARGET_x86" package/lean/autocore/Makefile | wc -l)
+		if [[ "$temperature_if" == "1" ]]; then
+			rm -rf package/lean/autocore/Makefile
+			rm -rf package/lean/autocore/files/autocore
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/Makefile package/lean/autocore/Makefile
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/autocore  package/lean/autocore/files/autocore
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/temperature package/lean/autocore/files/sbin/temperature
+		else
+			echo "temperature添加完成"
+		fi
+
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
 			cd  package/other-plugins/luci-app-serverchan
