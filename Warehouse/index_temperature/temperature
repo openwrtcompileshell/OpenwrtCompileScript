@@ -7,10 +7,9 @@ info()
 		a=`sensors | grep  'temp1'  | head -n 1 | cut -c10-24`
 		#获取CPU核心温度(r7800测试正常)
 	else
-		
-		a=$b$c
 		b=`cut -c1-2 /sys/class/thermal/thermal_zone0/temp`
 		c=`echo "°C"` 
+		a=$b$c
 	fi
 }
 
