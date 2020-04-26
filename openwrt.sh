@@ -1346,9 +1346,8 @@ source_lean() {
 		#增加首页温度显示
 		temperature_if=$(grep -o "@TARGET_x86" package/lean/autocore/Makefile | wc -l)
 		if [[ "$temperature_if" == "1" ]]; then
-			rm -rf package/lean/autocore/Makefile
 			rm -rf package/lean/autocore/files/autocore
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/Makefile package/lean/autocore/Makefile
+			sed -i "s/@TARGET_x86/@(i386||x86_64||arm||mipsel||mips||aarch64)/g"  package/lean/autocore/Makefile
 			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/autocore  package/lean/autocore/files/autocore
 			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/temperature package/lean/autocore/files/sbin/temperature
 		else
