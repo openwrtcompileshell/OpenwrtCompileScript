@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u
+#set -u
 
 version="2.9"
 SF="Script_File"
@@ -68,13 +68,10 @@ ls_file_luci(){
 	ls_file
 	read -p "请输入你的文件夹（记得区分大小写）：" file
 	if [[ -e $HOME/$OW/$SF/tmp ]]; then
-		echo ""
+		echo "$file" > $HOME/$OW/$SF/tmp/you_file
 	else
 		mkdir -p $HOME/$OW/$SF/tmp	
 	fi
-	
-	echo "$file" > $HOME/$OW/$SF/tmp/you_file
-	cd && cd $HOME/$OW/$file/lede
 }
 
 #显示config文件夹
@@ -1426,6 +1423,12 @@ source_lean() {
 		#将diskman选项启用
 		sed -i "s/default n/default y/g" package/lean/luci-app-diskman/Makefile
 
+		if [[ -e package/other-plugins/copy-pan ]]; then
+			sed -i "s/lm-sensors autocore #tr_ok/lm-sensors autocore copy-pan #tr_ok/g" include/target.mk
+		else
+			echo ""
+		fi
+
 		echo -e ">>$green lean版本配置优化完成$white"	
 }
 
@@ -1894,7 +1897,51 @@ make_continue_to_compile() {
 	esac
 }
 
+clean() {
+	clear &&echo -e "$green>>执行make clean$white"
+	make clean
+	no_clean
+}
 
-description_if
+no_clean() {
+	clear && echo -e "$green>>不执行make clean$white"
+	rm -rf .config && rm -rf ./tmp/ && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
+}
 
+file_help() {
+	echo ""
+	echo -e "$green用法: ( bash \$openwrt {文件夹} {命令} )$white"
+	echo -e "$green文件夹目录结构：$HOME/$OW/你的文件夹/lede"
+
+}
+
+
+#copy  by:Toyo  modify:ITdesk
+action1="$1"
+action2="$2"
+if [[ -z $1 ]]; then
+	description_if
+else
+	if [[ -e $HOME/$OW/$1 ]]; then
+		if [[ -z $2 ]]; then
+			echo ""
+			echo -e "$red>>命令参数不能为空！$white"
+			file_help
+		else
+			cd $HOME/$OW/$action1/lede
+			$action2
+			if [[ $? -eq 0 ]]; then
+				echo ""
+			else
+				echo ""
+				echo -e "$red>>脚本命令错误，请检查后再输入$white"
+				file_help
+			fi
+		fi
+	else
+		echo ""
+		echo -e "$red>>你输入的文件夹不存在，请检查后再数，注意大小写！！！$white"
+		file_help
+	fi
+fi
 
