@@ -1285,7 +1285,7 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant/g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata lm-sensors autocore #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata luci-app-dockerman lm-sensors autocore #tr_ok/g" include/target.mk
 
 		fi	
 		
@@ -1351,16 +1351,6 @@ source_lean() {
 			echo "temperature添加完成"
 		fi
 
-		#下载一下微信推送插件
-		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
-			cd  package/other-plugins/luci-app-serverchan
-			git pull
-			cd $HOME/$OW/$file/lede/
-		else
-			mkdir package/other-plugins
-			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
-		fi
-
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
 			#**默认选上tj
 			trojanif=$(grep -o "#tjdefault n" package/other-plugins/luci-app-passwall/Makefile | wc -l)
@@ -1410,6 +1400,36 @@ source_lean() {
 			fi
 		else
 			echo ""
+		fi
+
+		#other-plugins
+		if [[ -e package/other-plugins ]]; then
+			echo ""
+		else
+			mkdir package/other-plugins
+		fi
+
+
+		#下载一下微信推送插件
+		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
+			cd  package/other-plugins/luci-app-serverchan
+			git pull
+			cd $HOME/$OW/$file/lede/
+		else
+			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
+		fi
+
+		#采用lisaac的luci-app-dockerman
+		if [[ -e package/lean/luci-app-dockerman ]]; then
+			rm -rf package/lean/luci-app-dockerman
+		fi
+
+		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
+				cd  package/other-plugins/luci-app-dockerman
+				git pull
+				cd $HOME/$OW/$file/lede/
+		else
+				git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 		fi
 
 		#下载lienol的fileassistant
