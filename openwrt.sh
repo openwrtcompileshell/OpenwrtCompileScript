@@ -1432,6 +1432,17 @@ source_lean() {
 				git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 		fi
 
+		dockerman_display=$(grep -o "docker" package/other-plugins/luci-app-dockerman/luasrc/view/dockerman/overview.htm | wc -l)
+		if [[ "$dockerman_display" == "0" ]]; then
+			echo ""
+		else
+			grep "docker" -rl package/other-plugins/luci-app-dockerman/luasrc/* | xargs sed -i 's/docker/services/g'
+
+		fi
+
+		sed -i "s/default n/default y/g" package/other-plugins/luci-app-dockerman/Makefile
+
+
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
 			rm -rf   package/other-plugins/luci-app-fileassistant
