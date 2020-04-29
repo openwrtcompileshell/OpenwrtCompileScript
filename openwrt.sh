@@ -1413,7 +1413,7 @@ source_lean() {
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
 			cd  package/other-plugins/luci-app-serverchan
-			git pull
+			source_update_git_pull
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
@@ -1426,7 +1426,7 @@ source_lean() {
 
 		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
 				cd  package/other-plugins/luci-app-dockerman
-				git pull
+				source_update_git_pull
 				cd $HOME/$OW/$file/lede/
 		else
 				git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
@@ -1809,7 +1809,7 @@ n1_builder() {
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
 		if [[ -e $builder_patch ]]; then
 			cd  $builder_patch
-			git pull
+			source_update_git_pull
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/sean-liang/PHICOMM-N1-OpenWRT-Image-Builder $builder_patch
