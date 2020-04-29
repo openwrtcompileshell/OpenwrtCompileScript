@@ -570,13 +570,13 @@ description_if(){
    	cd
 	clear
 	echo "开始检测系统"
-	curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null  www.baidu.com
-	if [[ "$?" == "0" ]]; then
-		clear && echo -e  "$green已经安装curl$white"
-	else
+	curl_if=$(dpkg -l | grep -o "curl" |sed -n '1p' | wc -l)
+	if [[ "$curl_if" == "0" ]]; then
 		clear && echo "安装一下脚本用的依赖（注：不是openwrt的依赖而是脚本本身）"
 		sudo apt update
 		sudo apt install curl -y
+	else
+		clear && echo -e  "$green已经安装curl$white"
 	fi
 
 	#添加hosts(解决golang下载慢的问题)
