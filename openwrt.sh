@@ -1449,6 +1449,15 @@ source_lean() {
 			echo ""
 		fi
 
+		#删除frps makefilr部分代码
+		frps_makefile=$(grep "#frps_makefile" package/lean/luci-app-frps/Makefile | wc -l )
+		if [[ "$frps_makefile" == "1" ]]; then
+			echo ""
+		else
+			sed -i '27,37d' package/lean/luci-app-frps/Makefile
+			sed -i '$a \#frps_makefile' package/lean/luci-app-frps/Makefile
+		fi
+
 		echo -e ">>$green lean版本配置优化完成$white"	
 }
 
