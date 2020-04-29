@@ -2,19 +2,18 @@
 
 info()
 {
-	sen=`sensors | grep  'temp1'  | head -n 1 | cut -c10-24` #获取CPU核心温度(r7800测试正常)
-	sen_na=`sensors | grep  'N/A'  | wc -l`
+	#获取CPU核心温度(r7800测试正常)(已知竟斗云，N1无法获取温度，强迫症可以换回我之前的index.htm文件)
+	sen=`sensors | grep  'temp1'  | sed -n '1p' | cut -c10-24` 
+	sen_na=`sensors | grep  'N/A' | sed -n '1p' | wc -l`
 	cut_temp=`cut -c1-2 /sys/class/thermal/thermal_zone0/temp`
 	symbol=`echo "°C"`
 
-	if [ "$sen" == "" ];then
-		if [ "$sen_na" == "1" ];then
-			$cut_temp
-			if [[ $? -eq 0 ]]; then
-				a=$cut_temp$symbol
-			else
-				echo "Not Support"
-			fi
+	if [ "$sen_na" == "1" ];then
+		$cut_temp
+		if [[ $? -eq 0 ]]; then
+			a=$cut_temp$symbol
+		else
+			echo "Not Support"
 		fi
 	else
 		a=$sen
