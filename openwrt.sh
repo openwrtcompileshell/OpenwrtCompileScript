@@ -1460,12 +1460,13 @@ source_lean() {
 			echo ""
 		fi
 
-		#删除frps makefilr部分代码
+		#默认启用frps
 		frps_makefile=$(grep "#frps_makefile" package/lean/luci-app-frps/Makefile | wc -l )
 		if [[ "$frps_makefile" == "1" ]]; then
 			echo ""
 		else
 			sed -i '27,37d' package/lean/luci-app-frps/Makefile
+			sed -i '21,23d' package/lean/luci-app-frps/Makefile
 			sed -i '$a \#frps_makefile' package/lean/luci-app-frps/Makefile
 		fi
 
@@ -1935,6 +1936,12 @@ make_continue_to_compile() {
 		clear && make_continue_to_compile
 		;;
 	esac
+}
+
+#单独的命令模块
+template() {
+	system_install
+	source_download_if
 }
 
 clean() {
