@@ -1285,7 +1285,7 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant/g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata luci-app-dockerman lm-sensors autocore #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata luci-app-dockerman luci-app-rclone lm-sensors autocore #tr_ok/g" include/target.mk
 
 		fi	
 		
@@ -1461,14 +1461,11 @@ source_lean() {
 		fi
 
 		#默认启用frps
-		frps_makefile=$(grep "#frps_makefile" package/lean/luci-app-frps/Makefile | wc -l )
-		if [[ "$frps_makefile" == "1" ]]; then
-			echo ""
-		else
-			sed -i '27,37d' package/lean/luci-app-frps/Makefile
-			sed -i '21,23d' package/lean/luci-app-frps/Makefile
-			sed -i '$a \#frps_makefile' package/lean/luci-app-frps/Makefile
-		fi
+		sed -i '54a sed -i "s/enabled 0/\\enabled 1/g" /etc/config/frps '  package/lean/default-settings/files/zzz-default-settings
+		sed -i '55a /etc/init.d/frps restart' package/lean/default-settings/files/zzz-default-settings
+		sed -i '56a \   '  package/lean/default-settings/files/zzz-default-settings
+		sed -i "s/enabled 0/\enabled '0'/g" package/lean/default-settings/files/zzz-default-settings
+		sed -i "s/enabled 1/\\enabled '1'/g" package/lean/default-settings/files/zzz-default-settings
 
 		echo -e ">>$green lean版本配置优化完成$white"	
 }
