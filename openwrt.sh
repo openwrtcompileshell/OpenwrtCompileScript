@@ -1460,13 +1460,6 @@ source_lean() {
 			echo ""
 		fi
 
-		#默认启用frps
-		sed -i '54a sed -i "s/enabled 0/\\enabled 1/g" /etc/config/frps '  package/lean/default-settings/files/zzz-default-settings
-		sed -i '55a /etc/init.d/frps restart' package/lean/default-settings/files/zzz-default-settings
-		sed -i '56a \   '  package/lean/default-settings/files/zzz-default-settings
-		sed -i "s/enabled 0/\enabled '0'/g" package/lean/default-settings/files/zzz-default-settings
-		sed -i "s/enabled 1/\\enabled '1'/g" package/lean/default-settings/files/zzz-default-settings
-
 		echo -e ">>$green lean版本配置优化完成$white"	
 }
 
