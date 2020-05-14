@@ -543,13 +543,18 @@ source_update() {
 
 source_update_No_git_pull() {
 	source_branch=`cat "$HOME/$OW/$SF/tmp/source_branch"`
-	git fetch --all
-	git reset --hard origin/$source_branch
-	if [[ $? -eq 0 ]]; then
-		echo ""
+	if [[ $($source_branch | wc -l) == 0 ]]; then
+		git fetch --all
+		git reset --hard origin/master
 	else
-		echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
-		source_update_No_git_pull
+		git fetch --all
+		git reset --hard origin/$source_branch
+		if [[ $? -eq 0 ]]; then
+			echo ""
+		else
+			echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
+			source_update_No_git_pull
+		fi
 	fi
 }
 
@@ -1413,7 +1418,7 @@ source_lean() {
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
 			cd  package/other-plugins/luci-app-serverchan
-			source_update_git_pull
+			source_update_No_git_pull
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
@@ -1426,7 +1431,7 @@ source_lean() {
 
 		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
 				cd  package/other-plugins/luci-app-dockerman
-				source_update_git_pull
+				source_update_No_git_pull
 				cd $HOME/$OW/$file/lede/
 		else
 				git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
