@@ -543,7 +543,7 @@ source_update() {
 
 source_update_No_git_pull() {
 	source_branch=`cat "$HOME/$OW/$SF/tmp/source_branch"`
-	if [[ $($source_branch | wc -l) == 0 ]]; then
+	if [[ "$source_branch | wc -l" == "0" ]]; then
 		git fetch --all
 		git reset --hard origin/master
 	else
