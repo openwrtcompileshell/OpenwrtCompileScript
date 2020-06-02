@@ -1949,12 +1949,12 @@ new_source_make() {
 clean_make() {
 	clear &&echo -e "$green>>执行make clean$white"
 	make clean
-	no_clean
+	noclean_make
 }
 
 noclean_make() {
 	clear && echo -e "$green>>不执行make clean$white"
-	rm -rf ./tmp/ && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
+	rm -rf ./tmp/ &&  rm -rf .config && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
 }
 
 update_clean_make() {
