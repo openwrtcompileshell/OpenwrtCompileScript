@@ -1952,7 +1952,7 @@ clean_make() {
 
 noclean_make() {
 	clear && echo -e "$green>>不执行make clean$white"
-	rm -rf .config && rm -rf ./tmp/ && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
+	rm -rf ./tmp/ && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
 }
 
 update_clean_make() {
@@ -1970,9 +1970,17 @@ update_clean_make() {
 }
 
 file_help() {
-	echo ""
+	echo "---------------------------------------------------------------------"
 	echo -e "$green用法: ( bash \$openwrt {文件夹} {命令} )$white"
-	echo -e "$green文件夹目录结构：$HOME/$OW/你的文件夹/lede"
+	echo -e "$green文件夹目录结构：$HOME/$OW/你的文件夹/lede $white"
+	echo ""
+	echo -e "$green 可用命令：$white"
+	echo -e "$green   new_source_make $white   新建一个文件夹下载你需要的源码并进行编译 "
+	echo -e "$green   clean_make $white        执行make clean清理一下源码然后再进行编译"
+	echo -e "$green   noclean_make $white      不执行make clean清理一下源码然后再进行编译"
+	echo -e "$green   update_clean_make $white 执行make clean 并同步最新的源码 再进行编译"
+	echo ""
+	echo "---------------------------------------------------------------------"
 
 }
 
@@ -2001,7 +2009,7 @@ else
 		fi
 	else
 		echo ""
-		echo -e "$red>>你输入的文件夹不存在，请检查后再数，注意大小写！！！$white"
+		echo -e "$red>>参数错误，使用方法参考以下！！！$white"
 		file_help
 	fi
 fi
