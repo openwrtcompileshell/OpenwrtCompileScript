@@ -1047,13 +1047,22 @@ source_download_pandorabox_sdk() {
 				 ;;
 			esac
 			source_download_if
-			
-	
 }
 
 source_download_if() {
 		if [[ -e $HOME/$OW/$file/lede ]]; then
 			cd $HOME/$OW/$file/lede
+			source_download_ok
+			ecc
+		else
+			echo ""
+			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
+			cd $HOME/$OW/$file
+			source_download_select
+		fi
+}
+
+source_download_ok() {
 			source_if
 			source_Soft_link
 			update_feeds
@@ -1062,12 +1071,6 @@ source_download_if() {
 			source_lienol
 			source_Setting_Public
 			make_defconfig
-		else
-			echo ""
-			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
-			cd $HOME/$OW/$file
-			source_download_select
-		fi
 }
 
 source_if() {
@@ -1625,8 +1628,6 @@ make_defconfig() {
 	echo ""
 	echo "--------------------------"
 		make defconfig
-		Time
-		ecc
 }
 
 dl_download() {
@@ -1650,14 +1651,19 @@ dl_download() {
 	echo "----------------------------------------------"
 	Time	
 	make download -j$cpu_cores V=s
-	dl_error
+	if [[ $? -eq 0 ]]; then
+		echo ""
+	else
+		dl_error
+	fi
+
 }
 
 dl_error() {
 	echo "----------------------------------------"
-	echo "请检查上面有没有error出现，如果有请重新下载"
-	echo " 1.有"
-	echo " 2.没有"
+	echo " 你的dl下载报错了"
+	echo " 1.重新下载"
+	echo " 2.不理直接编译"
 	echo "----------------------------------------"
 	read -p "请输入你的决定：" dl_dw
 	case "$dl_dw" in
@@ -1934,20 +1940,33 @@ make_continue_to_compile() {
 }
 
 #单独的命令模块
-template() {
+new_source_make() {
 	system_install
-	source_download_if
 }
 
-clean() {
+clean_make() {
 	clear &&echo -e "$green>>执行make clean$white"
 	make clean
 	no_clean
 }
 
-no_clean() {
+noclean_make() {
 	clear && echo -e "$green>>不执行make clean$white"
 	rm -rf .config && rm -rf ./tmp/ && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
+}
+
+update_clean_make() {
+	clear
+	echo -e "$green>>$1执行make clean$white"
+		make clean && rm -rf .config && rm -rf ./tmp/
+	echo -e "$green>>$1执行git pull$white"
+		source_update_No_git_pull
+	echo -e "$green>>$1执行常用设置$white"
+		source_download_ok
+	echo -e "$green>>$1执行make menuconfig $white"
+		make menuconfig
+		dl_download
+		make -j$(nproc) V=s
 }
 
 file_help() {
