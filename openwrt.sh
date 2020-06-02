@@ -542,11 +542,10 @@ source_update() {
 }
 
 source_update_No_git_pull() {
-	source_branch=`cat "$HOME/$OW/$SF/tmp/source_branch"`
-	if [[ "$source_branch | wc -l" == "0" ]]; then
-		git fetch --all
-		git reset --hard origin/master
-	else
+	source_branch=$(cat "$HOME/$OW/$SF/tmp/source_branch")
+	$source_branch
+	clear
+	if [[ "$?" == "0" ]]; then
 		git fetch --all
 		git reset --hard origin/$source_branch
 		if [[ $? -eq 0 ]]; then
@@ -555,6 +554,9 @@ source_update_No_git_pull() {
 			echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
 			source_update_No_git_pull
 		fi
+	else
+		git fetch --all
+		git reset --hard origin/master
 	fi
 }
 
@@ -1957,21 +1959,29 @@ noclean_make() {
 
 update_clean_make() {
 	clear
-	echo -e "$green>>$1执行make clean$white"
+	echo -e "$green>>文件夹:$action1 执行make clean$white"
 		make clean && rm -rf .config && rm -rf ./tmp/
-	echo -e "$green>>$1执行git pull$white"
+	echo -e "$green>>文件夹:$action1 执行git pull$white"
 		source_update_No_git_pull
-	echo -e "$green>>$1执行常用设置$white"
+	echo -e "$green>>文件夹:$action1 执行常用设置$white"
 		source_download_ok
-	echo -e "$green>>$1执行make menuconfig $white"
+	echo -e "$green>>文件夹:$action1 执行make menuconfig $white"
 		make menuconfig
+	echo -e "$green>>文件夹:$action1 执行make download $white"
 		dl_download
+	echo -e "$green>>文件夹:$action1 执行make -j$(nproc) V=s $white"
+		starttime=`date +'%Y-%m-%d %H:%M:%S'`
 		make -j$(nproc) V=s
+		endtime=`date +'%Y-%m-%d %H:%M:%S'`
+		start_seconds=$(date --date="$starttime" +%s);
+		end_seconds=$(date --date="$endtime" +%s);
+		echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 }
 
 file_help() {
 	echo "---------------------------------------------------------------------"
-	echo -e "$green用法: ( bash \$openwrt {文件夹} {命令} )$white"
+	echo ""
+	echo -e "$green用法: bash \$openwrt [文件夹] [命令] $white"
 	echo -e "$green文件夹目录结构：$HOME/$OW/你的文件夹/lede $white"
 	echo ""
 	echo -e "$green 可用命令：$white"
@@ -1997,7 +2007,8 @@ else
 			echo -e "$red>>命令参数不能为空！$white"
 			file_help
 		else
-			cd $HOME/$OW/$action1/lede
+			file=$action1
+			cd $HOME/$OW/$file/lede
 			$action2
 			if [[ $? -eq 0 ]]; then
 				echo ""
