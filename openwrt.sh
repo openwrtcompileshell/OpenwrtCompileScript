@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -u
 
-version="2.9"
+version="3.0"
 SF="Script_File"
 OW="Openwrt"
 by="ITdesk"

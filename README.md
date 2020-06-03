@@ -1,6 +1,8 @@
 # OpenwrtCompileScript
 
 ![CompileScript](doc/CompileScript.PNG) 
+![Command_Line](doc/Command_Line.PNG)
+
 ## 序言
 
 用于辅助Openwrt编译，但不会帮你完成整个编译过程，需要一点Openwrt编译基础
@@ -49,6 +51,25 @@ https://www.right.com.cn/forum/thread-345378-1-1.html
 交流技术适当吹水群：667491026   （**拒绝大爷公子伸手党**)
 
 ## 版本修改记录
+
+### ++2.9版本
+
+1. 修复变量错误
+2. 将插件默认选上我经常用的
+3. 添加天气预报
+4. 个别变量改名
+5. 修改固件生成名字，添加日期和时间，方便分类
+6. 重写source_if整个模块（大改动）添加dl文件检测代码
+7. 支持gitpod云编译
+8. 新增 git_reset回退功能
+9.  适配lienol源码
+10. 更新OpenwrtCompileScript使用说明.pdf
+11. 修复windows10子系统无法更新
+12. 增加回退选择，报错可以选择回退到编译选择界面，方便继续编译，而不是重新开始
+13. 脚本支持Deepin 15.11桌面版
+14. 支持N1制作镜像源码
+15. 增加help模块
+16. 脚本支持命令模式
 
 ### ++2.8版本
 
