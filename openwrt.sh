@@ -588,12 +588,13 @@ description_if(){
 
 	#添加hosts(解决golang下载慢的问题)
 	if [[ $(grep -o "34.64.4.113 proxy.golang.org" /etc/hosts | wc -l) == "1" ]]; then
-		echo "hosts设置完成"
+		#echo "hosts设置完成"
+		sudo sed -i 's\34.64.4.113 proxy.golang.org\ \g' /etc/hosts
 	else
 		clear
-		echo "添加hosts(解决golang下载慢的问题)"
-		sudo cp  /etc/hosts /etc/hosts_back
-		sudo sed -i '3a\34.64.4.113 proxy.golang.org' /etc/hosts
+		#echo "添加hosts(解决golang下载慢的问题)"
+		#sudo cp  /etc/hosts /etc/hosts_back
+		#sudo sed -i '3a\34.64.4.113 proxy.golang.org' /etc/hosts
 	fi
 	
 	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
