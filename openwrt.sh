@@ -1945,7 +1945,12 @@ make_continue_to_compile() {
 #单独的命令模块
 make_j() {
 	dl_download
+	starttime=`date +'%Y-%m-%d %H:%M:%S'`
 	make -j$(nproc) V=s
+	endtime=`date +'%Y-%m-%d %H:%M:%S'`
+	start_seconds=$(date --date="$starttime" +%s);
+	end_seconds=$(date --date="$endtime" +%s);
+	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
 }
 
 new_source_make() {
@@ -1960,7 +1965,7 @@ clean_make() {
 
 noclean_make() {
 	clear && echo -e "$green>>不执行make clean$white"
-	rm -rf ./tmp/ &&  rm -rf .config && make menuconfig && make_j
+	source_config && make menuconfig && make_j
 }
 
 update_clean_make() {
@@ -1973,15 +1978,17 @@ update_clean_make() {
 		source_download_ok
 	echo -e "$green>>文件夹:$action1 执行make menuconfig $white"
 		make menuconfig
-	echo -e "$green>>文件夹:$action1 执行make download $white"
-		dl_download
-	echo -e "$green>>文件夹:$action1 执行make -j$(nproc) V=s $white"
-		starttime=`date +'%Y-%m-%d %H:%M:%S'`
-		make -j$(nproc) V=s
-		endtime=`date +'%Y-%m-%d %H:%M:%S'`
-		start_seconds=$(date --date="$starttime" +%s);
-		end_seconds=$(date --date="$endtime" +%s);
-		echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	echo -e "$green>>文件夹:$action1 执行make download 和make -j $white"
+		make_j
+
+	if [[ $? -eq 0 ]]; then
+		echo ""
+	else
+		echo -e "$red>>文件夹:$action1 编译失败了，请检查上面的报错，然后重新进行编译 $white"
+		echo ""
+		echo -e "$green 可以采用以下命令重新进行编译"
+		echo -e "$green bash \$openwrt $action1 make_j "
+	fi
 }
 
 file_help() {
@@ -1990,44 +1997,66 @@ file_help() {
 	echo -e "$green用法: bash \$openwrt [文件夹] [命令] $white"
 	echo -e "$green文件夹目录结构：$HOME/$OW/你的文件夹/lede $white"
 	echo ""
-	echo -e "$green 可用命令：$white"
+	echo -e "$yellow可用命令：$white"
+	echo -e "$green   make_j $white            执行make download 和make -j V=s "
 	echo -e "$green   new_source_make $white   新建一个文件夹下载你需要的源码并进行编译 "
 	echo -e "$green   clean_make $white        执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   noclean_make $white      不执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   update_clean_make $white 执行make clean 并同步最新的源码 再进行编译"
+	echo -e "$green   help $white 查看帮助"
+	echo ""
+	echo -e "$yellow例子： $white "
+	echo -e "$green   bash \$openwrt help $white  查看帮助  "
+	echo -e "$green   bash \$openwrt 你的文件夹  clean_make $white   清理编译文件，再重新编译  "
+	echo -e "$green   bash \$openwrt 你的文件夹  update_clean_make $white 同步最新的源码清理编译文件再编译  "
 	echo ""
 	echo "---------------------------------------------------------------------"
 
+}
+
+action1_if() {
+	if [[ -e $HOME/$OW/$action1 ]]; then
+		action2_if
+	else
+		echo ""
+		echo -e "$red>>文件夹不存在，使用方法参考以下！！！$white"
+		file_help
+	fi
+}
+
+action2_if() {
+	if [[ -z $action2 ]]; then
+		echo ""
+		echo -e "$red>>命令参数不能为空！$white"
+		file_help
+	else
+		file=$action1
+		cd $HOME/$OW/$file/lede
+
+		case "$action2" in
+		make_j|new_source_make|clean_make|noclean_make|update_clean_make)
+			$action2
+		;;
+		*)
+		echo ""
+		echo -e "$red 命令不存在，使用方法参考以下！！！$white"
+		file_help
+		;;
+	esac
+	fi
 }
 
 
 #copy  by:Toyo  modify:ITdesk
 action1="$1"
 action2="$2"
-if [[ -z $1 ]]; then
+if [[ -z $action1 ]]; then
 	description_if
 else
-	if [[ -e $HOME/$OW/$1 ]]; then
-		if [[ -z $2 ]]; then
-			echo ""
-			echo -e "$red>>命令参数不能为空！$white"
-			file_help
-		else
-			file=$action1
-			cd $HOME/$OW/$file/lede
-			$action2
-			if [[ $? -eq 0 ]]; then
-				echo ""
-			else
-				echo ""
-				echo -e "$red>>脚本命令错误，请检查后再输入$white"
-				file_help
-			fi
-		fi
-	else
-		echo ""
-		echo -e "$red>>参数错误，使用方法参考以下！！！$white"
+	if [[ "$action1" == "help" ]]; then
 		file_help
+	else
+		action1_if
 	fi
 fi
 
