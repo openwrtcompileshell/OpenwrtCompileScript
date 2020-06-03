@@ -1942,6 +1942,11 @@ make_continue_to_compile() {
 }
 
 #单独的命令模块
+make_j() {
+	dl_download
+	make -j$(nproc) V=s
+}
+
 new_source_make() {
 	system_install
 }
@@ -1954,7 +1959,7 @@ clean_make() {
 
 noclean_make() {
 	clear && echo -e "$green>>不执行make clean$white"
-	rm -rf ./tmp/ &&  rm -rf .config && make menuconfig && make download -j$(nproc) V=s &&  make -j$(nproc) V=s
+	rm -rf ./tmp/ &&  rm -rf .config && make menuconfig && make_j
 }
 
 update_clean_make() {
