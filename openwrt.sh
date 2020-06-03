@@ -401,6 +401,8 @@ display_git_log_luci() {
 			source_lienol
 			source_Setting_Public	
 			source_config
+			make_defconfig
+			ecc
 		else
 			echo -e  "$red >>命令错误或者网络不好，重新执行代码$white" && Time
 			display_git_log_luci
@@ -462,7 +464,6 @@ source_config() {
 			source_config
 			;;
 		esac
-			make_defconfig
 }
 
 Save_My_Config_luci() {
