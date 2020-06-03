@@ -1992,6 +1992,12 @@ update_clean_make() {
 	fi
 }
 
+update_clean_make_kernel() {
+	update_clean_make
+	make kernel_menuconfig
+	make_j
+}
+
 file_help() {
 	echo "---------------------------------------------------------------------"
 	echo ""
@@ -2035,7 +2041,7 @@ action2_if() {
 		cd $HOME/$OW/$file/lede
 
 		case "$action2" in
-		make_j|new_source_make|clean_make|noclean_make|update_clean_make)
+		make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel)
 			$action2
 		;;
 		*)
