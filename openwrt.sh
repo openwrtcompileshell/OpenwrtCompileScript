@@ -544,9 +544,10 @@ source_update() {
 
 source_update_No_git_pull() {
 	source_branch=$(cat "$HOME/$OW/$SF/tmp/source_branch")
-	$source_branch
-	clear
-	if [[ "$?" == "0" ]]; then
+	if [[ "$source_branch" == "" ]]; then
+		git fetch --all
+		git reset --hard origin/master
+	else
 		git fetch --all
 		git reset --hard origin/$source_branch
 		if [[ $? -eq 0 ]]; then
@@ -555,9 +556,6 @@ source_update_No_git_pull() {
 			echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
 			source_update_No_git_pull
 		fi
-	else
-		git fetch --all
-		git reset --hard origin/master
 	fi
 }
 
@@ -2039,7 +2037,7 @@ action2_if() {
 	else
 		file=$action1
 		cd $HOME/$OW/$file/lede
-
+		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
 		make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel)
 			$action2
