@@ -44,6 +44,29 @@ cd OpenwrtCompileScript && bash openwrt.sh
 
 `bash $openwrt`
 
+## 命令行调用脚本
+```bash
+用法: bash $openwrt [文件夹] [命令] 
+文件夹目录结构：$HOME/Openwrt/你的文件夹/lede
+
+可用命令:
+   make_j             执行make download 和make -j V=s 
+   new_source_make    新建一个文件夹下载你需要的源码并进行编译 
+   clean_make         执行make clean清理一下源码然后再进行编译
+   noclean_make       不执行make clean清理一下源码然后再进行编译
+   update_clean_make  执行make clean 并同步最新的源码 再进行编译
+   update_clean_make_kernel  编译完成以后执行make kernel_menuconfig($red危险操作)
+   update_script      将脚本同步到最新
+   help  查看帮助
+
+例子： 
+   bash $openwrt help   查看帮助 
+   bash $openwrt update_script 将脚本同步到最新
+   bash $openwrt 你的文件夹  clean_make    清理编译文件，再重新编译 
+   bash $openwrt 你的文件夹  update_clean_make  同步最新的源码清理编译文件再编译
+
+``` 
+
 ### 脚本详细使用方法
 
 https://www.right.com.cn/forum/thread-345378-1-1.html
