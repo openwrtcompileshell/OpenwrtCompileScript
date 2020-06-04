@@ -71,9 +71,10 @@ cd OpenwrtCompileScript && bash openwrt.sh
 
 [OpenwrtCompileScript使用说明.pdf](OpenwrtCompileScript使用说明.pdf)
 
-### 脚本视频教程
+|**脚本视频教程**|:交流技术适当吹水群：667491026   （**拒绝大爷公子伸手党**)
 
-请加交流技术适当吹水群：667491026   （**拒绝大爷公子伸手党**)
+
+
 
 ## 版本修改记录
 
