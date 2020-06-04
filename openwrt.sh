@@ -104,20 +104,20 @@ update_script() {
 		git fetch --all
 		git reset --hard origin/master
 		if [[ $? -eq 0 ]]; then
-			echo -e "$green>> 源码更新成功回车进入编译菜单$white"
+			echo -e "$green>> 脚本源码更新成功回车进入编译菜单$white"
 			read a
 			bash $openwrt
 		else
-			echo -e "$red>> 源码更新失败，重新执行代码$white"
+			echo -e "$red>> 脚本源码更新失败，重新执行代码$white"
 			update_script
 		fi
 	else
 		git fetch --all
 		git reset --hard origin/master
 		if [[ $? -eq 0 ]]; then
-			echo -e "$green>> 源码更新成功$white"
+			echo -e "$green>> 脚本源码更新成功$white"
 		else
-			echo -e "$red>> 源码更新失败，重新执行代码$white"
+			echo -e "$red>> 脚本源码更新失败，重新执行代码$white"
 			update_script
 		fi
 	fi
@@ -2019,6 +2019,7 @@ file_help() {
 	echo ""
 	echo -e "$yellow例子： $white "
 	echo -e "$green   bash \$openwrt help $white  查看帮助  "
+	echo -e "$green   bash \$openwrt update_script $white  将脚本同步到最新  "
 	echo -e "$green   bash \$openwrt 你的文件夹  clean_make $white   清理编译文件，再重新编译  "
 	echo -e "$green   bash \$openwrt 你的文件夹  update_clean_make $white 同步最新的源码清理编译文件再编译  "
 	echo ""
