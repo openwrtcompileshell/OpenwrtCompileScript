@@ -2013,6 +2013,8 @@ file_help() {
 	echo -e "$green   clean_make $white        执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   noclean_make $white      不执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   update_clean_make $white 执行make clean 并同步最新的源码 再进行编译"
+	echo -e "$green   update_clean_make_kernel $white 编译完成以后执行make kernel_menuconfig($red危险操作$white)"
+	echo -e "$green   update_script $white     将脚本同步到最新"
 	echo -e "$green   help $white 查看帮助"
 	echo ""
 	echo -e "$yellow例子： $white "
