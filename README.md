@@ -1,7 +1,6 @@
 # OpenwrtCompileScript
 
 ![CompileScript](doc/CompileScript.PNG) 
-![Command_Line](doc/Command_Line.PNG)
 
 ## 序言
 
@@ -66,6 +65,7 @@ cd OpenwrtCompileScript && bash openwrt.sh
    bash $openwrt 你的文件夹  update_clean_make  同步最新的源码清理编译文件再编译
 
 ``` 
+![Command_Line](doc/Command_Line.PNG)
 
 ### 脚本详细使用方法
 
