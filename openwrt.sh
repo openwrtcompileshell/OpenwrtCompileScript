@@ -100,22 +100,27 @@ Time() {
 update_script() {
 	clear
 	cd $HOME/$OW/$SF/$OCS
-	CheckUrl_github=`curl -I -m 2 -s -w "%{http_code}\n" -o /dev/null www.github.com`
-		if [[ $CheckUrl_github -eq 301 ]]; then
-			git fetch --all
-			git reset --hard origin/master
-			if [[ $? -eq 0 ]]; then
-				echo -e "$green>> 源码更新成功回车进入编译菜单$white"
-				read a
-				bash ${openwrt}
-			else
-				echo -e "$red>> 源码更新失败，重新执行代码$white"
-				update_script
-			fi
-			
+	if [[ "$action1" == "" ]]; then
+		git fetch --all
+		git reset --hard origin/master
+		if [[ $? -eq 0 ]]; then
+			echo -e "$green>> 源码更新成功回车进入编译菜单$white"
+			read a
+			bash $openwrt
 		else
-			echo -e "$red>>请检查你的网络，回车重新选择$white" && read a && Time && main_interface	
+			echo -e "$red>> 源码更新失败，重新执行代码$white"
+			update_script
 		fi
+	else
+		git fetch --all
+		git reset --hard origin/master
+		if [[ $? -eq 0 ]]; then
+			echo -e "$green>> 源码更新成功$white"
+		else
+			echo -e "$red>> 源码更新失败，重新执行代码$white"
+			update_script
+		fi
+	fi
 }
 
 #选项5.其他选项
@@ -2039,15 +2044,15 @@ action2_if() {
 		cd $HOME/$OW/$file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
-		make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel)
+			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel)
 			$action2
-		;;
-		*)
-		echo ""
-		echo -e "$red 命令不存在，使用方法参考以下！！！$white"
-		file_help
-		;;
-	esac
+			;;
+			*)
+			echo ""
+			echo -e "$red 命令不存在，使用方法参考以下！！！$white"
+			file_help
+			;;
+		esac
 	fi
 }
 
@@ -2058,10 +2063,16 @@ action2="$2"
 if [[ -z $action1 ]]; then
 	description_if
 else
-	if [[ "$action1" == "help" ]]; then
+	case "$action1" in
+		help)
 		file_help
-	else
+		;;
+		update_script)
+		update_script
+		;;
+		*)
 		action1_if
-	fi
+		;;
+	esac
 fi
 
