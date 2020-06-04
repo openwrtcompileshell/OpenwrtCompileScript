@@ -67,11 +67,13 @@ cd OpenwrtCompileScript && bash openwrt.sh
 ``` 
 ![Command_Line](doc/Command_Line.PNG)
 
-### 脚本详细使用方法
+### 脚本使用教程
 
-https://www.right.com.cn/forum/thread-345378-1-1.html
+[OpenwrtCompileScript使用说明.pdf](OpenwrtCompileScript使用说明.pdf)
 
-交流技术适当吹水群：667491026   （**拒绝大爷公子伸手党**)
+### 脚本视频教程
+
+请加交流技术适当吹水群：667491026   （**拒绝大爷公子伸手党**)
 
 ## 版本修改记录
 
