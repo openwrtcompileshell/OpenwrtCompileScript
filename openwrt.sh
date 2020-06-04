@@ -592,7 +592,7 @@ description_if(){
 
 	#添加hosts(解决golang下载慢的问题)
 	if [[ $(grep -o "34.64.4.113 proxy.golang.org" /etc/hosts | wc -l) == "1" ]]; then
-		#echo "hosts设置完成"
+		echo "之前设置的hosts失效，需要删除，请输入密码，放心不会炸的"
 		sudo sed -i 's\34.64.4.113 proxy.golang.org\ \g' /etc/hosts
 	else
 		clear
