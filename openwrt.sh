@@ -549,6 +549,7 @@ source_update() {
 
 source_update_No_git_pull() {
 	source_branch=$(cat "$HOME/$OW/$SF/tmp/source_branch")
+	clear
 	if [[ "$source_branch" == "" ]]; then
 		git fetch --all
 		git reset --hard origin/master
