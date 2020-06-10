@@ -1301,7 +1301,7 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-adbyby-plus luci-app-autoreboot/default-settings luci luci-app-adbyby-plus luci-app-autoreboot luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant/g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata luci-app-rclone lm-sensors autocore iperf #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc luci-app-ttyd luci-app-netdata luci-app-rclone lm-sensors autocore iperf iperf3 #tr_ok/g" include/target.mk
 
 		fi	
 		
