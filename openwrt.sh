@@ -1367,6 +1367,22 @@ source_lean() {
 			echo "temperature添加完成"
 		fi
 
+		#首页显示编译时间
+		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh-cn/base.po)
+		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
+			echo "已添加首页显示编译时间"
+		else
+			sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a #首页显示编译时间' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a msgid "Compile_time"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a msgstr "固件编译时间"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
+			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
+			echo "`date "+%Y-%m-%d %H:%M"` >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
+			echo "exit 0" >> package/lean/default-settings/files/zzz-default-settings
+		fi
+
+
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
 			#**默认选上tj
 			trojanif=$(grep -o "#tjdefault n" package/other-plugins/luci-app-passwall/Makefile | wc -l)
@@ -1477,6 +1493,7 @@ source_lean() {
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
+
 }
 
 
