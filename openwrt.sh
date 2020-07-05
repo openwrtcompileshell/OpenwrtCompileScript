@@ -1379,7 +1379,7 @@ source_lean() {
 			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
 			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
 			commit=$(git log -1 --format=format:'%C(bold white)%h%C(reset)')
-			echo "echo `date "+%Y-%m-%d %H:%M" (commit:$commit)` >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
+			echo "echo `date "+%Y-%m-%d %H:%M"` (commit:$commit) >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
 			echo "exit 0" >> package/lean/default-settings/files/zzz-default-settings
 		fi
 
