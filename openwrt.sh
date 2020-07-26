@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -x
 #set -u
 
 version="3.0"
@@ -900,7 +901,7 @@ update_system() {
 			echo -e "$green >>安装完成 $white" && Time
 		else
 			clear
-			echo "$red 依赖没有更新或安装成功，重新执行代码 $white" && Time
+			echo -e "$red 依赖没有更新或安装成功，重新执行代码 $white" && Time
 			update_system
 		fi
 	fi
@@ -1463,7 +1464,7 @@ source_lean() {
 		else
 				git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 		fi
-
+:<<'COMMENT'
 		dockerman_display=$(grep -o "docker" package/other-plugins/luci-app-dockerman/luasrc/view/dockerman/overview.htm | wc -l)
 		if [[ "$dockerman_display" == "0" ]]; then
 			echo ""
@@ -1471,7 +1472,7 @@ source_lean() {
 			grep "docker" -rl package/other-plugins/luci-app-dockerman/luasrc/* | xargs sed -i 's/docker/services/g'
 
 		fi
-
+COMMENT
 		sed -i "s/default n/default y/g" package/other-plugins/luci-app-dockerman/Makefile
 
 
