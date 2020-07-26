@@ -1299,7 +1299,7 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant/g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus/g" include/target.mk
 
 			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-netdata lm-sensors autocore #tr_ok/g" include/target.mk
 
@@ -1490,6 +1490,17 @@ source_lean() {
 			sed -i "s/lm-sensors autocore #tr_ok/lm-sensors autocore copy-pan #tr_ok/g" include/target.mk
 		else
 			echo ""
+		fi
+
+		#下载jd插件
+		if [[ -e package/other-plugins/luci-app-jd-dailybonus ]]; then
+			cd  package/other-plugins/node-request && source_update_No_git_pull
+			cd $HOME/$OW/$file/lede/
+			cd  package/other-plugins/luci-app-serverchan && source_update_No_git_pull
+			cd $HOME/$OW/$file/lede/
+		else
+			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
+			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"	
