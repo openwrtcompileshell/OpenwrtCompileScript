@@ -13,7 +13,7 @@ info()
 		if [[ $? -eq 0 ]]; then
 			a=$cut_temp$symbol
 		else
-			echo "Not Support"
+			a="Not Support"
 		fi
 	else
 		a=$sen

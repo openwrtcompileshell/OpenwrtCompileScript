@@ -8,7 +8,7 @@ start()
 	rfc=4096
 	cc=$(grep -c processor /proc/cpuinfo)
 	rsfe=$(echo $cc*$rfc | bc)
-	sysctl -w net.core.rps_sock_flow_entries=$rsfe
+	sysctl -w net.core.rps_sock_flow_entries=$rsfe >/dev/null
 	for fileRps in $(ls /sys/class/net/eth*/queues/rx-*/rps_cpus)
 	do
 		echo $cc > $fileRps
@@ -41,6 +41,9 @@ start()
 
 	x86_64=$(grep "x86_64" /etc/openwrt_release | wc -l )
 	if [ "$x86_64" == "1" ]; then
+		uci set network.@globals[0].packet_steering=1
+		uci commit network
+
 		a=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq)
 		b=$(echo -n ' : ')
 		c=$(cat /proc/cpuinfo | grep 'core id' | sort -u | wc -l)
