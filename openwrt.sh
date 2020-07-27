@@ -2031,6 +2031,18 @@ update_clean_make_kernel() {
 	make_j
 }
 
+update_script_rely() {
+	update_script
+	rely_on
+	if [[ $? -eq 0 ]]; then
+		echo -e "$green >>依赖安装完成 $white" && Time
+	else
+		clear
+		echo -e "$red 依赖没有更新或安装成功，重新执行代码 $white" && Time
+		update_script_rely
+	fi
+}
+
 file_help() {
 	echo "---------------------------------------------------------------------"
 	echo ""
@@ -2045,6 +2057,7 @@ file_help() {
 	echo -e "$green   update_clean_make $white 执行make clean 并同步最新的源码 再进行编译"
 	echo -e "$green   update_clean_make_kernel $white 编译完成以后执行make kernel_menuconfig($red危险操作$white)"
 	echo -e "$green   update_script $white     将脚本同步到最新"
+	echo -e "$green   update_script_rely $white将脚本和源码依赖同步到最新"
 	echo -e "$green   help $white 查看帮助"
 	echo ""
 	echo -e "$yellow例子： $white "
@@ -2052,6 +2065,7 @@ file_help() {
 	echo -e "$green   bash \$openwrt update_script $white  将脚本同步到最新  "
 	echo -e "$green   bash \$openwrt 你的文件夹  clean_make $white   清理编译文件，再重新编译  "
 	echo -e "$green   bash \$openwrt 你的文件夹  update_clean_make $white 同步最新的源码清理编译文件再编译  "
+	echo -e "$green   bash \$openwrt 你的文件夹  update_script_rely update_clean_make $white 脚本，源码依赖，源码同步最新，清理编译文件再编译  "
 	echo ""
 	echo "---------------------------------------------------------------------"
 
@@ -2077,8 +2091,29 @@ action2_if() {
 		cd $HOME/$OW/$file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
-			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel)
+			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely)
 			$action2
+			action3_if
+			;;
+			*)
+			echo ""
+			echo -e "$red 命令不存在，使用方法参考以下！！！$white"
+			file_help
+			;;
+		esac
+	fi
+}
+
+action3_if() {
+	if [[ -z $action3 ]]; then
+		echo ""
+	else
+		file=$action1
+		cd $HOME/$OW/$file/lede
+		rm -rf $HOME/$OW/$SF/tmp/*
+		case "$action3" in
+			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely)
+			$action3
 			;;
 			*)
 			echo ""
@@ -2093,6 +2128,7 @@ action2_if() {
 #copy  by:Toyo  modify:ITdesk
 action1="$1"
 action2="$2"
+action3="$3"
 if [[ -z $action1 ]]; then
 	description_if
 else
