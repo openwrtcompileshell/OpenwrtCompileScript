@@ -1473,7 +1473,6 @@ source_lean() {
 
 		fi
 COMMENT
-		sed -i "s/default n/default y/g" package/other-plugins/luci-app-dockerman/Makefile
 
 
 		#下载lienol的fileassistant
