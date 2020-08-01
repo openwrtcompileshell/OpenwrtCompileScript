@@ -1300,7 +1300,7 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus luci-app-wrtbwmon/g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus luci-app-wrtbwmon ipv6helper/g" include/target.mk
 
 			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-netdata lm-sensors autocore #tr_ok/g" include/target.mk
 
@@ -1319,7 +1319,7 @@ source_lean() {
 		fi
 
 		#ipq806_makefile
-		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-wifischedule luci-app-amule  fdisk e2fsprogs ca-certificates"
+		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-wifischedule luci-app-dockerman luci-app-frps fdisk e2fsprogs ca-certificates"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile` == "$ipq806_makefile" ]]; then
 			echo -e "$green 配置已经修改，不做其他操作$white"
 		else
@@ -1502,7 +1502,7 @@ COMMENT
 			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
 			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
 		fi
-
+:<<'COMMENT'
 		#取消IPV6
 		ipv6=$(grep "+IPV6:libip6tc" package/network/config/firewall/Makefile | wc -l)
 		if [[ "$ipv6" == "0" ]]; then
@@ -1513,7 +1513,7 @@ COMMENT
 			sed -i "s/+IPV6:libip6tc//g" package/network/utils/iptables/Makefile
 			#make menuconfig 以后再手动取消Global build settings  ---> Enable IPv6 support in packages
 		fi
-
+COMMENT
 		echo -e ">>$green lean版本配置优化完成$white"	
 
 }
