@@ -1504,6 +1504,17 @@ COMMENT
 			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
 		fi
 
+		#取消IPV6
+		ipv6=$(grep "+IPV6:libip6tc" package/network/config/firewall/Makefile | wc -l)
+		if [[ "$ipv6" == "0" ]]; then
+			echo ""
+		else
+			sed -i "s/+IPV6:libip6tc//g" package/network/config/firewall/Makefile
+			sed -i "s/+IPV6:kmod-nf-conntrack6//g" package/network/config/firewall/Makefile
+			sed -i "s/+IPV6:libip6tc//g" package/network/utils/iptables/Makefile
+			#make menuconfig 以后再手动取消Global build settings  ---> Enable IPv6 support in packages
+		fi
+
 		echo -e ">>$green lean版本配置优化完成$white"	
 
 }
