@@ -1434,6 +1434,94 @@ source_lean() {
 		else
 			echo ""
 		fi
+		other_plugins
+		echo -e ">>$green lean版本配置优化完成$white"
+
+}
+
+
+source_lean_package() {
+	echo ""
+	echo -e ">>$green开始下载lean的软件库$white"
+	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
+	if [[ $? -eq 0 ]]; then
+		echo -e ">>$green下载lean的软件库完成$white"
+	else
+		clear
+		echo "下载lean插件没有成功，重新执行代码" && Time
+		source_lean_package
+	fi
+}
+
+source_lienol() {
+	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
+	if [[ "$source_type" == "lienol" ]]; then
+		clear
+		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
+
+		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-ttyd ]]; then
+			echo ""
+		else
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean/luci-app-ttyd
+		fi
+
+		./scripts/feeds install -a
+
+		#lienol_target.mk
+		sed -i "s/luci-app-ddns/luci-app-sqm /g" include/target.mk
+		sed -i "s/luci-theme-bootstrap-mod/ /g" include/target.mk
+		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay/luci-app-adbyby-plus luci-app-autoreboot luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
+		sed -i "s/ip6tables/ /g" include/target.mk
+		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
+
+		#x86禁用gzip压缩
+		sed -i "s/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS || TARGET_x86/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS #|| TARGET_x86/g" config/Config-images.in
+
+		#lienol_x86_makefile
+		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web  "
+		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
+			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/luci-app-v2ray-server luci-app-trojan-server/$x86_makefile/g" target/linux/x86/Makefile
+		fi
+
+		#lienol_ipq806_makefile
+		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic luci-app-wifischedule fdisk e2fsprogs"
+		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
+			echo -e "$green 配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/uboot-envtools/$ipq806_makefile/g" target/linux/ipq806x/Makefile
+		fi
+
+		echo -e ">>$green lean版本配置优化完成$white"
+:<<'COMMENT'
+		#默认选上tj
+		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
+		if [[ "$trojanif" == "1" ]]; then
+			echo "Trojan设置完成"
+		else
+			sed -i '45s/\(.\{1\}\)/\#tj/' feeds/lienol/lienol/luci-app-passwall/Makefile
+			sed -i '45a\default y' feeds/lienol/lienol/luci-app-passwall/Makefile
+			sed -i "45s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
+			sed -i "46s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
+		fi
+
+		#更改passwall国内的dns
+		passwall_dns=$(grep -o "option up_china_dns '114.114.114.114'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
+		if [[ "$passwall_dns" == "1" ]]; then
+			sed -i "s/option up_china_dns '114.114.114.114'/option up_china_dns '223.5.5.5'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
+		fi
+
+		#更改passwall的dns模式
+		dns_mode=$(grep -o "option dns_mode 'pdnsd'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
+		if [[ "$dns_mode" == "1" ]]; then
+			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
+		fi
+COMMENT
+	fi
+}
+
+other_plugins() {
 
 		#other-plugins
 		if [[ -e package/other-plugins ]]; then
@@ -1522,90 +1610,6 @@ COMMENT
 			#make menuconfig 以后再手动取消Global build settings  ---> Enable IPv6 support in packages
 		fi
 COMMENT
-		echo -e ">>$green lean版本配置优化完成$white"	
-
-}
-
-
-source_lean_package() {
-	echo ""
-	echo -e ">>$green开始下载lean的软件库$white"
-	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
-	if [[ $? -eq 0 ]]; then
-		echo -e ">>$green下载lean的软件库完成$white"
-	else
-		clear	
-		echo "下载lean插件没有成功，重新执行代码" && Time
-		source_lean_package
-	fi
-}
-
-source_lienol() {
-	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
-	if [[ "$source_type" == "lienol" ]]; then
-		clear
-		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
-		
-		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-ttyd ]]; then
-			echo ""		
-		else
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean/luci-app-ttyd
-		fi
-
-		./scripts/feeds install -a
-			
-		#lienol_target.mk
-		sed -i "s/luci-app-ddns/luci-app-sqm /g" include/target.mk
-		sed -i "s/luci-theme-bootstrap-mod/ /g" include/target.mk 
-		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay/luci-app-adbyby-plus luci-app-autoreboot luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
-		sed -i "s/ip6tables/ /g" include/target.mk
-		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
-		
-		#x86禁用gzip压缩		
-		sed -i "s/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS || TARGET_x86/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS #|| TARGET_x86/g" config/Config-images.in
-		
-		#lienol_x86_makefile
-		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web  "
-		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
-			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/luci-app-v2ray-server luci-app-trojan-server/$x86_makefile/g" target/linux/x86/Makefile	
-		fi
-
-		#lienol_ipq806_makefile
-		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic luci-app-wifischedule fdisk e2fsprogs"
-		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
-			echo -e "$green 配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/uboot-envtools/$ipq806_makefile/g" target/linux/ipq806x/Makefile
-		fi
-
-		echo -e ">>$green lean版本配置优化完成$white"	
-:<<'COMMENT'
-		#默认选上tj
-		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
-		if [[ "$trojanif" == "1" ]]; then
-			echo "Trojan设置完成"
-		else
-			sed -i '45s/\(.\{1\}\)/\#tj/' feeds/lienol/lienol/luci-app-passwall/Makefile
-			sed -i '45a\default y' feeds/lienol/lienol/luci-app-passwall/Makefile
-			sed -i "45s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
-			sed -i "46s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
-		fi
-
-		#更改passwall国内的dns
-		passwall_dns=$(grep -o "option up_china_dns '114.114.114.114'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
-		if [[ "$passwall_dns" == "1" ]]; then
-			sed -i "s/option up_china_dns '114.114.114.114'/option up_china_dns '223.5.5.5'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
-		fi
-
-		#更改passwall的dns模式
-		dns_mode=$(grep -o "option dns_mode 'pdnsd'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
-		if [[ "$dns_mode" == "1" ]]; then
-			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
-		fi
-COMMENT
-	fi
 }
 
 #Public配置
