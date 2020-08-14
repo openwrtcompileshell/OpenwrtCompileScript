@@ -1155,29 +1155,9 @@ source_openwrt() {
 		clear
 		source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 		if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
-			echo "----------------------------------------------------"
-  			echo -e "检测到你是$green$source_type$white源码，是否加入lean插件"
-			echo " 1.添加插件(测试功能会有问题)"
-			echo " 2.不添加插件"
-			echo "----------------------------------------------------"
-			read  -p "请输入你的选择:" Source_judgment_select
-				case "$Source_judgment_select" in
-					1)
-					rm -rf package/lean 
-					source_openwrt_Setting
-					source_lean_package
-					;;
-					2)
-					echo ""
-					;;
-					*)
-					clear && echo  "请输入正确的数字（1-2）" && Time
-					source_openwrt
-					 ;;
-			esac
+			rm -rf package/lean 
+			source_openwrt_Setting
 		elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-			echo ""
-		else
 			echo ""
 		fi
 			
@@ -1187,61 +1167,66 @@ source_openwrt_Setting() {
 		source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 		if [[ "$source_type" == "openwrt-18.06" ]]; then
 			source_openwrt_Setting_18
-		else
-			echo ""
 		fi
-		#已知ok的插件有55r，frpc，其他有些用不到没有测试   #已知不行的插件有samb，qt
+		#下载lean插件
 		source_lean_package
 		echo -e ">>$green openwrt官方源码开始配置优化$white"
 		Time
-		
-		if [[ -e $HOME/$OW/$file/lede/include/target.mk_back ]]; then
-			echo ""
-		else
-			cp $HOME/$OW/$file/lede/include/target.mk  $HOME/$OW/$file/lede/include/target.mk_back		
-		fi			
-
-		itdesk_default_packages="DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-proto-relay   luci-app-sqm  luci-app-adbyby-plus luci-app-autoreboot luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-flowoffload luci-app-nlbwmon luci-app-accesscontrol  luci-app-ttyd luci-app-watchcat luci-app-wifischedule luci-app-netdata  luci-app-frpc ddns-scripts_aliyun ddns-scripts_dnspod"
-	
+		itdesk_default_packages="block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus luci-app-wrtbwmon luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-unblockmusic luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol  luci-app-frpc luci-app-ttyd luci-app-netdata  ddns-scripts_aliyun ddns-scripts_dnspod #tr_ok "
 		lean_packages_nas="DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba"	
 
-		lean_packages_router="DEFAULT_PACKAGES.router:=dnsmasq-full iptables ppp ppp-mod-pppoe firewall kmod-ipt-offload kmod-tcp-bbr"	
-		
-		#(DEFAULT_PACKAGES)
-		if [[ "$(grep -o "urngd" include/target.mk_back )" == "urngd" ]]; then
-			#19.7 and master (PACKAGES)
-			sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd urandom-seed urngd/$itdesk_default_packages/g"  include/target.mk
+		#修改target.mk
+		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
+			echo ""
 		else
-			#17.1 and 18.6 (PACKAGES)
-			sed -i "s/DEFAULT_PACKAGES:=base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd/$itdesk_default_packages/g"  include/target.mk
-		fi
+			#(DEFAULT_PACKAGES)
+			if [[ "$(grep -o "urngd" include/target.mk_back )" == "urngd" ]]; then
+				#19.7 and master (PACKAGES)
+				sed -i "s/urandom-seed urngd/urandom-seed urngd $itdesk_default_packages/g"  include/target.mk
+			else
+				#17.1 and 18.6 (PACKAGES)
+				sed -i "s/uclient-fetch logd/uclient-fetch logd $itdesk_default_packages/g"  include/target.mk
+			fi
 
-		#17.1-master (PACKAGES.nas)
-		sed -i "s/DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm/$lean_packages_nas/g" include/target.mk
+			#17.1-master (PACKAGES.nas)
+			#sed -i "s/DEFAULT_PACKAGES.nas:=block-mount fdisk lsblk mdadm/$lean_packages_nas/g" include/target.mk	
+		fi	
 		
-		#(PACKAGES.router)
-		if [[ "$(grep -o "kmod-ipt-offload" include/target.mk_back )" == "kmod-ipt-offload" ]]; then
-			#18.6-master (PACKAGES.router)
-			sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c kmod-ipt-offload/$lean_packages_router/g" include/target.mk
-
+		#x86_makefile
+		x86_makefile="partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid kmod-mmc-spi kmod-sdhci kmod-ath5k kmod-ath9k kmod-ath9k-htc kmod-ath10k kmod-rt2800-usb kmod-e1000e kmod-igb kmod-igbvf kmod-ixgbe kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-i40e kmod-i40evf kmod-r8125 kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-r8168 kmod-mlx4-core kmod-mlx5-core kmod-drm-amdgpu ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie htop lm-sensors  automount autosamba  luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm  ca-certificates #autocore"
+		FEATURES="squashfs vdi vmdk pcmcia fpu boot-part rootfs-part ext4 targz"
+		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
+			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-		#17.1 (PACKAGES.router)
-			sed -i "s/DEFAULT_PACKAGES.router:=dnsmasq iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd odhcp6c/$lean_packages_router/g" include/target.mk
-		fi		
+			sed -i "s/partx-utils mkf2fs e2fsprogs/$x86_makefile/g" target/linux/x86/Makefile
+		fi	
 			
 		#enable KERNEL_MIPS_FPU_EMULATOR
 		sed -i 's/default y if TARGET_pistachio/default y/g' config/Config-kernel.in
 			
 		#应用fullconenat
-		rm -rf package/network/config/firewall
-		svn checkout https://github.com/coolsnowwolf/lede/trunk/package/network/config/firewall package/network/config/firewall
+		#rm -rf package/network/config/firewall
+		#svn checkout https://github.com/coolsnowwolf/lede/trunk/package/network/config/firewall package/network/config/firewall
+
+		#docekr-ce
+		if [[ -e package/other-plugins/docker-ce ]]; then
+			rm -rf package/other-plugins/docker-ce
+			svn checkout https://github.com/coolsnowwolf/packages/trunk/utils/docker-ce  $HOME/$OW/$file/lede/package/other-plugins/docker-ce
+			cd $HOME/$OW/$file/lede/
+		else
+			svn checkout https://github.com/coolsnowwolf/packages/trunk/utils/docker-ce  $HOME/$OW/$file/lede/package/other-plugins/docker-ce
+		fi
+
+		#添加库
+		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default && update_feeds
+		
 
 		#活动连接数
 		sed -i 's/16384/65536/g' package/kernel/linux/files/sysctl-nf-conntrack.conf
 
 		#删除lean_frp
-		rm -rf package/lean/frp
-		rm -rf package/lean/luci-app-frpc		
+		#rm -rf package/lean/frp
+		#rm -rf package/lean/luci-app-frpc		
 				
 		#取消官方源码强制https
 		sed -i '09s/\(.\{1\}\)/\#/' package/network/services/uhttpd/files/uhttpd.config
@@ -1260,7 +1245,8 @@ source_openwrt_Setting() {
 			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/ucl  $HOME/$OW/$file/lede/tools/ucl
 			
 		fi 
-
+		echo "" > $HOME/$OW/$SF/tmp/source_branch
+		other_plugins
 		echo -e ">>$green openwrt官方源码配置优化完成$white"
 }
 
@@ -1431,11 +1417,12 @@ source_lean() {
 				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/kcptun_version.htm
 				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/passwall_version.htm
 			fi
-		else
-			echo ""
+
+			other_plugins
+			echo -e ">>$green lean版本配置优化完成$white"
+		
 		fi
-		other_plugins
-		echo -e ">>$green lean版本配置优化完成$white"
+		
 
 }
 
@@ -1530,7 +1517,7 @@ other_plugins() {
 			mkdir package/other-plugins
 		fi
 
-
+		
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
 			cd  package/other-plugins/luci-app-serverchan
@@ -1546,11 +1533,11 @@ other_plugins() {
 		fi
 
 		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
-				cd  package/other-plugins/luci-app-dockerman
-				source_update_No_git_pull
-				cd $HOME/$OW/$file/lede/
+			cd  package/other-plugins/luci-app-dockerman
+			source_update_No_git_pull
+			cd $HOME/$OW/$file/lede/
 		else
-				git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
+			git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 		fi
 :<<'COMMENT'
 		dockerman_display=$(grep -o "docker" package/other-plugins/luci-app-dockerman/luasrc/view/dockerman/overview.htm | wc -l)
