@@ -964,9 +964,9 @@ source_download_openwrt() {
 		echo ""
   		echo "	准备下载openwrt代码"
 		echo ""
-		echo "	1.Lean_R8(stable version)_source"
+		echo "	1.Lean_lede-17.01_source"
 		echo ""
-		echo " 	2.Lean_R20(Trunk)_source"
+		echo " 	2.Lean_master_source"
 		echo ""
 		echo " 	3.Lienol(dev-19.07)_source"
 		echo ""
@@ -985,7 +985,7 @@ source_download_openwrt() {
 		read  -p "请输入你要下载的源代码:" Download_source_openwrt
 			case "$Download_source_openwrt" in
 				1)
-				git clone https://github.com/coolsnowwolf/openwrt.git lede
+				git clone -b lede-17.01 https://github.com/coolsnowwolf/openwrt.git lede
 				;;
 				2)
 				git clone https://github.com/coolsnowwolf/lede.git lede
