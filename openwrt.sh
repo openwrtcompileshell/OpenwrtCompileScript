@@ -2071,7 +2071,7 @@ file_help() {
 	echo ""
 	echo -e "$yellow例子： $white "
 	echo -e "$green   bash \$openwrt help $white  查看帮助  "
-	echo -e "$green   bash \$openwrt new_source_make $white  下载新的源码然后进行编译  "
+	echo -e "$green   bash \$openwrt new_source_make $white  新建一个文件夹下载你需要的源码并进行编译  "
 	echo -e "$green   bash \$openwrt update_script $white  将脚本同步到最新  "
 	echo -e "$green   bash \$openwrt 你的文件夹  clean_make $white   清理编译文件，再重新编译  "
 	echo -e "$green   bash \$openwrt 你的文件夹  update_clean_make $white 同步最新的源码清理编译文件再编译  "
