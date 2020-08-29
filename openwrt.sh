@@ -1864,7 +1864,7 @@ n1_builder() {
 		fi
 
 		if [[ -e $builder_patch/armbian.img ]]; then
-			echo -e "$green >>armbin.img存在，复制固件$white"
+			echo -e "$green >>armbian.img存在，复制固件$white"
 			if [[ -e $builder_patch/openwrt.img ]]; then
 				rm -rf $builder_patch/openwrt.img
 				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patchopenwrt.img
@@ -1882,7 +1882,7 @@ n1_builder() {
 				fi
 
 		else
-			echo -e "$yellow >>检查到没有armbin.img,请将你的armbin镜像放到：$builder_patch $white"
+			echo -e "$yellow >>检查到没有armbian.img,请将你的armbian镜像放到：$builder_patch $white"
 			echo -e "$green >>存放完成以后，回车继续制作N1固件$white"
 			read a
 			n1_builder
