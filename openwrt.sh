@@ -1851,32 +1851,36 @@ n1_builder() {
 		mkdir $HOME/$OW/$SF/n1
 		n1_builder
 	fi
-	ln -s $HOME/$OW/$file/lede/N1_builder $builder_patch
 
-	builder_patch="$HOME/$OW/$SF/n1/N1_and_beikeyun-OpenWRT-Image-Builder"
-	if [[ -e bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz ]]; then
+	if [ ! -d $builder_patch/tmp ];then
+		mkdir -p $builder_patch/tmp
+	else
+		rm -rf $builder_patch/tmp/*
+	fi
+
+	cd $HOME/$OW/$file/lede/
+
+	n1_img="$HOME/$OW/$file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
+	builder_patch="$HOME/$OW/$SF/n1/N1_builder"
+	if [[ -e $n1_img ]]; then
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
 		if [[ -e $builder_patch ]]; then
 			cd $builder_patch
 			source_update_git_pull
 		else
-			https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
+			git clone https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
 		fi
+
+		ln -s $builder_patch $HOME/$OW/$file/lede/N1_builder  && clear
 
 		if [[ -e $builder_patch/armbian.img ]]; then
 			echo -e "$green >>armbian.img存在，复制固件$white" && clear
-			cd $HOME/$OW/$file/lede/
+
 			if [[ -e $builder_patch/openwrt.img ]]; then
 				rm -rf $builder_patch/openwrt.img
-				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
+				cp $n1_img $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 			else
-				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
-			fi
-
-			if [ ! -d $builder_patch/tmp ];then
-				mkdir -p $builder_patch/tmp
-			else
-				rm -rf $builder_patch/tmp/*
+				cp $n1_img $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 			fi
 
 			cd $builder_patch
