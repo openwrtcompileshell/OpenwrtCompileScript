@@ -1869,9 +1869,8 @@ n1_builder() {
 			source_update_git_pull
 		else
 			git clone https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
+			ln -s  $builder_patch $HOME/$OW/$file/lede/N1_builder && clear
 		fi
-
-		ln -s $builder_patch $HOME/$OW/$file/lede/N1_builder  && clear
 
 		if [[ -e $builder_patch/armbian.img ]]; then
 			echo -e "$green >>armbian.img存在，复制固件$white" && clear
