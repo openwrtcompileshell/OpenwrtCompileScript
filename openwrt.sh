@@ -1851,39 +1851,46 @@ n1_builder() {
 		mkdir $HOME/$OW/$SF/n1
 		n1_builder
 	fi
+	ln -s $HOME/$OW/$file/lede/N1_builder $builder_patch
 
-	builder_patch="$HOME/$OW/$SF/n1/PHICOMM-N1-OpenWRT-Image-Builder"
+	builder_patch="$HOME/$OW/$SF/n1/N1_and_beikeyun-OpenWRT-Image-Builder"
 	if [[ -e bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz ]]; then
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
 		if [[ -e $builder_patch ]]; then
 			cd $builder_patch
 			source_update_git_pull
 		else
-			git clone https://github.com/sean-liang/PHICOMM-N1-OpenWRT-Image-Builder $builder_patch
+			https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
 		fi
 
 		if [[ -e $builder_patch/armbian.img ]]; then
-			clear
-			echo -e "$green >>armbian.img存在，复制固件$white"
+			echo -e "$green >>armbian.img存在，复制固件$white" && clear
 			cd $HOME/$OW/$file/lede/
 			if [[ -e $builder_patch/openwrt.img ]]; then
 				rm -rf $builder_patch/openwrt.img
-				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt.img
+				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 			else
-				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt.img
+				cp bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 			fi
-			clear && echo -e "$green >>输一下密码，然后回车两次就行$white"
+
+			if [ ! -d $builder_patch/tmp ];then
+				mkdir -p $builder_patch/tmp
+			else
+				rm -rf $builder_patch/tmp/*
+			fi
+
 			cd $builder_patch
-			sudo bash build.sh
+			sudo bash mk_n1_opimg.sh
 				if [[ $? -eq 0 ]]; then
-					cp $builder_patch/n1-firmware.img.gz $HOME/$OW/$file/lede/bin/targets/armvirt/64/n1-firmware.img.gz
-					echo -e "$green >>N1镜像制作完成,你的固件在：$HOME/$OW/$file/lede/bin/targets/armvirt/64/n1-firmware.img.gz$white"
+					echo ""
+					echo -e "$green >>N1镜像制作完成,你的固件在：$builder_patch/tmp$white"
 				else
 					echo "$red >>N1固件制作失败，重新执行代码 $white" && Time
 					n1_builder
 				fi
 
 		else
+			clear
 			echo -e "$yellow >>检查到没有armbian.img,请将你的armbian镜像放到：$builder_patch $white"
 			echo -e "$green >>存放完成以后，回车继续制作N1固件$white"
 			read a
@@ -2104,7 +2111,7 @@ action2_if() {
 		cd $HOME/$OW/$file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
-			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely)
+			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
 			$action2
 			action3_if
 			;;
