@@ -1096,6 +1096,10 @@ source_if() {
 			elif [[ $source_git_branch == "master" ]]; then
 				echo "master" > $HOME/$OW/$SF/tmp/source_branch
 			fi
+		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/openwrt.git | wc -l` == "2" ]]; then
+			echo "lean" > $HOME/$OW/$SF/tmp/source_type
+			echo "lede-17.01" > $HOME/$OW/$SF/tmp/source_branch
+
 		elif [[ `git remote -v | grep -o https://github.com/coolsnowwolf/lede.git | wc -l` == "2" ]]; then
 			echo "lean" > $HOME/$OW/$SF/tmp/source_type
 			if [[ $source_git_branch == "master" ]]; then
