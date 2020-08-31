@@ -1431,6 +1431,7 @@ source_lean() {
 COMMENT
 
 			other_plugins
+			update_feeds
 			echo -e ">>$green lean版本配置优化完成$white"
 		
 		fi
@@ -1592,7 +1593,7 @@ COMMENT
 
 		#adguardhome插件
 		if [[ -e package/other-plugins/luci-app-adguardhome ]]; then
-			cd  package/luci-app-adguardhome && source_update_No_git_pull
+			cd  package/other-plugins/luci-app-adguardhome && source_update_No_git_pull
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
