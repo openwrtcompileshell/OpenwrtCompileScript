@@ -1308,6 +1308,13 @@ source_lean() {
 			sed -i "s/luci-app-airplay2//g" target/linux/x86/Makefile
 		fi
 
+		#修改X86默认固件大小
+		if [[ `grep -o "default 160" config/Config-images.in | wc -l` == "1" ]]; then
+			sed -i 's\default 160\default 260\g' config/Config-images.in
+		else
+			echo ""
+		fi
+
 		#ipq806_makefile
 		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-wifischedule luci-app-dockerman luci-app-frps fdisk e2fsprogs ca-certificates"
 		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile` == "$ipq806_makefile" ]]; then
