@@ -1603,13 +1603,22 @@ COMMENT
 			rm -rf package/other-plugins/luci-app-passwall
 			rm -rf package/other-plugins/chinadns-ng
 			rm -rf package/other-plugins/tcping
+			rm -rf package/other-plugins/trojan-go
+			rm -rf package/other-plugins/trojan-plus
+			rm -rf package/other-plugins/brook
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-go package/other-plugins/trojan-go
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-plus package/other-plugins/trojan-plus
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
 		else
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-go package/other-plugins/trojan-go
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-plus package/other-plugins/trojan-plus
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
 		fi
 :<<'COMMENT'
 		#取消IPV6
