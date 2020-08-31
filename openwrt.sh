@@ -1392,7 +1392,7 @@ source_lean() {
 				sed -i "46s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 				sed -i "47s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 			fi
-
+:<<'COMMENT'
 			#更改**国内的dns
 			passwall_dns=$(grep -o "option up_china_dns 'default'" package/other-plugins/luci-app-passwall/root/etc/config/passwall | wc -l)
 			if [[ "$passwall_dns" == "1" ]]; then
@@ -1428,6 +1428,7 @@ source_lean() {
 				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/kcptun_version.htm
 				sed -i "s/vpn/services/g" package/other-plugins/luci-app-passwall/luasrc/view/passwall/rule/passwall_version.htm
 			fi
+COMMENT
 
 			other_plugins
 			echo -e ">>$green lean版本配置优化完成$white"
