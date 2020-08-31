@@ -1597,6 +1597,20 @@ COMMENT
 		else
 			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
 		fi
+
+		#Hello word插件
+		if [[ -e package/other-plugins/luci-app-passwall ]]; then
+			rm -rf package/other-plugins/luci-app-passwall
+			rm -rf package/other-plugins/chinadns-ng
+			rm -rf package/other-plugins/tcping
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
+		else
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
+		fi
 :<<'COMMENT'
 		#取消IPV6
 		ipv6=$(grep "+IPV6:libip6tc" package/network/config/firewall/Makefile | wc -l)
