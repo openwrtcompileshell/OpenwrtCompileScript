@@ -1607,6 +1607,7 @@ COMMENT
 			rm -rf package/other-plugins/trojan-go
 			rm -rf package/other-plugins/trojan-plus
 			rm -rf package/other-plugins/brook
+			rm -rf package/other-plugins/ssocks
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
@@ -1620,6 +1621,7 @@ COMMENT
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-go package/other-plugins/trojan-go
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-plus package/other-plugins/trojan-plus
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
+			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/ssocks package/other-plugins/ssocks
 		fi
 :<<'COMMENT'
 		#取消IPV6
