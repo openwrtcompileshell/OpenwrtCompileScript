@@ -1297,7 +1297,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-kodexplorer  luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm "
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-kodexplorer  luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm luci-app-adguardhome "
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
