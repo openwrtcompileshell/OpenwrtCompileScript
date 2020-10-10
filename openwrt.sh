@@ -1634,10 +1634,10 @@ source_Setting_Public() {
 	#frpc替换为27版本
 	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
-		sed -i "s/PKG_VERSION:=0.34.0/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
+		sed -i "s/PKG_VERSION:=0.34.1/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
 	elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-		sed -i "s/PKG_VERSION:=0.34.0/PKG_VERSION:=0.27.0/g" package/lean/frp/Makefile
-		sed -i "s/PKG_HASH:=3c4f354c7c82eb5001f0de5a55015acbaa1fba03aa97647a74131bc4118598a8/PKG_HASH:=5d2efd5d924c7a7f84a9f2838de6ab9b7d5ca070ab243edd404a5ca80237607c/g" package/lean/frp/Makefile
+		sed -i "s/PKG_VERSION:=0.34.1/PKG_VERSION:=0.27.0/g" package/lean/frp/Makefile
+		sed -i "s/PKG_HASH:=a47f952cc491a1d5d6f838306f221d6a8635db7cf626453df72fe6531613d560/PKG_HASH:=5d2efd5d924c7a7f84a9f2838de6ab9b7d5ca070ab243edd404a5ca80237607c/g" package/lean/frp/Makefile
 	else
 		echo ""
 	fi
