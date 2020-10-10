@@ -1075,9 +1075,9 @@ source_download_ok() {
 			source_if
 			source_Soft_link
 			update_feeds
-			source_openwrt
+			#source_openwrt
 			source_lean
-			source_lienol
+			#source_lienol
 			source_Setting_Public
 			make_defconfig
 }
@@ -1554,16 +1554,6 @@ other_plugins() {
 		else
 			git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 		fi
-:<<'COMMENT'
-		dockerman_display=$(grep -o "docker" package/other-plugins/luci-app-dockerman/luasrc/view/dockerman/overview.htm | wc -l)
-		if [[ "$dockerman_display" == "0" ]]; then
-			echo ""
-		else
-			grep "docker" -rl package/other-plugins/luci-app-dockerman/luasrc/* | xargs sed -i 's/docker/services/g'
-
-		fi
-COMMENT
-
 
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
@@ -1626,18 +1616,6 @@ COMMENT
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/ssocks package/other-plugins/ssocks
 		fi
-:<<'COMMENT'
-		#取消IPV6
-		ipv6=$(grep "+IPV6:libip6tc" package/network/config/firewall/Makefile | wc -l)
-		if [[ "$ipv6" == "0" ]]; then
-			echo ""
-		else
-			sed -i "s/+IPV6:libip6tc//g" package/network/config/firewall/Makefile
-			sed -i "s/+IPV6:kmod-nf-conntrack6//g" package/network/config/firewall/Makefile
-			sed -i "s/+IPV6:libip6tc//g" package/network/utils/iptables/Makefile
-			#make menuconfig 以后再手动取消Global build settings  ---> Enable IPv6 support in packages
-		fi
-COMMENT
 }
 
 #Public配置
@@ -1663,30 +1641,6 @@ source_Setting_Public() {
 	else
 		echo ""
 	fi
-
-:<<'COMMENT'
-	#默认选上v2
-	v2if=$(grep -o "#v2default y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-	
-	if [[ "$v2if" == "1" ]]; then
-		echo "v2设置完成"
-	else
-		sed -i '26s/\(.\{1\}\)/\#v2/' package/lean/luci-app-ssr-plus/Makefile
-		sed -i '26a\default y' package/lean/luci-app-ssr-plus/Makefile
-		sed -i "26s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		sed -i "27s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-	fi
-
-	trojanif=$(grep -o "#tjdefault y if x86_64" package/lean/luci-app-ssr-plus/Makefile | wc -l)
-	if [[ "$trojanif" == "1" ]]; then
-		echo "Trojan设置完成"
-	else
-		sed -i '31s/\(.\{1\}\)/\#tj/' package/lean/luci-app-ssr-plus/Makefile
-		sed -i '31a\default y' package/lean/luci-app-ssr-plus/Makefile
-		sed -i "31s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-		sed -i "32s/^/        /" package/lean/luci-app-ssr-plus/Makefile
-	fi
-COMMENT
 	echo -e ">>$green Public配置完成$white"	
 }
 
@@ -1824,13 +1778,15 @@ make_firmware_or_plugin() {
 make_compile_firmware() {
 	clear
 	echo "--------------------------------------------------------"
-	echo  "++编译固件是否要使用多线程编译++"
+	echo -e "$green++编译固件是否要使用多线程编译++$white"
 	echo ""
 	echo "  首次编译不建议-j，具体用几线程看你电脑j有机会编译失败,"
 	echo "不懂回车默认运行make V=s"
 	echo ""
-	echo -e "多线程例子：$yellow make -j4 V=s$white"
+	echo -e "多线程例子：$yellow make -j$cpu_cores V=s $white(黄色字体这段完整的输进去)"
 	echo -e "温馨提醒你的cpu核心数为：$green $cpu_cores $white"
+	echo ""
+	echo -e "$red!!!请不要在输入参数这行直接输数字，把命令敲全，不懂就直接回车!!!$white"
 	echo "--------------------------------------------------------"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
 	if [[ -z "$mk_f" ]];then
@@ -1840,7 +1796,7 @@ make_compile_firmware() {
 	else
 		dl_download
 		clear
-		echo -e "你输入的线程是：$green$mk_f$white"
+		echo -e "你输入的命令是：$green$mk_f$white"
 		echo "准备开始执行编译" && Time
 		$mk_f
 	fi
@@ -2016,6 +1972,8 @@ make_continue_to_compile() {
 	echo -e "$red 2.否 （直接退出脚本）$white"
 	echo ""
 	echo -e "$yellow 3.回到配置加载（回到之前选择配置界面，重新选择配置或者取消某些包来完成编译）$white"
+	echo ""
+	echo -e "$yellow如果你不理解上面的意思，你可以直接选择1$white"
 	echo ""
 		prompt
 	echo "---------------------------------------------------------------------"
