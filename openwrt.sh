@@ -1601,6 +1601,7 @@ source_Setting_Public() {
 	#修改固件生成名字,增加当天日期(by:左右）
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
+
 	#frpc替换为27版本
 	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
 	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
@@ -1611,6 +1612,7 @@ source_Setting_Public() {
 	else
 		echo ""
 	fi
+
 	echo -e ">>$green Public配置完成$white"	
 }
 
@@ -1812,25 +1814,24 @@ if_wo() {
 }
 
 n1_builder() {
-	if [[ -e $HOME/$OW/$SF/n1 ]]; then
-		echo ""
-	else
-		mkdir $HOME/$OW/$SF/n1
-		n1_builder
-	fi
-
-	if [ ! -d $builder_patch/tmp ];then
-		mkdir -p $builder_patch/tmp
-	else
-		rm -rf $builder_patch/tmp/*
-	fi
-
-	cd $HOME/$OW/$file/lede/
-
 	n1_img="$HOME/$OW/$file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
 	builder_patch="$HOME/$OW/$SF/n1/N1_builder"
+
 	if [[ -e $n1_img ]]; then
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
+		if [[ -e $HOME/$OW/$SF/n1 ]]; then
+			echo ""
+		else
+			mkdir $HOME/$OW/$SF/n1
+			n1_builder
+		fi
+
+		if [ ! -d $builder_patch/tmp ];then
+			mkdir -p $builder_patch/tmp
+		else
+			rm -rf $builder_patch/tmp/*
+		fi
+
 		if [[ -e $builder_patch ]]; then
 			cd $builder_patch
 			source_update_git_pull
