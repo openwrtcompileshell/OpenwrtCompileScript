@@ -2040,7 +2040,7 @@ update_script_rely() {
 
 actions_openwrt() {
 	HOME=$(pwd)
-	file=$(lean)
+	file=lean
 	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
 		echo -e "开始创建主文件夹"
 		mkdir -p $HOME/$OW/$SF/dl
