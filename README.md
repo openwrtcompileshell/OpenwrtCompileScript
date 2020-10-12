@@ -73,7 +73,7 @@ cd OpenwrtCompileScript && bash openwrt.sh
 
 ### 脚本使用教程
 
-[OpenwrtCompileScript使用说明.pdf](OpenwrtCompileScript使用说明.pdf)
+[OpenwrtCompileScript使用说明.pdf](OpenwrtCompileScript使用说明.pdf) （有段时间没有更新了）
 
 **脚本视频教程加群** :**667491026**   （**拒绝大爷公子伸手党**)
 
