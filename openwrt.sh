@@ -2038,6 +2038,24 @@ update_script_rely() {
 	fi
 }
 
+actions_openwrt() {
+	HOME=$(pwd)
+	file=$(lean)
+	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
+		echo -e "开始创建主文件夹"
+		mkdir -p $HOME/$OW/$SF/dl
+		mkdir -p $HOME/$OW/$SF/My_config
+		mkdir -p $HOME/$OW/$SF/tmp
+	fi
+
+	echo "开始创建编译文件夹"
+	mkdir $HOME/$OW/$file
+	git clone  https://github.com/coolsnowwolf/lede.git $HOME/$OW/$file/lede
+	cd $HOME/$OW/$file/lede
+	source_download_ok
+	make_j
+}
+
 file_help() {
 	echo "---------------------------------------------------------------------"
 	echo ""
