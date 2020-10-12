@@ -24,7 +24,7 @@ The script is made to work on these OS :
 - （已放弃）Github Gitpod云编译(参考：https://www.right.com.cn/forum/thread-1573038-1-1.html)
 - Deepin 15.11桌面版（群友测试ok）
 
-### 脚本使用教程
+## 脚本使用教程
 
 [OpenwrtCompileScript使用说明.pdf](OpenwrtCompileScript使用说明.pdf) （有段时间没有更新了）
 
