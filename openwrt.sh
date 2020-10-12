@@ -2086,12 +2086,16 @@ file_help() {
 }
 
 action1_if() {
-	if [[ -e $HOME/$OW/$action1 ]]; then
-		action2_if
+	if [[ "$action1" == "actions_openwrt" ]]; then
+		 actions_openwrt
 	else
-		echo ""
-		echo -e "$red>>文件夹不存在，使用方法参考以下！！！$white"
-		file_help
+		if [[ -e $HOME/$OW/$action1 ]]; then
+			action2_if
+		else
+			echo ""
+			echo -e "$red>>文件夹不存在，使用方法参考以下！！！$white"
+			file_help
+		fi
 	fi
 }
 
