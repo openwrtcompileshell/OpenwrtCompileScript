@@ -16,6 +16,7 @@ yellow="\033[33m"
 white="\033[0m"
 
 prompt() {
+	echo -e "$green  脚本问题反馈：https://github.com/openwrtcompileshell/OpenwrtCompileScript/issues或者加群反馈(群在github有)$white"
 	echo  -e " $yellow温馨提示，最近的编译依赖有变动，如果你最近一直编译失败，建议使用脚本5.其他选项 --- 1.只搭建编译环境功能 $white"
 }
 
@@ -787,6 +788,8 @@ self_test() {
 	echo "		  	检测脚本是否最新： $Script_status "
 	echo "  "
 	echo "	      	    -------------------------------------------"
+	echo ""
+	echo -e "$green  脚本问题反馈：https://github.com/openwrtcompileshell/OpenwrtCompileScript/issues或者加群反馈(群在github有)$white"
 	echo ""
 	echo "  请自行决定是否修复红字的错误，以保证编译顺利，你也可以直接回车进入菜单，但有可能会出现编译失败！！！如果都是绿色正常可以忽略此段话"
 	read a
