@@ -2086,9 +2086,6 @@ file_help() {
 }
 
 action1_if() {
-	if [[ "$action1" == "actions_openwrt" ]]; then
-		 actions_openwrt
-	else
 		if [[ -e $HOME/$OW/$action1 ]]; then
 			action2_if
 		else
@@ -2096,7 +2093,6 @@ action1_if() {
 			echo -e "$red>>文件夹不存在，使用方法参考以下！！！$white"
 			file_help
 		fi
-	fi
 }
 
 action2_if() {
@@ -2130,7 +2126,7 @@ action3_if() {
 		cd $HOME/$OW/$file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action3" in
-			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely)
+			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
 			$action3
 			;;
 			*)
@@ -2159,6 +2155,9 @@ else
 		;;
 		new_source_make)
 		new_source_make
+		;;
+		actions_openwrt)
+		actions_openwrt
 		;;
 		*)
 		action1_if
