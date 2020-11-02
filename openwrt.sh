@@ -1337,12 +1337,12 @@ source_lean() {
 			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
 		fi
 	
-		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/index.htm)
+		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/x86/index.htm)
 		if [[ "$x86indexif" == "Local Weather" ]]; then
 			echo "已经替换X86首页文件"
 		else
 			rm -rf package/lean/autocore/files/index.htm
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/index.htm
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/x86/index.htm
 		fi
 	
 		base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
@@ -1358,7 +1358,7 @@ source_lean() {
 			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		fi
 	fi
-
+:<<'COMMENT'
 		#增加首页温度显示
 		temperature_if=$(grep -o "@TARGET_x86" package/lean/autocore/Makefile | wc -l)
 		if [[ "$temperature_if" == "1" ]]; then
@@ -1369,7 +1369,7 @@ source_lean() {
 		else
 			echo "temperature添加完成"
 		fi
-
+COMMENT
 		#首页显示编译时间
 		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh-cn/base.po)
 		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
