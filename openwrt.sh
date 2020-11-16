@@ -1557,7 +1557,7 @@ other_plugins() {
 		if [[ -e package/other-plugins/luci-app-jd-dailybonus ]]; then
 			cd  package/other-plugins/node-request && source_update_No_git_pull
 			cd $HOME/$OW/$file/lede/
-			cd  package/other-plugins/luci-app-serverchan && source_update_No_git_pull
+			cd  package/other-plugins/luci-app-jd-dailybonus && source_update_No_git_pull
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
