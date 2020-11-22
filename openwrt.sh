@@ -1338,15 +1338,7 @@ source_lean() {
 			sed -i "s/luci-app-ipsec-vpnd luci-app-unblockmusic luci-app-zerotier ca-certificates/$ipq806_makefile/g" target/linux/ipq806x/Makefile
 		fi
 		
-		#替换lean首页文件，添加天气代码(by:冷淡)
-		indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
-		if [[ "$indexif" == "Local Weather" ]]; then
-			echo "已经替换首页文件"
-		else
-			rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-		fi
-	
+		#默认对x86首页下手，其他的你们安全了
 		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/x86/index.htm)
 		if [[ "$x86indexif" == "Local Weather" ]]; then
 			echo "已经替换X86首页文件"
@@ -1369,6 +1361,15 @@ source_lean() {
 		fi
 	fi
 :<<'COMMENT'
+		#替换lean首页文件，添加天气代码(by:冷淡)
+		indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
+		if [[ "$indexif" == "Local Weather" ]]; then
+			echo "已经替换首页文件"
+		else
+			rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+		fi
+
 		#增加首页温度显示
 		temperature_if=$(grep -o "@TARGET_x86" package/lean/autocore/Makefile | wc -l)
 		if [[ "$temperature_if" == "1" ]]; then
