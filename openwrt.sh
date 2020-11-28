@@ -1575,6 +1575,7 @@ other_plugins() {
 			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
 		fi
 
+:<<'COMMENT'
 		#Hello word插件
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
 			rm -rf package/other-plugins/luci-app-passwall
@@ -1600,6 +1601,7 @@ other_plugins() {
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
 			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/ssocks package/other-plugins/ssocks
 		fi
+COMMENT
 }
 
 #Public配置
