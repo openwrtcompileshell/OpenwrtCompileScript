@@ -1951,9 +1951,6 @@ make_continue_to_compile() {
 	echo ""
 	echo -e "$red 2.否 （直接退出脚本）$white"
 	echo ""
-	echo -e "$yellow 3.回到配置加载（回到之前选择配置界面，重新选择配置或者取消某些包来完成编译）$white"
-	echo ""
-	echo -e "$yellow如果你不理解上面的意思，你可以直接选择1$white"
 	echo ""
 		prompt
 	echo "---------------------------------------------------------------------"
@@ -1966,11 +1963,8 @@ make_continue_to_compile() {
 		2)
 		exit
 		;;
-		3)
-		source_config
-		;;
 		*)
-		clear && echo  "Error请输入正确的数字 [1-3]" && Time
+		clear && echo  "Error请输入正确的数字 [1-2]" && Time
 		clear && make_continue_to_compile
 		;;
 	esac
