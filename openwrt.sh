@@ -1399,13 +1399,6 @@ COMMENT
 		#下载插件
 		other_plugins
 
-		#默认选上NaiveProxy
-		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
-			sed -i '24d' feeds/helloworld/luci-app-ssr-plus/Makefile
-			sed -i '23a\default y if i386||x86_64||arm||aarch64' feeds/helloworld/luci-app-ssr-plus/Makefile
-			sed -i "24s/^/        /" feeds/helloworld/luci-app-ssr-plus/Makefile
-		fi
-
 		#默认选上其他参数
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
 			sed -i '54d' package/other-plugins/luci-app-passwall/Makefile
