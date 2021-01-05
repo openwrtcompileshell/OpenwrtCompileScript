@@ -1,0 +1,10 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete firewall.banlogon
+	set firewall.banlogon=include
+	set firewall.banlogon.type=script
+	set firewall.banlogon.path=/usr/share/banlogon/banlogon.include
+	set firewall.banlogon.reload=1
+	commit firewall
+EOF

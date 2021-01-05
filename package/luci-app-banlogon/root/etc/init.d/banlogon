@@ -1,0 +1,74 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+#hash=""
+
+PROG='/usr/sbin/banlogon'
+
+service_triggers()
+{
+	procd_add_reload_trigger 'banlogon'
+}
+
+start_instance() {
+	config_get_bool enabled "$1" 'enabled' '0'
+	config_get_bool uhttpd "$1" 'uhttpd' '0'
+	config_get_bool dropbear "$1" 'dropbear' '0'
+}
+
+start_service() {
+#	data="$(sha256sum /etc/config/banlogon|awk '{print $1}')"
+#	[ "$hash" != "$data" ] || return 1
+#	i="$(awk '/hash=\"/ {print FNR}' /etc/init.d/banlogon)"
+#	sed -i "${i}c hash=\"$data\"" /etc/init.d/banlogon
+	config_load 'banlogon'
+	config_foreach start_instance 'basic'
+
+	[ "$enabled" -gt 0 ] || {
+	ipset list uhttpd4 2>/dev/null 1>/dev/null && ipset flush uhttpd4 2>/dev/null
+	ipset list uhttpd6 2>/dev/null 1>/dev/null && ipset flush uhttpd6  2>/dev/null
+	ipset list dropbear4 2>/dev/null 1>/dev/null && ipset flush dropbear4 2>/dev/null
+	ipset list dropbear6 2>/dev/null 1>/dev/null && ipset flush dropbear6  2>/dev/null
+	fw3 restart ; return 1 ; }
+
+uhttpd() { uhttpd() { uhttpd() {
+	config_get http "$1" listen_http ; config_get https "$1" listen_https ; for http in $http; do
+	echo $(echo "$http"|sed 's/ /\n/g;s/[:]/ /g;s/]/ /g'|while read ip port ; do echo $port ; done)
+	done ; for https in $https; do
+	echo $(echo "$https"|sed 's/ /\n/g;s/[:]/ /g;s/]/ /g'|while read ip port ; do echo $port ; done)
+	done ; } ; config_load 'uhttpd' ; config_foreach uhttpd 'uhttpd' ; }
+	uport=$(uhttpd|uniq|sed ':a;N;s/\n/ /g;ta') ; }
+
+dropbear() { dropbear() { dropbear() {
+	config_get Port "$1" 'Port' ; for port in $Port; do echo $port ; done ; }
+	config_load 'dropbear' ; config_foreach dropbear 'dropbear' ; }
+	dport=$(dropbear|uniq|sed ':a;N;s/\n/ /g;ta') ; }
+
+	#uport="$(for u in $(ps|grep -v grep|grep uhttpd);do a=$(echo "${u}"|grep ":[0-9]");[ -n "$a" ]&&echo "${a/*:/}";done|uniq)"
+	#dport="$(ps|grep -v grep|grep dropbear|awk '{print $10}'|uniq)"
+
+	[ "$uhttpd" -gt 0 ] && { append OPTIONS "uhttpd"
+	ipset list uhttpd4 2>/dev/null 1>/dev/null||ipset create uhttpd4 hash:ip family inet timeout 0 2>/dev/null
+	ipset list uhttpd6 2>/dev/null 1>/dev/null||ipset create uhttpd6 hash:ip family inet6 timeout 0 2>/dev/null
+	uhttpd ; for uport in $uport ; do
+	iptables -C INPUT -m set --match-set uhttpd4 src -p tcp --dport "$uport" -j DROP 2>/dev/null||\
+	iptables -I INPUT -m set --match-set uhttpd4 src -p tcp --dport "$uport" -j DROP 2>/dev/null
+	ip6tables -C INPUT -m set --match-set uhttpd6 src -p tcp --dport "$uport" -j DROP 2>/dev/null||\
+	ip6tables -I INPUT -m set --match-set uhttpd6 src -p tcp --dport "$uport" -j DROP 2>/dev/null ; done ; }
+	[ "$dropbear" -gt 0 ] && { append OPTIONS "dropbear"
+	ipset list dropbear4 2>/dev/null 1>/dev/null||ipset create dropbear4 hash:ip family inet timeout 0 2>/dev/null
+	ipset list dropbear6 2>/dev/null 1>/dev/null||ipset create dropbear6 hash:ip family inet6 timeout 0 2>/dev/null
+	dropbear ; for dport in $dport ; do
+	iptables -C INPUT -m set --match-set dropbear4 src -p tcp --dport "$dport" -j DROP 2>/dev/null||\
+	iptables -I INPUT -m set --match-set dropbear4 src -p tcp --dport "$dport" -j DROP 2>/dev/null
+	ip6tables -C INPUT -m set --match-set dropbear6 src -p tcp --dport "$dport" -j DROP 2>/dev/null||\
+	ip6tables -I INPUT -m set --match-set dropbear6 src -p tcp --dport "$dport" -j DROP 2>/dev/null ; done ; }
+
+	procd_open_instance #启动进程实例 进程必须挂在前台
+	procd_set_param command "${PROG}" -a "$OPTIONS" #执行启动命令
+	procd_set_param respawn #启用进程守护
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_close_instance #关闭进程实例 等同于 CTRL + C
+}

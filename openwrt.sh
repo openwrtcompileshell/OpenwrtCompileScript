@@ -1297,7 +1297,7 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus luci-app-wrtbwmon /g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd  lm-sensors autocore #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-banlogon lm-sensors autocore #tr_ok/g" include/target.mk
 			#部分插件不默认选上，因为新内核支持不是很好
 			#ipv6helper luci-app-netdata luci-app-sqm luci-app-kodexplorer  luci-app-dockerman
 
@@ -1326,6 +1326,13 @@ source_lean() {
 		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/x86/Makefile | wc -l` == "1" ]]; then
 			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/x86/Makefile
 			sed -i 's\KERNEL_TESTING_PATCHVER:=5.4\KERNEL_TESTING_PATCHVER:=4.19\g' target/linux/x86/Makefile
+		else
+			echo ""
+		fi
+
+		#修改ipq806x内核
+		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/ipq806x/Makefile | wc -l` == "1" ]]; then
+			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/ipq806x/Makefile
 		else
 			echo ""
 		fi
@@ -1566,6 +1573,15 @@ other_plugins() {
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
+		fi
+
+		 #错误访问登录限制（来自恩山401626436）
+		if [[ -e package/other-plugins/luci-app-banlogon ]]; then
+			rm -rf  package/other-plugins/luci-app-banlogon
+			cp -r $HOME/$OW/$SF/$OCS/package/luci-app-banlogon  package/other-plugins/luci-app-banlogon
+			cd $HOME/$OW/$file/lede/
+		else
+			cp -r $HOME/$OW/$SF/$OCS/package/luci-app-banlogon  package/other-plugins/luci-app-banlogon
 		fi
 
 :<<'COMMENT'

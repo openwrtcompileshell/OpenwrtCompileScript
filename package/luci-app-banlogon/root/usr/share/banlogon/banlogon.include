@@ -1,0 +1,37 @@
+#!/bin/sh
+
+. $IPKG_INSTROOT/lib/functions.sh
+
+main() {
+	config_get_bool enabled "$1" 'enabled' '0'
+	config_get_bool uhttpd "$1" 'uhttpd' '0'
+	config_get_bool dropbear "$1" 'dropbear' '0' ; }
+	config_load 'banlogon'
+	config_foreach main 'basic'
+	[ "$enabled" -gt 0 ] || return 1
+#	uport="$(for u in $(ps|grep -v grep|grep uhttpd);do a=$(echo "${u}"|grep ":[0-9]");[ -n "$a" ]&&echo "${a/*:/}";done|uniq)"
+#	dport="$(ps|grep -v grep|grep dropbear|awk '{print $10}'|uniq)"
+uhttpd() { uhttpd() { uhttpd() {
+	config_get http "$1" listen_http ; config_get https "$1" listen_https ; for http in $http; do
+	echo $(echo "$http"|sed 's/ /\n/g;s/[:]/ /g;s/]/ /g'|while read ip port ; do echo $port ; done)
+	done ; for https in $https; do
+	echo $(echo "$https"|sed 's/ /\n/g;s/[:]/ /g;s/]/ /g'|while read ip port ; do echo $port ; done)
+	done ; } ; config_load 'uhttpd' ; config_foreach uhttpd 'uhttpd' ; }
+	uport=$(uhttpd|uniq|sed ':a;N;s/\n/ /g;ta') ; }
+
+dropbear() { dropbear() { dropbear() {
+	config_get Port "$1" 'Port' ; for port in $Port; do echo $port ; done ; }
+	config_load 'dropbear' ; config_foreach dropbear 'dropbear' ; }
+	dport=$(dropbear|uniq|sed ':a;N;s/\n/ /g;ta') ; }
+	[ "$uhttpd" -gt 0 ] && {
+	uhttpd ; for uport in $uport ; do
+	iptables -C INPUT -m set --match-set uhttpd4 src -p tcp --dport "$uport" -j DROP 2>/dev/null||\
+	iptables -I INPUT -m set --match-set uhttpd4 src -p tcp --dport "$uport" -j DROP 2>/dev/null
+	ip6tables -C INPUT -m set --match-set uhttpd6 src -p tcp --dport "$uport" -j DROP 2>/dev/null||\
+	ip6tables -I INPUT -m set --match-set uhttpd6 src -p tcp --dport "$uport" -j DROP 2>/dev/null ; done ; }
+	[ "$dropbear" -gt 0 ] && {
+	dropbear ; for dport in $dport ; do
+	iptables -C INPUT -m set --match-set dropbear4 src -p tcp --dport "$dport" -j DROP 2>/dev/null||\
+	iptables -I INPUT -m set --match-set dropbear4 src -p tcp --dport "$dport" -j DROP 2>/dev/null
+	ip6tables -C INPUT -m set --match-set dropbear6 src -p tcp --dport "$dport" -j DROP 2>/dev/null||\
+	ip6tables -I INPUT -m set --match-set dropbear6 src -p tcp --dport "$dport" -j DROP 2>/dev/null ; done ; }

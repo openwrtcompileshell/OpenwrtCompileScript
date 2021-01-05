@@ -1,0 +1,4 @@
+msgid "Banlogon"
+msgstr "登录封锁"
+
+

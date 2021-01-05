@@ -1,0 +1,40 @@
+{
+	"admin/control/banlogon": {
+		"title": "登录封锁",
+		"order": 30,
+		"action": {
+			"type": "firstchild"
+		},
+		"depends": {
+			"acl": [ "luci-app-banlogon" ],
+			"uci": { "banlogon": true }
+		}
+	},
+
+	"admin/control/banlogon/global": {
+		"title": "General Setup",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "banlogon/global"
+		}
+	},
+
+	"admin/control/banlogon/whitelist": {
+		"title": "Whitelist",
+		"order": 2,
+		"action": {
+			"type": "view",
+			"path": "banlogon/whitelist"
+		}
+	},
+
+	"admin/control/banlogon/Blockeduser": {
+		"title": "封禁用户",
+		"order": 3,
+		"action": {
+			"type": "view",
+			"path": "banlogon/Blockeduser"
+		}
+	}
+}

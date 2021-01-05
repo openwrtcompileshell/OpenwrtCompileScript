@@ -1,0 +1,10 @@
+
+config basic
+	option uhttpd '1'
+	option dropbear '1'
+	option Refreshinterval '3s'
+	option Errorcount '3'
+	option Actionmethod '1'
+	option Actiontime '60'
+	option enabled '0'
+
