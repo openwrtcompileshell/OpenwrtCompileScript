@@ -1304,7 +1304,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome git git-http node node-npm "
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome git git-http node node-npm golang"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1420,6 +1420,9 @@ COMMENT
 			sed -i '73a\default y if i386||x86_64||arm||aarch64' package/other-plugins/luci-app-passwall/Makefile
 			sed -i "74s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 		fi
+
+		#删除这个，解决报错问题
+		rm -rf dl/go-mod-cache
 		
 		update_feeds
 		echo -e ">>$green lean版本配置优化完成$white"
