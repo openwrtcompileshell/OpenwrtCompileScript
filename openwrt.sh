@@ -1304,7 +1304,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome git git-http node node-npm golang"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome git git-http node node-npm golang gcc"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1317,7 +1317,7 @@ source_lean() {
 
 		#修改X86默认固件大小
 		if [[ `grep -o "default 160" config/Config-images.in | wc -l` == "1" ]]; then
-			sed -i 's\default 160\default 260\g' config/Config-images.in
+			sed -i 's\default 160\default 1024\g' config/Config-images.in
 		else
 			echo ""
 		fi
