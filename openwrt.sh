@@ -1329,21 +1329,6 @@ source_lean() {
 		else
 			echo ""
 		fi
-
-		#修改ipq806x内核
-		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/ipq806x/Makefile | wc -l` == "1" ]]; then
-			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/ipq806x/Makefile
-		else
-			echo ""
-		fi
-
-		#ipq806_makefile
-		ipq806_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-wifischedule luci-app-dockerman luci-app-frps fdisk e2fsprogs ca-certificates"
-		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile` == "$ipq806_makefile" ]]; then
-			echo -e "$green 配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/luci-app-ipsec-vpnd luci-app-unblockmusic luci-app-zerotier ca-certificates/$ipq806_makefile/g" target/linux/ipq806x/Makefile
-		fi
 		
 		#默认对x86首页下手，其他的你们安全了
 		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/x86/index.htm)
