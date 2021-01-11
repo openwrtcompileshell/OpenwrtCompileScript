@@ -24,6 +24,7 @@ start() {
 	else
 		git clone https://github.com/ITdesk01/AUCloudflareIP.git /usr/share/AUCloudflareIP && Detect
 		chmod +x /usr/share/AUCloudflareIP/AUCloudflareIP.sh
+		chmod +x /usr/share/AUCloudflareIP/CloudflareST
 		sh /usr/share/AUCloudflareIP/AUCloudflareIP.sh system_variable
 	fi
 	exit 0
