@@ -9,33 +9,32 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=installscript
 PKG_VERSION:=1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/installscript-x86
-  TITLE:=x86/x64 Install script.
+define Package/installscript
+  TITLE:=x86/x64 Install JD_Script Checkjs AUCloudflareIP Script.
   MAINTAINER:=ITdesk
-  DEPENDS:=@TARGET_x86
-  VARIANT:=x86
+  DEPENDS:=+git +git-http +node +node-npm
 endef
 
-define Package/installscript-x86/description
-  Install JD_Script Checkjs AUCloudflareIP Script.
+define Package/installscript/description
+Install JD_Script Checkjs AUCloudflareIP Script.
 endef
 
 define Build/Compile
 endef
 
-define Package/installscript-x86/postinst
+define Package/installscript/postinst
 	#!/bin/sh
 	npm install -g crypto-js got http-server tough-cookie download request tunnel
 	exit 0
 endef 
 
-define Package/installscript-x86/install
+define Package/installscript/install
 	$(INSTALL_DIR) $(1)/usr/share
 	$(CP) ./files/* $(1)/usr/share
 endef
 
-$(eval $(call BuildPackage,installscript-x86))
+$(eval $(call BuildPackage,installscript))
