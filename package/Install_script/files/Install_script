@@ -11,6 +11,7 @@ start() {
 		git clone https://github.com/ITdesk01/JD_Script.git /usr/share/JD_Script && Detect
 		chmod +x /usr/share/JD_Script/jd.sh 
 		sh /usr/share/JD_Script/jd.sh system_variable
+		sh /usr/share/JD_Script/jd.sh update &
 	fi
 
 	if [ -e /usr/share/Checkjs ];then
