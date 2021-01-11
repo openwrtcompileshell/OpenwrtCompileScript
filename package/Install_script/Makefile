@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=installscript
+PKG_NAME:=Install_script
 PKG_VERSION:=1
 PKG_RELEASE:=3
 
@@ -15,22 +15,22 @@ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/installscript
+define Package/Install_script
   TITLE:=x86/x64 Install JD_Script Checkjs AUCloudflareIP Script.
   MAINTAINER:=ITdesk
   DEPENDS:=+git +git-http +node +node-npm
 endef
 
-define Package/installscript/description
+define Package/Install_script/description
 	Install JD_Script Checkjs AUCloudflareIP Script.
 endef
 
 define Build/Compile
 endef
 
-define Package/installscript/install
+define Package/Install_script/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/installscript-settings-settings $(1)/etc/uci-defaults/99-installscript-settings
+	$(INSTALL_BIN) ./files/Install_script-settings $(1)/etc/uci-defaults/99-Install_script-settings
 endef
 
-$(eval $(call BuildPackage,installscript))
+$(eval $(call BuildPackage,Install_script))

@@ -2,7 +2,7 @@
 
 start() {
 	
-	if [ ! -d /usr/share/JD_Script ]
+	if [ -e /usr/share/JD_Script ]
 		echo "JD_Script已存在"
 	else
 		npm install -g crypto-js got http-server tough-cookie download request tunnel && Detect
@@ -11,7 +11,7 @@ start() {
 		sh /usr/share/JD_Script/jd.sh system_variable
 	fi
 
-	if [ ! -d /usr/share/Checkjs ]
+	if [ -e /usr/share/Checkjs ]
 		echo "Checkjs已存在"
 	else
 		git clone https://github.com/ITdesk01/Checkjs.git /usr/share/Checkjs && Detect
@@ -19,7 +19,7 @@ start() {
 		sh /usr/share/Checkjs/checkjs.sh system_variable 
 	fi
 	
-	if [ ! -d /usr/share/AUCloudflareIP ]
+	if [ -e /usr/share/AUCloudflareIP ]
 		echo "AUCloudflareIP已存在"
 	else
 		git clone https://github.com/ITdesk01/AUCloudflareIP.git /usr/share/AUCloudflareIP && Detect

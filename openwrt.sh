@@ -1304,7 +1304,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome golang gcc installscript"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome golang gcc Install_script"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1572,19 +1572,13 @@ other_plugins() {
 		fi
 
 		#安装脚本
-		cd $HOME/$OW/$SF/$OCS/package/installscript/files/AUCloudflareIP
-		git fetch --all && git reset --hard origin/main
-		cd $HOME/$OW/$SF/$OCS/package/installscript/files/Checkjs
-		git fetch --all && git reset --hard origin/main
-		cd $HOME/$OW/$SF/$OCS/package/installscript/files/JD_Script
-		git fetch --all && git reset --hard origin/main
-		cd $HOME/$OW/$file/lede/
-		if [[ -e package/other-plugins/installscript ]]; then
-			rm -rf  package/other-plugins/installscript
-			cp -r $HOME/$OW/$SF/$OCS/package/installscript  package/other-plugins/installscript
+		if [[ -e package/other-plugins/Install_script ]]; then
+			rm -rf  package/other-plugins/Install_script
+			cp -r $HOME/$OW/$SF/$OCS/package/Install_script  package/other-plugins/Install_script
 		else
-			cp -r $HOME/$OW/$SF/$OCS/package/installscript  package/other-plugins/installscript
+			cp -r $HOME/$OW/$SF/$OCS/package/Install_script  package/other-plugins/Install_script
 		fi
+
 :<<'COMMENT'
 		#Hello word插件
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
