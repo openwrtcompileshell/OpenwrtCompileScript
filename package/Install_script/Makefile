@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Install_script
 PKG_VERSION:=1
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
@@ -29,8 +29,8 @@ define Build/Compile
 endef
 
 define Package/Install_script/install
-	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(INSTALL_BIN) ./files/Install_script-settings $(1)/etc/uci-defaults/99-Install_script-settings
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/Install_script $(1)/etc/init.d/Install_script
 endef
 
 $(eval $(call BuildPackage,Install_script))
