@@ -9,7 +9,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=installscript
 PKG_VERSION:=1
-PKG_RELEASE:=2
+PKG_RELEASE:=3
+
+PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -20,21 +22,15 @@ define Package/installscript
 endef
 
 define Package/installscript/description
-Install JD_Script Checkjs AUCloudflareIP Script.
+	Install JD_Script Checkjs AUCloudflareIP Script.
 endef
 
 define Build/Compile
 endef
 
-define Package/installscript/postinst
-	#!/bin/sh
-	npm install -g crypto-js got http-server tough-cookie download request tunnel
-	exit 0
-endef 
-
 define Package/installscript/install
-	$(INSTALL_DIR) $(1)/usr/share
-	$(CP) ./files/* $(1)/usr/share
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) ./files/installscript-settings-settings $(1)/etc/uci-defaults/99-installscript-settings
 endef
 
 $(eval $(call BuildPackage,installscript))
