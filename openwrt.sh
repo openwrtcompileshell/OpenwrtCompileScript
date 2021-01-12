@@ -15,6 +15,19 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
+calculating_time_start() {
+startTime=`date +%Y%m%d-%H:%M:%S`
+startTime_s=`date +%s`
+}
+
+calculating_time_end() {
+endTime=`date +%Y%m%d-%H:%M:%S`
+endTime_s=`date +%s`
+sumTime=$[ $endTime_s - $startTime_s ]
+echo ""
+echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime" "$yellow耗时:$green $sumTime $white秒"
+}
+
 prompt() {
 	echo -e "$green  脚本问题反馈：https://github.com/openwrtcompileshell/OpenwrtCompileScript/issues或者加群反馈(群在github有)$white"
 	echo  -e " $yellow温馨提示，最近的编译依赖有变动，如果你最近一直编译失败，建议使用脚本5.其他选项 --- 1.只搭建编译环境功能 $white"
@@ -1740,7 +1753,7 @@ ecc() {
 
 make_firmware_or_plugin() {
 	clear
-	starttime=`date +'%Y-%m-%d %H:%M:%S'`
+	calculating_time_start
 	echo "----------------------------------------"
 	echo "请选择编译固件 OR 编译插件"
 	echo " 1.编译固件"
@@ -1796,10 +1809,7 @@ make_compile_firmware() {
 	if [[ $? -eq 0 ]]; then
 		n1_builder
 		if_wo
-		endtime=`date +'%Y-%m-%d %H:%M:%S'`
-		start_seconds=$(date --date="$starttime" +%s);
-		end_seconds=$(date --date="$endtime" +%s);
-		echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+		calculating_time_end
 	else
 		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
 		make_continue_to_compile
@@ -1921,10 +1931,7 @@ make_Compile_plugin() {
 		echo "---------------------------------------------------------------------"
 			read a
 			make_Continue_compiling_the_plugin
-			endtime=`date +'%Y-%m-%d %H:%M:%S'`
-			start_seconds=$(date --date="$starttime" +%s);
-			end_seconds=$(date --date="$endtime" +%s);
-			echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+			calculating_time_end
 		else
 			echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
 			make_continue_to_compile
@@ -1984,12 +1991,9 @@ make_continue_to_compile() {
 #单独的命令模块
 make_j() {
 	dl_download
-	starttime=`date +'%Y-%m-%d %H:%M:%S'`
+	calculating_time_start
 	make -j$(nproc) V=s
-	endtime=`date +'%Y-%m-%d %H:%M:%S'`
-	start_seconds=$(date --date="$starttime" +%s);
-	end_seconds=$(date --date="$endtime" +%s);
-	echo "本次运行时间： "$((end_seconds-start_seconds))"s"
+	calculating_time_end
 	n1_builder
 }
 

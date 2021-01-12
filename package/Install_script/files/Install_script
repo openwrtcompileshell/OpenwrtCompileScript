@@ -2,10 +2,11 @@
 # Copyright (C) 2017 lean <coolsnowwolf@gmail.com>
 
 START=99
-USE_PROCD=1
 
 start() {
-	echo "执行脚本安装与检测，请稍等"
+	echo "-------------------------------------------"
+	echo " Instrall_script执行脚本安装与检测，请稍等"
+	echo "-------------------------------------------"
 	#检测网络环境
 	ping -c 2 github.com > /dev/null 2>&1
 	if [ $? -eq 0 ];then
@@ -18,15 +19,12 @@ start() {
 
 	#创建主文件
 	if [ -e /usr/share/Install_script ];then
-		echo ""
+		echo "主文件夹创建完成"
 	else
 		mkdir  /usr/share/Install_script
 	fi
 	
 	cd /usr/share/Install_script
-
-	#检测npm依赖
-	npm_install
 
 	#开始下载脚本
 	if [ -e JD_Script ];then
@@ -53,16 +51,20 @@ start() {
 		chmod +x AUCloudflareIP/CloudflareST
 		sh AUCloudflareIP/AUCloudflareIP.sh system_variable
 	fi
+
+	#检测npm依赖(安装时间太久，放到最后)
+	npm_install
+
 	exit 0
 }
 
 npm_install() {
-	npm_if=(cat npm_install.log | grep "安装完成" |wc -l)
+	npm_if=$(cat npm_install.log | grep "安装完成" |wc -l)
 	if [ $npm_if = "1" ];then
 		echo "npm 安装完成"
 	else
 		echo "npm 开始安装,请稍等"
-		npm install -g crypto-js got http-server tough-cookie download request tunnel >/tmp/npm_install.log
+		npm install -g crypto-js got http-server tough-cookie download request tunnel > npm_install.log
 		echo "安装完成" >> npm_install.log
 	fi
 }
