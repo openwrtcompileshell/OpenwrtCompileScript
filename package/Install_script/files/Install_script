@@ -4,37 +4,66 @@
 START=99
 
 start() {
+	echo "执行脚本安装与检测，请稍等"
+	#检测网络环境
+	ping -c 2 github.com > /dev/null 2>&1
+	if [ $? -eq 0 ];then
+		echo "网络正常"
+	else
+		echo "网络连接异常"
+		sleep 5m
+		start
+	fi
+
+	#创建主文件
+	if [ -e /usr/share/Install_script ];then
+		echo ""
+	else
+		mkdir  /usr/share/Install_script
+	fi
 	
-	if [ -e /usr/share/JD_Script ];then
+	cd /usr/share/Install_script
+
+	#检测npm依赖
+	npm_install
+
+	#开始下载脚本
+	if [ -e JD_Script ];then
 		echo "JD_Script已存在"
 	else
-		git clone https://github.com/ITdesk01/JD_Script.git /usr/share/JD_Script && Detect
-		chmod +x /usr/share/JD_Script/jd.sh 
-		sh /usr/share/JD_Script/jd.sh system_variable
-		sh /usr/share/JD_Script/jd.sh update &
+		git clone https://github.com/ITdesk01/JD_Script.git && Detect
+		chmod +x JD_Script/jd.sh
+		sh JD_Script/jd.sh system_variable
 	fi
 
-	if [ -e /usr/share/Checkjs ];then
+	if [ -e Checkjs ];then
 		echo "Checkjs已存在"
 	else
-		git clone https://github.com/ITdesk01/Checkjs.git /usr/share/Checkjs && Detect
-		chmod +x /usr/share/Checkjs/checkjs.sh
-		sh /usr/share/Checkjs/checkjs.sh system_variable 
+		git clone https://github.com/ITdesk01/Checkjs.git && Detect
+		chmod +x Checkjs/checkjs.sh
+		sh Checkjs/checkjs.sh system_variable
 	fi
 	
-	if [ -e /usr/share/AUCloudflareIP ];then
+	if [ -e AUCloudflareIP ];then
 		echo "AUCloudflareIP已存在"
 	else
-		git clone https://github.com/ITdesk01/AUCloudflareIP.git /usr/share/AUCloudflareIP && Detect
-		chmod +x /usr/share/AUCloudflareIP/AUCloudflareIP.sh
-		chmod +x /usr/share/AUCloudflareIP/CloudflareST
-		sh /usr/share/AUCloudflareIP/AUCloudflareIP.sh system_variable
+		git clone https://github.com/ITdesk01/AUCloudflareIP.git && Detect
+		chmod +x AUCloudflareIP/AUCloudflareIP.sh
+		chmod +x AUCloudflareIP/CloudflareST
+		sh AUCloudflareIP/AUCloudflareIP.sh system_variable
 	fi
-	
-	npm install -g crypto-js got http-server tough-cookie download request tunnel >/tmp/npm_install.log &
-	exit 0
 }
 
+npm_install() {
+	npm_if=(cat npm_install.log | grep "安装完成" |wc -l)
+	if [ $npm_if = "1" ];then
+		echo "npm 安装完成"
+	else
+		echo "npm 开始安装,请稍等"
+		npm install -g crypto-js got http-server tough-cookie download request tunnel >/tmp/npm_install.log
+		echo "安装完成" >> npm_install.log
+	fi
+}
 
 Detect() {
 	if [ $? -eq 0 ]; then
