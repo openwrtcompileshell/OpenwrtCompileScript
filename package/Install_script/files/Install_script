@@ -71,6 +71,9 @@ start() {
 		sh AUCloudflareIP/AUCloudflareIP.sh system_variable
 	fi
 
+	#全局变量生效
+	source /etc/profile
+
 	#检测npm依赖(安装时间太久，放到最后)
 	npm_install
 
