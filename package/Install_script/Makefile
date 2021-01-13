@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Install_script
 PKG_VERSION:=1
-PKG_RELEASE:=5
+PKG_RELEASE:=6
 #PKG_FLAGS:=nonshared
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
@@ -23,7 +23,17 @@ define Package/Install_script
 endef
 
 define Package/Install_script/description
-	Install JD_Script Checkjs AUCloudflareIP Script.
+Script Used
+	https://github.com/ITdesk01/JD_Script
+	https://github.com/ITdesk01/Checkjs
+	https://github.com/ITdesk01/AUCloudflareIP
+
+Dependent requirements
+	node >=10
+	node-npm >=10
+
+Please meet the above dependencies, otherwise you may not be able to use the script normally
+
 endef
 
 define Build/Compile

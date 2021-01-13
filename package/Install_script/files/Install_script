@@ -3,23 +3,42 @@
 
 START=99
 
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+white="\033[0m"
+
 start() {
+	clear
 	echo "-------------------------------------------"
-	echo " Instrall_script执行脚本安装与检测，请稍等"
+	echo -e "$green	    Instrall_script$white"
 	echo "-------------------------------------------"
+	echo -e "$yellow 本插件使用到的脚本$white"
+	echo "  1.https://github.com/ITdesk01/JD_Script"
+	echo "  2.https://github.com/ITdesk01/Checkjs"
+	echo "  3.https://github.com/ITdesk01/AUCloudflareIP"
+	echo ""
+	echo -e "$yellow 等安装完成以后可以用以下代码调用脚本$white"
+	echo -e "$green  sh \$jd $white      #调用JD_Script"
+	echo -e "$green  sh \$checkjs $white #调用Checkjs"
+	echo -e "$green  sh \$AUCI $white    #调用AUCloudflareIP"
+	echo ""
+	echo " 脚本用法请到github查看说明"
+	echo "-------------------------------------------"
+	echo -e "$green 执行脚本安装与检测，请稍等$white" && sleep 5
 	#检测网络环境
 	ping -c 2 github.com > /dev/null 2>&1
 	if [ $? -eq 0 ];then
-		echo "网络正常"
+		echo -e "$green 网络正常$white"
 	else
-		echo "网络连接异常"
+		echo -e "$red 网络连接异常$white"
 		sleep 5m
 		start
 	fi
 
 	#创建主文件
 	if [ -e /usr/share/Install_script ];then
-		echo "主文件夹创建完成"
+		echo -e "$green 主文件夹创建完成$white"
 	else
 		mkdir  /usr/share/Install_script
 	fi
@@ -28,7 +47,7 @@ start() {
 
 	#开始下载脚本
 	if [ -e JD_Script ];then
-		echo "JD_Script已存在"
+		echo -e "$green JD_Script已存在$white"
 	else
 		git clone https://github.com/ITdesk01/JD_Script.git && Detect
 		chmod +x JD_Script/jd.sh
@@ -36,7 +55,7 @@ start() {
 	fi
 
 	if [ -e Checkjs ];then
-		echo "Checkjs已存在"
+		echo -e "$green Checkjs已存在$white"
 	else
 		git clone https://github.com/ITdesk01/Checkjs.git && Detect
 		chmod +x Checkjs/checkjs.sh
@@ -44,7 +63,7 @@ start() {
 	fi
 	
 	if [ -e AUCloudflareIP ];then
-		echo "AUCloudflareIP已存在"
+		echo -e "$green AUCloudflareIP已存在$white"
 	else
 		git clone https://github.com/ITdesk01/AUCloudflareIP.git && Detect
 		chmod +x AUCloudflareIP/AUCloudflareIP.sh
@@ -61,9 +80,9 @@ start() {
 npm_install() {
 	npm_if=$(cat npm_install.log | grep "安装完成" |wc -l)
 	if [ $npm_if = "1" ];then
-		echo "npm 安装完成"
+		echo -e "$green npm 安装完成$white"
 	else
-		echo "npm 开始安装,请稍等"
+		echo -e  "$yellow npm 开始安装,请稍等$white"
 		npm install -g crypto-js got http-server tough-cookie download request tunnel > npm_install.log
 		echo "安装完成" >> npm_install.log
 	fi
@@ -73,7 +92,7 @@ Detect() {
 	if [ $? -eq 0 ]; then
 		echo  ""
 	else
-		echo "代码运行失败重新执行"
+		echo -e "$red 代码运行失败重新执行$white"
 		start
 	fi
 }
