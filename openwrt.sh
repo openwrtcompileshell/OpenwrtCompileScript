@@ -25,7 +25,7 @@ endTime=`date +%Y%m%d-%H:%M:%S`
 endTime_s=`date +%s`
 sumTime=$[ $endTime_s - $startTime_s ]
 echo ""
-echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime" "$yellow耗时:$green $sumTime $white秒"
+echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime" "$yellow耗时:$green $sumTime 秒$white"
 }
 
 prompt() {
