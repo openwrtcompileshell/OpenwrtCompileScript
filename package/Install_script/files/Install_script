@@ -127,16 +127,8 @@ stop() {
 			sleep 5
 
 			echo -e "$green删除脚本目录$white"
-			if [ -d $dir_file/Checkjs ];then
-				rm -rf $dir_file/Checkjs
-			fi
-
-			if [ -d $dir_file/AUCloudflareIP ];then
-				rm -rf $dir_file/AUCloudflareIP
-			fi
-
-			if [ -d $dir_file/JD_Script ];then
-				rm -rf $dir_file/JD_Script
+			if [ -d $dir_file ];then
+				rm -rf $dir_file
 			fi
 			sleep 5
 
