@@ -8,6 +8,8 @@ green="\033[32m"
 yellow="\033[33m"
 white="\033[0m"
 
+dir_file="/usr/share/Install_script"
+
 start() {
 	clear
 	echo "-------------------------------------------"
@@ -37,20 +39,20 @@ start() {
 	fi
 
 	#创建主文件
-	if [ -e /usr/share/Install_script ];then
+	if [ -e $dir_file ];then
 		echo -e "$green 主文件夹创建完成$white"
 	else
-		mkdir  /usr/share/Install_script
+		mkdir  $dir_file
 	fi
 	
-	cd /usr/share/Install_script
+	cd $dir_file
 
 	#开始下载脚本
 	if [ -e JD_Script ];then
 		echo -e "$green JD_Script已存在$white"
 	else
 		git clone https://github.com/ITdesk01/JD_Script.git && Detect
-		chmod +x JD_Script/jd.sh
+		chmod 755 JD_Script/jd.sh
 		sh JD_Script/jd.sh system_variable
 	fi
 
@@ -58,7 +60,7 @@ start() {
 		echo -e "$green Checkjs已存在$white"
 	else
 		git clone https://github.com/ITdesk01/Checkjs.git && Detect
-		chmod +x Checkjs/checkjs.sh
+		chmod 755 Checkjs/checkjs.sh
 		sh Checkjs/checkjs.sh system_variable
 	fi
 	
@@ -66,8 +68,8 @@ start() {
 		echo -e "$green AUCloudflareIP已存在$white"
 	else
 		git clone https://github.com/ITdesk01/AUCloudflareIP.git && Detect
-		chmod +x AUCloudflareIP/AUCloudflareIP.sh
-		chmod +x AUCloudflareIP/CloudflareST
+		chmod 755 AUCloudflareIP/AUCloudflareIP.sh
+		chmod 755 AUCloudflareIP/CloudflareST
 		sh AUCloudflareIP/AUCloudflareIP.sh system_variable
 	fi
 
@@ -99,3 +101,55 @@ Detect() {
 		start
 	fi
 }
+
+
+stop() {
+	clear
+	echo "------------------------------------------"
+	echo -e "$yellow 用于删除JD_Script checkjs AUCloudflareIP$white"
+	echo "------------------------------------------"
+
+	read  -p "请先保存你的cookie和推送文件这个也会删除，确定无误回复 $green y $white 删除,不清楚的crtl+c退出" num
+		if [ $num = "y" ];then
+			echo -e "$green删除计划任务$white"
+			sed -i '/JD_Script/d' /etc/crontabs/root >/dev/null 2>&1
+			sed -i '/Checkjs/d' /etc/crontabs/root >/dev/null 2>&1
+			sed -i '/AUCloudflareIP/d' /etc/crontabs/root >/dev/null 2>&1
+			sed -i '/####/d' /etc/crontabs/root >/dev/null 2>&1
+			/etc/init.d/cron restart
+			sleep 5
+
+			echo -e "$green开始删除全局变量$white"
+			sed -i '/AUCloudflareIP/d' /etc/profile >/dev/null 2>&1
+			sed -i '/Checkjs/d' /etc/profile >/dev/null 2>&1
+			sed -i '/JD_Script/d' /etc/profile >/dev/null 2>&1
+
+			sleep 5
+
+			echo -e "$green删除脚本目录$white"
+			if [ -d $dir_file/Checkjs ];then
+				rm -rf $dir_file/Checkjs
+			fi
+
+			if [ -d $dir_file/AUCloudflareIP ];then
+				rm -rf $dir_file/AUCloudflareIP
+			fi
+
+			if [ -d $dir_file/JD_Script ];then
+				rm -rf $dir_file/JD_Script
+			fi
+			sleep 5
+
+			echo ""
+			echo "---------------------------------------------------------"
+			echo "			删除完成，玩的开心"
+			echo -e "彻底关掉插件输$green /etc/init.d/Install_script disable$white，这样就不会自己启动了"
+			echo "---------------------------------------------------------"
+			. /etc/profile
+		else
+			echo "请不要乱输"
+			sh $0
+		fi
+}
+
+
