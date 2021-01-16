@@ -33,7 +33,7 @@ start() {
 	if [ $? -eq 0 ];then
 		echo -e "$green 网络正常$white"
 	else
-		echo -e "$red 网络连接异常$white"
+		echo -e "$red 网络连接异常，休息5分钟再继续试$white"
 		sleep 5m
 		start
 	fi
@@ -45,6 +45,12 @@ start() {
 		mkdir  $dir_file
 	fi
 	
+	if [ -e $dir_file/script_config ];then
+		echo -e "$green script_config创建完成$white"
+	else
+		mkdir  $dir_file/script_config
+	fi
+
 	cd $dir_file
 
 	#开始下载脚本
@@ -109,39 +115,43 @@ stop() {
 	echo -e "$yellow 用于删除JD_Script checkjs AUCloudflareIP$white"
 	echo "------------------------------------------"
 
-	read  -p "请先保存你的cookie和推送文件这个也会删除，确定无误回复 $green y $white 删除,不清楚的crtl+c退出" num
-		if [ $num = "y" ];then
-			echo -e "$green删除计划任务$white"
-			sed -i '/JD_Script/d' /etc/crontabs/root >/dev/null 2>&1
-			sed -i '/Checkjs/d' /etc/crontabs/root >/dev/null 2>&1
-			sed -i '/AUCloudflareIP/d' /etc/crontabs/root >/dev/null 2>&1
-			sed -i '/####/d' /etc/crontabs/root >/dev/null 2>&1
-			/etc/init.d/cron restart
-			sleep 5
+	echo -e "请先保存$green$dir_file/script_config$white，这个也会删除"
+	echo ""
+	seconds_left=15
+	while [ ${seconds_left} -gt 0 ]; do
+		echo -n "  ${seconds_left}秒以后开始删除,不清楚的现在crtl+c退出"
+		sleep 1
+		seconds_left=$(($seconds_left - 1))
+		echo -ne "\r"
+	done
+		echo -e "$green删除计划任务$white"
+		sed -i '/JD_Script/d' /etc/crontabs/root >/dev/null 2>&1
+		sed -i '/Checkjs/d' /etc/crontabs/root >/dev/null 2>&1
+		sed -i '/AUCloudflareIP/d' /etc/crontabs/root >/dev/null 2>&1
+		sed -i '/####/d' /etc/crontabs/root >/dev/null 2>&1
+		/etc/init.d/cron restart
+		sleep 5
 
-			echo -e "$green开始删除全局变量$white"
-			sed -i '/AUCloudflareIP/d' /etc/profile >/dev/null 2>&1
-			sed -i '/Checkjs/d' /etc/profile >/dev/null 2>&1
-			sed -i '/JD_Script/d' /etc/profile >/dev/null 2>&1
+		echo -e "$green开始删除全局变量$white"
+		sed -i '/AUCloudflareIP/d' /etc/profile >/dev/null 2>&1
+		sed -i '/Checkjs/d' /etc/profile >/dev/null 2>&1
+		sed -i '/JD_Script/d' /etc/profile >/dev/null 2>&1
 
-			sleep 5
+		sleep 5
 
-			echo -e "$green删除脚本目录$white"
-			if [ -d $dir_file ];then
-				rm -rf $dir_file
-			fi
-			sleep 5
-
-			echo ""
-			echo "---------------------------------------------------------"
-			echo "			删除完成，玩的开心"
-			echo -e "彻底关掉插件输$green /etc/init.d/Install_script disable$white，这样就不会自己启动了"
-			echo "---------------------------------------------------------"
-			. /etc/profile
-		else
-			echo "请不要乱输"
-			sh $0
+		echo -e "$green删除脚本目录$white"
+		if [ -d $dir_file ];then
+			rm -rf $dir_file
 		fi
+		sleep 5
+
+		echo ""
+		echo "---------------------------------------------------------"
+		echo "			删除完成，玩的开心"
+		echo -e "彻底关掉插件输$green /etc/init.d/Install_script disable$white，这样就不会自己启动了"
+		echo "---------------------------------------------------------"
+		. /etc/profile
+
 }
 
 

@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Install_script
 PKG_VERSION:=1
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 #PKG_FLAGS:=nonshared
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
@@ -37,6 +37,10 @@ Please meet the above dependencies, otherwise you may not be able to use the scr
 endef
 
 define Build/Compile
+endef
+
+define Package/Install_script/conffies
+	/usr/share/Install_script/config
 endef
 
 define Package/Install_script/install

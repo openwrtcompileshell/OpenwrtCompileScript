@@ -107,7 +107,7 @@ Time() {
 		echo -n ${seconds_left}
 		sleep 1
 		seconds_left=$(($seconds_left - 1))
-		echo -ne "\r     \r"
+		echo -ne "\r"
 	done
 }
 
