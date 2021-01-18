@@ -85,6 +85,13 @@ start() {
 	#检测npm依赖(安装时间太久，放到最后)
 	npm_install
 
+	#生成备份的时候把script_config一起打包出来
+	script_config="/usr/share/Install_script/script_config"
+	if_sysupgrade=$(grep -o "$script_config" /etc/sysupgrade.conf | wc -l )
+	if [ $if_sysupgrade == "0" ];then
+		echo "$script_config" >> /etc/sysupgrade.conf
+	fi
+
 	exit 0
 }
 
