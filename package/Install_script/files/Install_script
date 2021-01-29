@@ -57,7 +57,7 @@ start() {
 	if [ -e JD_Script ];then
 		echo -e "$green JD_Script已存在$white"
 	else
-		git clone https://github.com/ITdesk01/JD_Script.git && Detect
+		git clone -b main https://github.com/ITdesk01/JD_Script.git && Detect
 		chmod 755 JD_Script/jd.sh
 		sh JD_Script/jd.sh system_variable
 	fi
