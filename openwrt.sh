@@ -1557,17 +1557,6 @@ other_plugins() {
 			echo ""
 		fi
 
-		#下载jd插件
-		if [[ -e package/other-plugins/luci-app-jd-dailybonus ]]; then
-			cd  package/other-plugins/node-request && source_update_No_git_pull
-			cd $HOME/$OW/$file/lede/
-			cd  package/other-plugins/luci-app-jd-dailybonus && source_update_No_git_pull
-			cd $HOME/$OW/$file/lede/
-		else
-			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
-			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
-		fi
-
 		#adguardhome插件
 		if [[ -e package/other-plugins/luci-app-adguardhome ]]; then
 			cd  package/other-plugins/luci-app-adguardhome && source_update_No_git_pull
@@ -1593,6 +1582,17 @@ other_plugins() {
 		fi
 
 :<<'COMMENT'
+		#下载jd插件
+		if [[ -e package/other-plugins/luci-app-jd-dailybonus ]]; then
+			cd  package/other-plugins/node-request && source_update_No_git_pull
+			cd $HOME/$OW/$file/lede/
+			cd  package/other-plugins/luci-app-jd-dailybonus && source_update_No_git_pull
+			cd $HOME/$OW/$file/lede/
+		else
+			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
+			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
+		fi
+
 		#Hello word插件
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
 			rm -rf package/other-plugins/luci-app-passwall
