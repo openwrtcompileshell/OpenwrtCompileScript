@@ -1308,16 +1308,16 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus luci-app-wrtbwmon /g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant  luci-app-wrtbwmon /g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd  lm-sensors autocore #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-dockerman lm-sensors autocore #tr_ok/g" include/target.mk
 			#部分插件不默认选上，因为新内核支持不是很好
-			#ipv6helper  luci-app-sqm luci-app-kodexplorer  luci-app-dockerman luci-app-banlogon luci-app-netdata
+			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus  luci-app-banlogon luci-app-netdata
 
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns  luci-app-adguardhome golang gcc Install_script"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns Install_script"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1326,11 +1326,12 @@ source_lean() {
 			sed -i "s/luci-app-openvpn-server//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-music-remote-center//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-airplay2//g" target/linux/x86/Makefile
+			sed -i "s/luci-app-jd-dailybonus//g" target/linux/x86/Makefile
 		fi
 
 		#修改X86默认固件大小
 		if [[ `grep -o "default 160" config/Config-images.in | wc -l` == "1" ]]; then
-			sed -i 's\default 160\default 1024\g' config/Config-images.in
+			sed -i 's\default 160\default 512\g' config/Config-images.in
 		else
 			echo ""
 		fi
@@ -1645,6 +1646,8 @@ source_Setting_Public() {
 	else
 		echo ""
 	fi
+
+	sed -i "s/*\/\$time \* /0 *\/2 /g" package/lean/luci-app-frpc/root/etc/init.d/frp
 
 	echo -e ">>$green Public配置完成$white"	
 }
