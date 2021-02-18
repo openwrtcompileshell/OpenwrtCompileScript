@@ -1310,9 +1310,9 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns  luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant  luci-app-wrtbwmon /g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc  luci-app-dockerman lm-sensors autocore #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc  luci-app-dockerman lm-sensors autocore luci-app-godproxy luci-app-banlogon #tr_ok/g" include/target.mk
 			#部分插件不默认选上，因为新内核支持不是很好
-			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus  luci-app-banlogon luci-app-netdata 不安全luci-app-ttyd
+			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus   luci-app-netdata 不安全luci-app-ttyd
 
 		fi	
 		
@@ -1576,6 +1576,14 @@ other_plugins() {
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
+		fi
+
+		#godproxy插件
+		if [[ -e package/other-plugins/luci-app-godproxy ]]; then
+			cd  package/other-plugins/luci-app-godproxy && source_update_No_git_pull
+			cd $HOME/$OW/$file/lede/
+		else
+			git clone https://github.com/project-lede/luci-app-godproxy.git package/other-plugins/luci-app-godproxy
 		fi
 
 		 #错误访问登录限制（来自恩山401626436）
