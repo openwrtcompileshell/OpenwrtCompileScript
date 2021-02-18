@@ -1546,17 +1546,19 @@ other_plugins() {
 		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
 			cd  package/other-plugins/luci-app-dockerman
 			source_update_No_git_pull
+			sed -i "s/+ttyd//g" applications/luci-app-dockerman/Makefile
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
+			sed -i "s/+ttyd//g" package/other-plugins/luci-app-dockerman/applications/luci-app-dockerman/Makefile
 		fi
 
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
 			rm -rf   package/other-plugins/luci-app-fileassistant
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		else
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/lienol/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
+			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		fi
 
 		#将diskman选项启用
