@@ -1308,11 +1308,11 @@ source_lean() {
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant  luci-app-wrtbwmon /g" include/target.mk
+			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns  luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant  luci-app-wrtbwmon /g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq luci-app-frpc luci-app-ttyd luci-app-dockerman lm-sensors autocore #tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc  luci-app-dockerman lm-sensors autocore #tr_ok/g" include/target.mk
 			#部分插件不默认选上，因为新内核支持不是很好
-			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus  luci-app-banlogon luci-app-netdata
+			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus  luci-app-banlogon luci-app-netdata 不安全luci-app-ttyd
 
 		fi	
 		
@@ -1365,6 +1365,16 @@ source_lean() {
 			sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		fi
+
+		#ipq806x_makefile
+		ipq806x_makefile="kmod-ath10k-ct wpad-openssl Install_script"
+		#ipq806x_makefile="kmod-ath10k-ct wpad-openssl kmod-qca-nss-drv kmod-qca-nss-drv-qdisc kmod-qca-nss-ecm-standard kmod-qca-nss-gmac kmod-nss-ifb iptables-mod-physdev kmod-ipt-physdev kmod-qca-nss-drv-pppoe MAC80211_NSS_SUPPORT  luci-app-cpufreq Install_script"
+		if [[ `grep -o "$ipq806x_makefile" target/linux/ipq806x/Makefile ` == "$ipq806x_makefile" ]]; then
+			echo -e "$green ipq806x_makefile配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/kmod-ath10k-ct wpad-openssl/$ipq806x_makefile/g" target/linux/ipq806x/Makefile
+		fi
+
 	fi
 :<<'COMMENT'
 		#替换lean首页文件，添加天气代码(by:冷淡)
@@ -1421,7 +1431,7 @@ COMMENT
 		fi
 
 		#删除这个，解决报错问题
-		rm -rf dl/go-mod-cache
+		rm -rf dl/go-mod-cache && rm -rf ./tmp
 		
 		update_feeds
 		echo -e ">>$green lean版本配置优化完成$white"
