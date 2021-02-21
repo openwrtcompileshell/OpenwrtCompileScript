@@ -101,7 +101,7 @@ npm_install() {
 		echo -e "$green npm 安装完成$white"
 	else
 		echo -e  "$yellow npm 开始安装,请稍等$white"
-		npm install -g crypto-js got http-server tough-cookie download request tunnel qrcode-terminal websocket > npm_install.log
+		npm install -g crypto-js got http-server tough-cookie download request tunnel qrcode-terminal websocket ws > npm_install.log
 		echo "安装完成" >> npm_install.log
 	fi
 }
