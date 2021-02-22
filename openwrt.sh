@@ -1580,7 +1580,9 @@ other_plugins() {
 
 		#godproxy插件
 		if [[ -e package/other-plugins/luci-app-godproxy ]]; then
-			cd  package/other-plugins/luci-app-godproxy && source_update_No_git_pull
+			cd  package/other-plugins/luci-app-godproxy
+			git fetch --all
+			git reset --hard origin/main
 			cd $HOME/$OW/$file/lede/
 		else
 			git clone https://github.com/project-lede/luci-app-godproxy.git package/other-plugins/luci-app-godproxy
