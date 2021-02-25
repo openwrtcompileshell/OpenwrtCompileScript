@@ -108,6 +108,7 @@ npm_install() {
 		else
 			echo -e "$red 代码运行失败,请检查报错原因$white"
 		fi
+		echo "安装完成" >> npm_install.log
 	fi
 }
 

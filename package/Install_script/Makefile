@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=Install_script
 PKG_VERSION:=1
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 #PKG_FLAGS:=nonshared
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
@@ -19,7 +19,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/Install_script
   TITLE:=x86/x64 Install Script.
   MAINTAINER:=ITdesk
-  DEPENDS:=+git +git-http +node +node-npm
+  DEPENDS:=+git +git-http +node +node-npm +openssh-client +openssh-keygen
 endef
 
 define Package/Install_script/description
