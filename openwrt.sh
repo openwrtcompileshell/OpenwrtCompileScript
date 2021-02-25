@@ -1310,20 +1310,19 @@ source_lean() {
 		else
 			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns  luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant  luci-app-wrtbwmon /g" include/target.mk
 
-			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc  luci-app-dockerman lm-sensors autocore luci-app-godproxy  openssh-client openssh-keygen#tr_ok/g" include/target.mk
+			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc  luci-app-dockerman lm-sensors autocore luci-app-godproxy #tr_ok/g" include/target.mk
 			#部分插件不默认选上，因为新内核支持不是很好
 			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus   luci-app-netdata 不安全luci-app-ttyd
 
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns Install_script"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns Install_script luci-app-openvpn-server luci-app-upnp"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
 			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
 
-			sed -i "s/luci-app-openvpn-server//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-music-remote-center//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-airplay2//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-jd-dailybonus//g" target/linux/x86/Makefile
