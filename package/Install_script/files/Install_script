@@ -101,14 +101,13 @@ npm_install() {
 		echo -e "$green npm 安装完成$white"
 	else
 		echo -e  "$yellow npm 开始安装,请稍等$white"
-		cd $dir_file/JD_Script/git_clone/lxk0301
+		cp  $dir_file/JD_Script/git_clone/lxk0301/package.json $dir_file/package.json
 		npm install
 		if [ $? -eq 0 ]; then
 			echo "安装完成" >> npm_install.log
 		else
 			echo -e "$red 代码运行失败,请检查报错原因$white"
 		fi
-		echo "安装完成" >> npm_install.log
 	fi
 }
 
