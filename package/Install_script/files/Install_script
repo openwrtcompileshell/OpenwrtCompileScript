@@ -100,7 +100,7 @@ npm_install() {
 	if [ $npm_if = "1" ];then
 		echo -e "$green npm 安装完成$white"
 	else
-		sh /usr/share/Install_script/JD_Script/jd.sh npm_install
+		sh $dir_file/JD_Script/jd.sh npm_install
 	fi
 }
 
