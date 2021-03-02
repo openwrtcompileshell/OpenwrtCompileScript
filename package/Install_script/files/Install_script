@@ -96,11 +96,12 @@ start() {
 }
 
 npm_install() {
-	npm_if=$(cat npm_install.log | grep "安装完成" |wc -l)
+	npm_if=$(cat $dir_file/npm_install.log | grep "安装完成" |wc -l)
 	if [ $npm_if = "1" ];then
 		echo -e "$green npm 安装完成$white"
 	else
 		sh $dir_file/JD_Script/jd.sh npm_install
+		echo  "npm 安装完成" > $dir_file/npm_install.log
 	fi
 }
 
