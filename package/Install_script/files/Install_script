@@ -59,7 +59,7 @@ start() {
 	else
 		git clone -b main https://github.com/ITdesk01/JD_Script.git && Detect
 		chmod 755 JD_Script/jd.sh
-		sh JD_Script/jd.sh system_variable
+		sh JD_Script/jd.sh update
 	fi
 
 	if [ -e Checkjs ];then
