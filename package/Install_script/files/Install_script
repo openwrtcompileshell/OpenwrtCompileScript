@@ -151,6 +151,10 @@ stop() {
 		fi
 		sleep 5
 
+		echo -e "$green删除.ssh目录$white"
+		rm -rf /root/.ssh
+		sleep 5
+
 		echo ""
 		echo "---------------------------------------------------------"
 		echo "			删除完成，玩的开心"
