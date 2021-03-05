@@ -1317,7 +1317,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns Install_script luci-app-openvpn-server luci-app-upnp"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1366,8 +1366,8 @@ source_lean() {
 		fi
 
 		#ipq806x_makefile
-		ipq806x_makefile="kmod-ath10k-ct wpad-openssl Install_script"
-		#ipq806x_makefile="kmod-ath10k-ct wpad-openssl kmod-qca-nss-drv kmod-qca-nss-drv-qdisc kmod-qca-nss-ecm-standard kmod-qca-nss-gmac kmod-nss-ifb iptables-mod-physdev kmod-ipt-physdev kmod-qca-nss-drv-pppoe MAC80211_NSS_SUPPORT  luci-app-cpufreq Install_script"
+		ipq806x_makefile="kmod-ath10k-ct wpad-openssl jd_openwrt_script"
+		#ipq806x_makefile="kmod-ath10k-ct wpad-openssl kmod-qca-nss-drv kmod-qca-nss-drv-qdisc kmod-qca-nss-ecm-standard kmod-qca-nss-gmac kmod-nss-ifb iptables-mod-physdev kmod-ipt-physdev kmod-qca-nss-drv-pppoe MAC80211_NSS_SUPPORT  luci-app-cpufreq jd_openwrt_script"
 		if [[ `grep -o "$ipq806x_makefile" target/linux/ipq806x/Makefile ` == "$ipq806x_makefile" ]]; then
 			echo -e "$green ipq806x_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1596,11 +1596,13 @@ other_plugins() {
 		fi
 
 		#安装脚本
-		if [[ -e package/other-plugins/Install_script ]]; then
-			rm -rf  package/other-plugins/Install_script
-			cp -r $HOME/$OW/$SF/$OCS/package/Install_script  package/other-plugins/Install_script
+		if [[ -e package/other-plugins/jd_openwrt_script ]]; then
+			cd  package/other-plugins/jd_openwrt_script
+			git fetch --all
+			git reset --hard origin/main
+			cd $HOME/$OW/$file/lede/
 		else
-			cp -r $HOME/$OW/$SF/$OCS/package/Install_script  package/other-plugins/Install_script
+			git clone https://github.com/ITdesk01/jd_openwrt_script.git package/other-plugins/jd_openwrt_script
 		fi
 
 :<<'COMMENT'
