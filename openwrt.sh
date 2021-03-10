@@ -1374,6 +1374,17 @@ source_lean() {
 			sed -i "s/kmod-ath10k-ct wpad-openssl/$ipq806x_makefile/g" target/linux/ipq806x/Makefile
 		fi
 
+
+		#N1_makefile
+		N1_makefile="mkf2fs e2fsprogs brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio brcmfmac-firmware-usb wireless-regdb kmod-b44 kmod-brcmfmac kmod-brcmutil kmod-cfg80211 fdisk blkid lsblk losetup uuidgen  tar  gawk getopt  bash perl perlbase-utf8 acl attr chattr debugfs dosfstools dumpe2fs e2freefrag e4crypt exfat-fsck exfat-mkfs f2fs-tools filefrag fstrim fuse-utils hfsfsck lsattr mkhfs ncdu nfs-utils nfs-utils-libs ntfs-3g ntfs-3g-utils resize2fs squashfs-tools-mksquashfs squashfs-tools-unsquashfs swap-utils tune2fs xfs-admin xfs-fsck xfs-growfs xfs-mkfs jd_openwrt_script"
+		if [[ `grep -o "$N1_makefile" target/linux/armvirt/Makefile ` == "$N1_makefile" ]]; then
+			echo -e "$green N1_makefile配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/mkf2fs e2fsprogs/$N1_makefile/g" target/linux/armvirt/Makefile
+			sed -i "s/default y if TARGET_sunxi/default y if TARGET_sunxi\n default y if TARGET_armvirt/g" package/kernel/mac80211/broadcom.mk
+
+		fi
+
 	fi
 :<<'COMMENT'
 		#替换lean首页文件，添加天气代码(by:冷淡)
