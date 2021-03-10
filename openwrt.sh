@@ -1902,8 +1902,9 @@ n1_builder() {
 		if [[ -e $builder_patch/armbian.img ]]; then
 			echo -e "$green >>$builder_patch/armbian.img存在，复制固件$white" && clear
 
-			if [[ ! -e $builder_patch/openwrt.img ]]; then
+			if [[ ! -e $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz ]]; then
 				echo -e "$green>> 开始复制openwrt固件 $white"
+				rm -rf $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 				cp $n1_img $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 			fi
 
