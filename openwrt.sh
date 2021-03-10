@@ -1883,6 +1883,7 @@ if_wo() {
 n1_builder() {
 	n1_img="$HOME/$OW/$file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
 	builder_patch="$HOME/$OW/$file/lede/N1_builder"
+	armbian_img="Armbian_20.10_Aml-s9xxx_buster_5.4.101-flippy-54+o.img"
 	cd $HOME/$OW/$file/lede
 	if [[ -e $n1_img ]]; then
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
@@ -1897,11 +1898,15 @@ n1_builder() {
 		if [ ! -d $builder_patch/tmp ];then
 			mkdir -p $builder_patch/tmp
 		else
-			rm -rf $builder_patch/tmp/*
+			sudo rm -rf $builder_patch/tmp/*
 		fi
 
-		if [[ -e $builder_patch/armbian.img ]]; then
-			echo -e "$green >>$builder_patch/armbian.img存在，复制固件$white" && clear
+		if [ ! -d $builder_patch/imges ];then
+			mkdir -p $builder_patch/imges
+		fi
+
+		if [[ -e $builder_patch/imges/$armbian_img ]]; then
+			echo -e "$green >>$builder_patch/imges/$armbian_img存在，复制固件$white" && clear
 
 			if [[ ! -e $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz ]]; then
 				echo -e "$green>> 开始复制openwrt固件 $white"
@@ -1911,18 +1916,18 @@ n1_builder() {
 
 			cd $builder_patch
 			echo -e "$green>> 准备开始制作n1固件，请输入管理员密码 $white"
-			sudo bash mk_n1_opimg.sh
+			sudo bash mk_s905d_n1.sh
 			if [[ $? -eq 0 ]]; then
 				echo ""
 				echo -e "$green >>N1镜像制作完成,你的固件在：$builder_patch/tmp$white"
 			else
-				echo "$red >>N1固件制作失败，重新执行代码 $white" && Time
+				echo -e "$red >>N1固件制作失败，重新执行代码 $white" && Time
 				n1_builder
 			fi
 
 		else
 			clear
-			echo -e "$yellow >>检查到没有armbian.img,请将你的armbian镜像放到：$builder_patch $white"
+			echo -e "$yellow >>检查到没有$armbian_img,请将你的armbian镜像放到：$builder_patch/imges $white"
 			echo -e "$green >>存放完成以后，回车继续制作N1固件$white"
 			read a
 			n1_builder
