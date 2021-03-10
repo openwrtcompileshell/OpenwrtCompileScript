@@ -1882,15 +1882,15 @@ if_wo() {
 
 n1_builder() {
 	n1_img="$HOME/$OW/$file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
-	builder_patch="$HOME/$OW/$SF/n1/N1_builder"
-
+	builder_patch="$HOME/$OW/$file/lede/N1_builder"
+	cd $HOME/$OW/$file/lede
 	if [[ -e $n1_img ]]; then
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
-		if [[ -e $HOME/$OW/$SF/n1 ]]; then
-			echo ""
+		if [[ -e $builder_patch ]]; then
+			cd $builder_patch
+			source_update_git_pull
 		else
-			mkdir $HOME/$OW/$SF/n1
-			n1_builder
+			git clone https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
 		fi
 
 		if [ ! -d $builder_patch/tmp ];then
@@ -1899,33 +1899,24 @@ n1_builder() {
 			rm -rf $builder_patch/tmp/*
 		fi
 
-		if [[ -e $builder_patch ]]; then
-			cd $builder_patch
-			source_update_git_pull
-		else
-			git clone https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
-			ln -s  $builder_patch $HOME/$OW/$file/lede/N1_builder && clear
-		fi
-
 		if [[ -e $builder_patch/armbian.img ]]; then
-			echo -e "$green >>armbian.img存在，复制固件$white" && clear
+			echo -e "$green >>$builder_patch/armbian.img存在，复制固件$white" && clear
 
-			if [[ -e $builder_patch/openwrt.img ]]; then
-				rm -rf $builder_patch/openwrt.img
-				cp $n1_img $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
-			else
+			if [[ ! -e $builder_patch/openwrt.img ]]; then
+				echo -e "$green>> 开始复制openwrt固件 $white"
 				cp $n1_img $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
 			fi
 
 			cd $builder_patch
+			echo -e "$green>> 准备开始制作n1固件，请输入管理员密码 $white"
 			sudo bash mk_n1_opimg.sh
-				if [[ $? -eq 0 ]]; then
-					echo ""
-					echo -e "$green >>N1镜像制作完成,你的固件在：$builder_patch/tmp$white"
-				else
-					echo "$red >>N1固件制作失败，重新执行代码 $white" && Time
-					n1_builder
-				fi
+			if [[ $? -eq 0 ]]; then
+				echo ""
+				echo -e "$green >>N1镜像制作完成,你的固件在：$builder_patch/tmp$white"
+			else
+				echo "$red >>N1固件制作失败，重新执行代码 $white" && Time
+				n1_builder
+			fi
 
 		else
 			clear
