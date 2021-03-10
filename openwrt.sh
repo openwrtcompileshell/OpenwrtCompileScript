@@ -2045,6 +2045,7 @@ update_clean_make() {
 	clear
 	echo -e "$green>>更新脚本到最新$white"
 	update_script
+	cd $HOME/$OW/$file/lede
 	echo -e "$green>>文件夹:$action1 执行make clean$white"
 		make clean && rm -rf .config && rm -rf ./tmp/ && rm -rf ./feeds
 	echo -e "$green>>文件夹:$action1 执行git pull$white"
