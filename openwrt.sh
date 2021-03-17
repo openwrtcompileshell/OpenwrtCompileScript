@@ -683,12 +683,27 @@ description_if(){
 	#win10
 	check_win10_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
 	check_win10_system01=$(cat /proc/version |grep -o microsoft-standard)
+	UB=$(cat '/proc/version' | grep -o "ubuntu")
+	DW=$(cat '/proc/version' | grep -o 'Darwin')
+	CT=$(cat '/proc/version' | grep -o "centos")
+	DWOS='Darwin'
+	CTOS="centos"
+	UBOS="ubuntu"
+	OS=($cat '/proc/version')
 	if [[ "$check_win10_system" == "Microsoft@Microsoft.com" ]]; then
 		win10
 	elif [[ "$check_win10_system01" == "microsoft-standard" ]]; then
-		win10
+		win10	
+	#ubuntu
+	elif [[ $UB =~ $UBOS ]]; then
+		ubuntu
+	#elif [[ $DW =~ $DWOS ]]; then
+	#	osx
+	elif [[ $CT =~ $CTOS ]]; then
+		centos
 	else
-		echo "不是win10系统" && clear
+		echo $OS
+		echo "暂未支持您的系统" && clear
 	fi
 	
 	clear
@@ -746,6 +761,100 @@ win10() {
 				esac
 			
 			fi
+}
+
+ubuntu() {
+	export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+	if [[ -e /etc/apt/sources.list.back ]]; then
+		clear && echo -e "$green源码已替换$white"
+	else
+		clear
+		echo "-----------------------------------------------------------------"
+		echo -e "+++检测到$green Ubuntu 系统$white+++"
+		echo ""
+		echo -e "  $green Ubuntu 系统"
+		echo "     1.备份系统软件源"
+		echo "     2.软件源替换为阿里云"
+		echo "     3.安装编译环境"
+		echo "-----------------------------------------------------------------"
+		echo ""
+		read -p "是否替换软件源然后进行编译（1.yes，2.no）：" ubuntu_select
+		case "$ubuntu_select" in
+		1)
+			clear
+			echo -e "$green开始替换软件源$white" && Time
+			sudo cp  /etc/apt/sources.list /etc/apt/sources.list.back
+			#sudo rm -rf /etc/apt/sources.list
+			#sudo cp $HOME/$OW/$SF/$OCS/ubuntu18.4_sources.list /etc/apt/sources.list
+			sed -i "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/sources.list
+			sudo apt-get update
+			sudo apt-get install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl swig rsync bison g++ gcc help2man htop ncurses-term ocaml-nox sharutils yui-compressor make cmake libncurses-dev unzip python tree nano
+			;;
+		2)
+			clear
+			echo "不做任何操作，即将进入主菜单" && Time
+			;;
+		*)
+			clear && echo  "Error请输入正确的数字 [1-2]" && Time
+			description_if
+			;;
+		esac
+	fi
+}
+
+centos() {
+	export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+	Version=`cat /etc/redhat-release|awk '{print "Redhat " $7}'`
+	if [[ -e /etc/yum.repos.d/Centos-Base.repo.back ]]; then
+		clear && echo -e "$green源码已替换$white"
+	else
+		clear
+		echo "-----------------------------------------------------------------"
+		echo -e "+++检测到$green Centos 系统$white+++"
+		echo ""
+		echo -e "  $green Centos 系统"
+		echo "     1.备份系统软件源"
+		echo "     2.软件源替换为阿里云"
+		echo "     3.安装编译环境"
+		echo "-----------------------------------------------------------------"
+		echo ""
+		read -p "是否替换软件源然后进行编译（1.yes，2.no）：" ubuntu_select
+		case "$ubuntu_select" in
+		1)
+			clear
+			echo -e "$green开始替换软件源$white" && Time			
+			if [ $Version =~ 6.* ]; then
+				sudo mv /etc/yum.repos.d/Centos-Base.repo /etc/yum.repos.d/Centos-Base.repo.back
+				sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo
+				sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo				
+			elif [ $Version =~ 7.* ]; then 
+				sudo mv /etc/yum.repos.d/Centos-Base.repo /etc/yum.repos.d/Centos-Base.repo.back
+				sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+				sudo sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo				
+			elif [ $Version =~ 7.* ]; then
+				sudo mv /etc/yum.repos.d/Centos-Base.repo /etc/yum.repos.d/Centos-Base.repo.back
+				sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo
+				sudo sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo
+			else 
+				yum_soft
+			fi
+			yum_soft
+			;;
+		2)
+			clear
+			echo "不做任何操作，即将进入主菜单" && Time
+			;;
+		*)
+			clear && echo  "Error请输入正确的数字 [1-2]" && Time
+			description_if
+			;;
+		esac
+
+	fi
+}
+
+yum_soft(){
+	sudo yum makecache && sudo yum install -y gcc gcc-c++ kernel-devel python-mini pciutils ncurses-devel asciidoc autoconf bison bzip2 flex gawk gettext git patch quilt subversion unzip openssl-devel perl-XML-Parser zlib-devel libxslt xmlto uglify-js xz nanotree nano tree binutils ncurses	zlib-static make unzip perl-ExtUtils-MakeMaker glibc glibc-devel glibc-static ncurses-libs sed sdcc intltool sharutils bison wget git-core
 }
 
 self_test() {
