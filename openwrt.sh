@@ -5,7 +5,7 @@
 version="3.0"
 SF="Script_File"
 OW="Openwrt"
-by="ITdesk"
+by="guyezi"
 OCS="OpenwrtCompileScript"
 cpu_cores=`cat /proc/cpuinfo | grep processor | wc -l`	
 
@@ -673,7 +673,8 @@ description_if(){
 		echo "存在"
 	else 
 		cd $HOME/$OW/$SF/
-                git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+                #git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
+		git clone https://github.com/guyezi/OpenwrtCompileScript1.git OpenwrtCompileScript
 		cd 
 		rm -rf `pwd`/$OCS
 		cd $HOME/$OW/$SF/$OCS
