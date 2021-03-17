@@ -674,7 +674,7 @@ description_if(){
 	else 
 		cd $HOME/$OW/$SF/
                 #git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git
-		git clone https://github.com/guyezi/OpenwrtCompileScript1.git OpenwrtCompileScript
+		git clone https://github.com/guyezi/OpenwrtCompileScript-1.git OpenwrtCompileScript
 		cd 
 		rm -rf `pwd`/$OCS
 		cd $HOME/$OW/$SF/$OCS
