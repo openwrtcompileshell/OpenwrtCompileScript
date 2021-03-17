@@ -1106,6 +1106,8 @@ source_download_openwrt() {
 		echo ""
 		echo "	7.openwrt(Trunk)_source"
 		echo ""
+		echo "	8.openwrt21.2(stable version)_source"
+		echo ""
 		echo "	0.exit"
 		echo ""
 		echo ""
@@ -1132,6 +1134,9 @@ source_download_openwrt() {
 				;;
 				7)
 				git clone  https://github.com/openwrt/openwrt.git lede
+				;;
+				8)
+				git clone  -b openwrt-21.02 https://github.com/openwrt/openwrt.git lede
 				;;
 				0)
 				exit
