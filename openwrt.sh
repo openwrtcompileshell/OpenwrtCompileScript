@@ -16,16 +16,16 @@ yellow="\033[33m"
 white="\033[0m"
 
 calculating_time_start() {
-startTime=`date +%Y%m%d-%H:%M:%S`
-startTime_s=`date +%s`
+	startTime=`date +%Y%m%d-%H:%M:%S`
+	startTime_s=`date +%s`
 }
 
 calculating_time_end() {
-endTime=`date +%Y%m%d-%H:%M:%S`
-endTime_s=`date +%s`
-sumTime=$[ $endTime_s - $startTime_s ]
-echo ""
-echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime" "$yellow耗时:$green $sumTime 秒$white"
+	endTime=`date +%Y%m%d-%H:%M:%S`
+	endTime_s=`date +%s`
+	sumTime=$[ $endTime_s - $startTime_s ]
+	echo ""
+	echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime" "$yellow耗时:$green $sumTime 秒$white"
 }
 
 prompt() {
