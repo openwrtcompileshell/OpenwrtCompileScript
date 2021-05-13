@@ -606,15 +606,11 @@ description_if(){
 		clear && echo -e  "$green已经安装curl$white"
 	fi
 
-	#添加hosts(解决golang下载慢的问题)
-	if [[ $(grep -o "34.64.4.113 proxy.golang.org" /etc/hosts | wc -l) == "1" ]]; then
-		echo "之前设置的hosts失效，需要删除，请输入密码，放心不会炸的"
-		sudo sed -i 's\34.64.4.113 proxy.golang.org\ \g' /etc/hosts
-	else
-		clear
-		#echo "添加hosts(解决golang下载慢的问题)"
-		#sudo cp  /etc/hosts /etc/hosts_back
-		#sudo sed -i '3a\34.64.4.113 proxy.golang.org' /etc/hosts
+	#解决golang下载慢的问题,来源：https://goproxy.cn/
+	if [[ ! "$GO111MODULE" == "no" ]]; then
+		export GO111MODULE=on
+		export GOPROXY=https://goproxy.cn
+		source /etc/profile
 	fi
 	
 	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
