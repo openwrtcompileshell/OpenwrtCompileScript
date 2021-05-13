@@ -608,8 +608,8 @@ description_if(){
 
 	#解决golang下载慢的问题,来源：https://goproxy.cn/
 	if [[ ! "$GO111MODULE" == "no" ]]; then
-		export GO111MODULE=on
-		export GOPROXY=https://goproxy.cn
+		echo "export GO111MODULE=on" | sudo tee -a /etc/profile
+		echo "export GOPROXY=https://goproxy.cn" | sudo tee -a /etc/profile
 		source /etc/profile
 	fi
 	
