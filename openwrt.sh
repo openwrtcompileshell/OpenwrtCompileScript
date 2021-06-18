@@ -1301,36 +1301,32 @@ source_lean() {
 		update_feeds
 
 		#target.mk
+		target_mk="luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc luci-app-dockerman lm-sensors #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin/default-settings luci luci-app-ddns  luci-app-autoreboot  luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant  luci-app-wrtbwmon /g" include/target.mk
-
-			sed -i "s/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-cpufreq/luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol luci-app-frpc  luci-app-dockerman lm-sensors autocore luci-app-godproxy #tr_ok/g" include/target.mk
-			#部分插件不默认选上，因为新内核支持不是很好
-			#ipv6helper  luci-app-sqm luci-app-kodexplorer luci-app-jd-dailybonus   luci-app-netdata 不安全luci-app-ttyd
+			sed -i "s/luci-app-autoreboot/luci-app-autoreboot  $target_mk/g" include/target.mk
 
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp"
+		x86_makefile="luci-app-unblockmusic luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
 			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
 
-			sed -i "s/luci-app-music-remote-center//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-airplay2//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-jd-dailybonus//g" target/linux/x86/Makefile
+			sed -i "s/luci-app-uugamebooster//g" target/linux/x86/Makefile
+
 		fi
 
 		#修改X86默认固件大小
 		if [[ `grep -o "default 160" config/Config-images.in | wc -l` == "1" ]]; then
-			sed -i 's\default 160\default 512\g' config/Config-images.in
+			sed -i 's\default 160\default 1024\g' config/Config-images.in
 		else
 			echo ""
 		fi
-
+:<<'COMMENT'
 		#修改x86内核
 		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/x86/Makefile | wc -l` == "1" ]]; then
 			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/x86/Makefile
@@ -1360,7 +1356,7 @@ source_lean() {
 			sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
 		fi
-
+COMMENT
 		#ipq806x_makefile
 		ipq806x_makefile="kmod-ath10k-ct wpad-openssl jd_openwrt_script"
 		#ipq806x_makefile="kmod-ath10k-ct wpad-openssl kmod-qca-nss-drv kmod-qca-nss-drv-qdisc kmod-qca-nss-ecm-standard kmod-qca-nss-gmac kmod-nss-ifb iptables-mod-physdev kmod-ipt-physdev kmod-qca-nss-drv-pppoe MAC80211_NSS_SUPPORT  luci-app-cpufreq jd_openwrt_script"
@@ -1402,7 +1398,7 @@ source_lean() {
 		else
 			echo "temperature添加完成"
 		fi
-COMMENT
+
 		#首页显示编译时间
 		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh-cn/base.po)
 		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
@@ -1418,8 +1414,7 @@ COMMENT
 			echo "exit 0" >> package/lean/default-settings/files/zzz-default-settings
 		fi
 
-		#下载插件
-		other_plugins
+		
 
 		#默认选上其他参数
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
@@ -1435,11 +1430,23 @@ COMMENT
 			sed -i '73a\default y if i386||x86_64||arm||aarch64' package/other-plugins/luci-app-passwall/Makefile
 			sed -i "74s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 		fi
+COMMENT
+		#下载插件
+		other_plugins
 
 		#删除这个，解决报错问题
 		rm -rf dl/go-mod-cache && rm -rf ./tmp
 		
 		update_feeds
+		#node.js
+		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
+		if [[  "$node_if" == "0" ]];then
+			echo "src-git node https://github.com/nxhack/openwrt-node-packages.git" >>feeds.conf.default
+			./scripts/feeds update node
+			rm ./package/feeds/packages/node
+			rm ./package/feeds/packages/node-*
+			./scripts/feeds install -a -p node	
+		fi
 		echo -e ">>$green lean版本配置优化完成$white"
 }
 
