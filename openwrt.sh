@@ -1297,7 +1297,8 @@ source_lean() {
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
-		sed -i "s/#src-git helloworld/src-git helloworld/g" feeds.conf.default 
+		#添加库
+		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
 		update_feeds
 
 		#target.mk
