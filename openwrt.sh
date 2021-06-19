@@ -1327,21 +1327,13 @@ source_lean() {
 		else
 			echo ""
 		fi
-:<<'COMMENT'
-		#修改x86内核
-		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/x86/Makefile | wc -l` == "1" ]]; then
-			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/x86/Makefile
-			sed -i 's\KERNEL_TESTING_PATCHVER:=5.4\KERNEL_TESTING_PATCHVER:=4.19\g' target/linux/x86/Makefile
-		else
-			echo ""
-		fi
-		
+
 		#默认对x86首页下手，其他的你们安全了
 		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/x86/index.htm)
 		if [[ "$x86indexif" == "Local Weather" ]]; then
 			echo "已经替换X86首页文件"
 		else
-			rm -rf package/lean/autocore/files/index.htm
+			rm -rf package/lean/autocore/files/x86/index.htm
 			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/x86/index.htm
 		fi
 	
@@ -1349,13 +1341,16 @@ source_lean() {
 		if [[ "$base_zh_po_if" == "#天气预报" ]]; then
 			echo "已添加天气预报翻译"
 		else
-			sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a #天气预报' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a msgid "Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a msgstr "天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a msgid "Local Weather"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a msgstr "本地天气"' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a \#天气预报\nmsgid "Weather"\nmsgstr "天气"\n\nmsgid "Local Weather"\nmsgstr "本地天气"\n ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		fi
+
+:<<'COMMENT'
+		#修改x86内核
+		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/x86/Makefile | wc -l` == "1" ]]; then
+			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/x86/Makefile
+			sed -i 's\KERNEL_TESTING_PATCHVER:=5.4\KERNEL_TESTING_PATCHVER:=4.19\g' target/linux/x86/Makefile
+		else
+			echo ""
 		fi
 COMMENT
 		#ipq806x_makefile
