@@ -1302,7 +1302,7 @@ source_lean() {
 		update_feeds
 
 		#target.mk
-		target_mk="luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc luci-app-dockerman lm-sensors #tr_ok"
+		target_mk="luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1311,7 +1311,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-wol luci-app-unblockmusic luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1342,6 +1342,18 @@ source_lean() {
 			echo "已添加天气预报翻译"
 		else
 			sed -i '$a \#天气预报\nmsgid "Weather"\nmsgstr "天气"\n\nmsgid "Local Weather"\nmsgstr "本地天气"\n ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+		fi
+
+		#首页显示编译时间
+		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh-cn/base.po)
+		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
+			echo "已添加首页显示编译时间"
+		else
+			sed -i '$a \#首页显示编译时间\nmsgid "Compile_time"\nmsgstr "固件编译时间"\n' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
+			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
+			echo "echo \"`date "+%Y-%m-%d %H:%M"` (commit:`git log -1 --format=format:'%C(bold white)%h%C(reset)'`)\" >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
+			echo "exit 0" >> package/lean/default-settings/files/zzz-default-settings
 		fi
 
 :<<'COMMENT'
@@ -1394,23 +1406,6 @@ COMMENT
 		else
 			echo "temperature添加完成"
 		fi
-
-		#首页显示编译时间
-		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh-cn/base.po)
-		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
-			echo "已添加首页显示编译时间"
-		else
-			sed -i '$a \       ' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a #首页显示编译时间' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a msgid "Compile_time"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$a msgstr "固件编译时间"' feeds/luci/modules/luci-base/po/zh-cn/base.po
-			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
-			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
-			echo "echo \"`date "+%Y-%m-%d %H:%M"` (commit:`git log -1 --format=format:'%C(bold white)%h%C(reset)'`)\" >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
-			echo "exit 0" >> package/lean/default-settings/files/zzz-default-settings
-		fi
-
-		
 
 		#默认选上其他参数
 		if [[ -e package/other-plugins/luci-app-passwall ]]; then
