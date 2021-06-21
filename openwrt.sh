@@ -1302,7 +1302,7 @@ source_lean() {
 		update_feeds
 
 		#target.mk
-		target_mk="luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors #tr_ok"
+		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1382,6 +1382,15 @@ COMMENT
 		else
 			sed -i "s/mkf2fs e2fsprogs/$N1_makefile/g" target/linux/armvirt/Makefile
 			sed -i "s/default y if TARGET_sunxi/default y if TARGET_sunxi\n default y if TARGET_armvirt/g" package/kernel/mac80211/broadcom.mk
+
+		fi
+
+		#rockchip_makefile
+		rockchip_makefile="autocore-arm jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-qbittorrent luci-app-ssrserver-python luci-app-transmission luci-app-zerotier"
+		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
+			echo -e "$green rockchip_makefile配置已经修改，不做其他操作$white"
+		else
+			sed -i "s/luci-app-cpufreq/$rockchip_makefile/g" target/linux/rockchip/Makefile
 
 		fi
 
