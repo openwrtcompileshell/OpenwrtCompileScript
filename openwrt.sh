@@ -1302,7 +1302,7 @@ source_lean() {
 		update_feeds
 
 		#target.mk
-		target_mk="luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors #tr_ok"
+		target_mk="luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1422,6 +1422,9 @@ COMMENT
 			sed -i "74s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 		fi
 COMMENT
+		#修改网易云启用node.js
+		sed -i "s/default n/default y/g" package/lean/luci-app-unblockmusic/Config.in
+
 		#下载插件
 		other_plugins
 
