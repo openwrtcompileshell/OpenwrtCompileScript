@@ -1386,7 +1386,7 @@ COMMENT
 		fi
 
 		#rockchip_makefile
-		rockchip_makefile="autocore-arm jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-qbittorrent luci-app-ssrserver-python luci-app-transmission luci-app-zerotier"
+		rockchip_makefile="ipv6helper autocore-arm jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-qbittorrent luci-app-ssrserver-python luci-app-transmission luci-app-zerotier"
 		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
 			echo -e "$green rockchip_makefile配置已经修改，不做其他操作$white"
 		else
