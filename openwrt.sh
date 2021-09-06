@@ -241,6 +241,10 @@ download_package_luci() {
 	echo ""
 	echo "		  2. luci-app-oaf （测试中）"
 	echo ""
+	echo "		  3. cups 共享打印机"
+	echo ""
+	echo "		  4. luci-app-netkeeper（闪讯插件）"
+	echo ""
 	echo "		  99. 自定义下载插件 "
 	echo ""
 	echo "		  0. 回到上一级菜单"
@@ -255,6 +259,22 @@ download_package_luci() {
 		2)
 		git clone https://github.com/destan19/OpenAppFilter.git
 		;;
+		3)
+		cd $HOME/$OW/$file/lede/
+		if [[ `cat feeds.conf.default | grep "cups" | wc -l` -eq 0 ]]; then
+			echo "src-git cups https://github.com/TheMMcOfficial/lede-cups.git" >> feeds.conf.default
+		fi
+		./scripts/feeds update cups
+		./scripts/feeds install cups
+		;;
+		4)
+		cd $HOME/$OW/$file/lede/
+		if [[ `cat feeds.conf.default | grep "netkeeper" | wc -l` -eq 0 ]]; then
+			echo "src-git netkeeper https://github.com/sjz123321/feed-netkeeper.git" >> feeds.conf.default
+		fi
+		./scripts/feeds update netkeeper
+		./scripts/feeds install netkeeper
+		;;
 		99)
 		download_package_customize
 		;;
@@ -262,7 +282,7 @@ download_package_luci() {
 		other
 		;;
 		*)
-	clear && echo  "请输入正确的数字 [1-2,99,0]" && Time
+	clear && echo  "请输入正确的数字 [1-4,99,0]" && Time
 	download_package_luci
 	;;
 esac
