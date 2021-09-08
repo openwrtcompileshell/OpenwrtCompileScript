@@ -998,23 +998,23 @@ source_download_openwrt() {
 		echo ""
   		echo "	准备下载openwrt代码"
 		echo ""
-		echo "	1.Lean_lede-17.01_source"
+		echo "	1.Lean_lede-17.01_source(我很久没对这个进行测试了)"
 		echo ""
 		echo " 	2.Lean_master_source"
 		echo ""
-		echo " 	3.Lienol(dev-19.07)_source"
+		echo " 	3.Lienol(dev-19.07)_source(我很久没对这个进行测试了)"
 		echo ""
-		echo "	4.openwrt17.1(stable version)_source"
+		echo "	4.openwrt17.1(stable version)_source(我很久没对这个进行测试了)"
 		echo ""
-		echo "	5.openwrt18.6(stable version)_source"
+		echo "	5.openwrt18.6(stable version)_source(我很久没对这个进行测试了)"
 		echo ""
-		echo "	6.openwrt19.7(stable version)_source"
+		echo "	6.openwrt19.7(stable version)_source(我很久没对这个进行测试了)"
 		echo ""
-		echo "	7.openwrt(Trunk)_source"
+		echo "	7.openwrt(Trunk)_source(我很久没对这个进行测试了)"
 		echo ""
 		echo "	0.exit"
 		echo ""
-		echo ""
+		echo "我现在经常用lean的源码，并且我已很长时间没有维护这个互动界面了，你可以bash \$openwrt help查看命令用法"
 		echo "  ----------------------------------------"
 		read  -p "请输入你要下载的源代码:" Download_source_openwrt
 			case "$Download_source_openwrt" in
@@ -1406,7 +1406,7 @@ COMMENT
 		fi
 
 		#rockchip_makefile
-		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-qbittorrent luci-app-ssrserver-python luci-app-transmission luci-app-zerotier"
+		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-qbittorrent luci-app-ssrserver-python luci-app-transmission luci-app-zerotier wget"
 		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
 			echo -e "$green rockchip_makefile配置已经修改，不做其他操作$white"
 		else
