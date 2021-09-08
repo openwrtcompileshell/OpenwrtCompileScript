@@ -1410,7 +1410,7 @@ COMMENT
 		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
 			echo -e "$green rockchip_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/luci-app-cpufreq/$rockchip_makefile/g" target/linux/rockchip/Makefile
+			sed -i "s/luci-app-zerotier/$rockchip_makefile/g" target/linux/rockchip/Makefile
 
 		fi
 
