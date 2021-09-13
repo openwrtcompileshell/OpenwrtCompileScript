@@ -1231,7 +1231,7 @@ source_openwrt_Setting() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid kmod-mmc-spi kmod-sdhci kmod-ath5k kmod-ath9k kmod-ath9k-htc kmod-ath10k kmod-rt2800-usb kmod-e1000e kmod-igb kmod-igbvf kmod-ixgbe kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-i40e kmod-i40evf kmod-r8125 kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-r8168 kmod-mlx4-core kmod-mlx5-core kmod-drm-amdgpu ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie htop lm-sensors  automount autosamba  luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm  ca-certificates #autocore"
+		x86_makefile="partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid kmod-mmc-spi kmod-sdhci kmod-ath5k kmod-ath9k kmod-ath9k-htc kmod-ath10k kmod-rt2800-usb kmod-e1000e kmod-igb kmod-igbvf kmod-ixgbe kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-i40e kmod-i40evf kmod-r8125 kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-r8168 kmod-mlx4-core kmod-mlx5-core kmod-drm-amdgpu ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie htop lm-sensors  automount autosamba luci-app-aria2 luci-app-frps luci-app-hd-idle luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm  ca-certificates #autocore"
 		FEATURES="squashfs vdi vmdk pcmcia fpu boot-part rootfs-part ext4 targz"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
@@ -1331,12 +1331,12 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp"
+		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp ipv6helper"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
 			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
-
+			sed -i "s/luci-app-qbittorrent//g"target/linux/x86/Makefile
 			sed -i "s/luci-app-uugamebooster//g" target/linux/x86/Makefile
 
 		fi
@@ -1396,7 +1396,7 @@ COMMENT
 
 
 		#N1_makefile
-		N1_makefile="mkf2fs e2fsprogs brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio brcmfmac-firmware-usb wireless-regdb kmod-b44 kmod-brcmfmac kmod-brcmutil kmod-cfg80211 fdisk blkid lsblk losetup uuidgen  tar  gawk getopt  bash perl perlbase-utf8 acl attr chattr debugfs dosfstools dumpe2fs e2freefrag e4crypt exfat-fsck exfat-mkfs f2fs-tools filefrag fstrim fuse-utils hfsfsck lsattr mkhfs ncdu nfs-utils nfs-utils-libs ntfs-3g ntfs-3g-utils resize2fs squashfs-tools-mksquashfs squashfs-tools-unsquashfs swap-utils tune2fs xfs-admin xfs-fsck xfs-growfs xfs-mkfs ddns-scripts_aliyun jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-transmission luci-app-upnp"
+		N1_makefile="mkf2fs e2fsprogs brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio brcmfmac-firmware-usb wireless-regdb kmod-b44 kmod-brcmfmac kmod-brcmutil kmod-cfg80211 fdisk blkid lsblk losetup uuidgen  tar  gawk getopt  bash perl perlbase-utf8 acl attr chattr debugfs dosfstools dumpe2fs e2freefrag e4crypt exfat-fsck exfat-mkfs f2fs-tools filefrag fstrim fuse-utils hfsfsck lsattr mkhfs ncdu nfs-utils nfs-utils-libs ntfs-3g ntfs-3g-utils resize2fs squashfs-tools-mksquashfs squashfs-tools-unsquashfs swap-utils tune2fs xfs-admin xfs-fsck xfs-growfs xfs-mkfs ddns-scripts_aliyun jd_openwrt_script luci-app-aria2 luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-transmission luci-app-upnp"
 		if [[ `grep -o "$N1_makefile" target/linux/armvirt/Makefile ` == "$N1_makefile" ]]; then
 			echo -e "$green N1_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1406,7 +1406,7 @@ COMMENT
 		fi
 
 		#rockchip_makefile
-		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-adbyby-plus luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-qbittorrent luci-app-ssrserver-python luci-app-transmission luci-app-zerotier wget"
+		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-aria2 luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-ssrserver-python luci-app-transmission luci-app-zerotier wget"
 		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
 			echo -e "$green rockchip_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1504,7 +1504,7 @@ source_lienol() {
 		#lienol_target.mk
 		sed -i "s/luci-app-ddns/luci-app-sqm /g" include/target.mk
 		sed -i "s/luci-theme-bootstrap-mod/ /g" include/target.mk
-		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay/luci-app-adbyby-plus luci-app-autoreboot luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
+		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay/luci-app-autoreboot luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
 		sed -i "s/ip6tables/ /g" include/target.mk
 		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
 
