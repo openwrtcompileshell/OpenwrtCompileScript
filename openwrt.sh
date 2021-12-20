@@ -1335,7 +1335,8 @@ source_lean() {
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
-			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
+			sed -i "s/luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
+			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding//g"target/linux/x86/Makefile
 			sed -i "s/luci-app-qbittorrent//g"target/linux/x86/Makefile
 			sed -i "s/luci-app-uugamebooster//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-adbyby-plus//g" target/linux/x86/Makefile
@@ -1343,7 +1344,7 @@ source_lean() {
 
 		#修改X86默认固件大小
 		if [[ `grep -o "default 160" config/Config-images.in | wc -l` == "1" ]]; then
-			sed -i 's\default 160\default 4096\g' config/Config-images.in
+			sed -i 's\default 160\default 1024\g' config/Config-images.in
 			#传统模式
 			grub_position=$(cat config/Config-images.in | grep -n "Build GRUB images" | awk  '{print $1}' | sed "s/://")
 			del_num=$(($grub_position + 4))
