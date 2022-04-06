@@ -956,10 +956,10 @@ update_system() {
 create_file() {
 	clear
 	echo "----------------------------------------"
-	echo "		   开始创建文件夹"
+	echo -e "		   $green开始创建文件夹$white"
 	echo "----------------------------------------"
 	echo ""
-	read -p "请输入你要创建的文件夹名:" you_file
+	read -p "请输入你要创建的文件夹名(不要中文):" you_file
 
 	if [[ -z "$you_file" ]];then
 		echo -e "$red请不要输入空值!!!$white"
@@ -1742,7 +1742,7 @@ source_Setting_Public() {
 update_feeds() {
 	clear
 	echo "---------------------------"
-	echo "      更新Feeds代码"
+	echo -e "      $green更新Feeds代码$white"
 	echo "---------------------------"
 	./scripts/feeds update -a && ./scripts/feeds install -a
 	if [[ $? -eq 0 ]]; then
@@ -1759,7 +1759,7 @@ make_defconfig() {
 	echo "---------------------------"
 	echo ""
 	echo ""
-	echo "       测试编译环境"
+	echo -e "       $green测试编译环境$white"
 	echo ""
 	echo ""
 	echo "--------------------------"
@@ -1778,7 +1778,7 @@ dl_download() {
 	fi
 	clear
 	echo "----------------------------------------------"
-	echo "# 开始下载DL，如果出现下载很慢，请检查你的梯子 #"
+	echo -e "$green# 开始下载DL，如果出现下载很慢，请检查你的梯子 #$white"
 	echo ""
 	echo -e "$green你的CPU核数为：$cpu_cores $white"
 	echo -e "$yellow自动执行make download -j$cpu_cores  V=s加快下载速度$white"
@@ -1797,7 +1797,7 @@ dl_download() {
 
 dl_error() {
 	echo "----------------------------------------"
-	echo " 你的dl下载报错了"
+	echo -e " $yellow你的dl下载报错了$white"
 	echo " 1.重新下载"
 	echo " 2.不理直接编译"
 	echo "----------------------------------------"
@@ -1820,7 +1820,7 @@ ecc() {
 	clear
 	echo "    -----------------------------------------------"
 	echo ""
-	echo "		【××编译环境搭建成功××】"
+	echo -e "		$green【××编译环境搭建成功××】$white"
 	echo ""
 	echo "	  1.请回车进入编译菜单，第一次回车较慢稍等"
 	echo "	  2.进去编译菜单选择你要的功能完成以后Save"
@@ -1879,8 +1879,8 @@ make_compile_firmware() {
 	echo "  首次编译不建议-j，具体用几线程看你电脑j有机会编译失败,"
 	echo "不懂回车默认运行make V=s"
 	echo ""
-	echo -e "多线程例子：$yellow make -j$cpu_cores V=s $white(黄色字体这段完整的输进去)"
 	echo -e "温馨提醒你的cpu核心数为：$green $cpu_cores $white"
+	echo -e "可用多线程例子：$yellow make -j$cpu_cores V=s $white(黄色字体这段完整的输进去)"
 	echo ""
 	echo -e "$red!!!请不要在输入参数这行直接输数字，把命令敲全，不懂就直接回车!!!$white"
 	echo "--------------------------------------------------------"
