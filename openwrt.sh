@@ -223,7 +223,7 @@ download_package() {
 }
 
 download_package2() {
-	cd $HOME/$OW/$file/lede 
+	cd $HOME/$OW/$you_file/lede
 	rm -rf ./tmp
 	display_git_log_luci
 	update_feeds
@@ -232,7 +232,7 @@ download_package2() {
 
 
 download_package_luci() {
-	cd $HOME/$OW/$file/lede/package/Extra-plugin
+	cd $HOME/$OW/$you_file/lede/package/Extra-plugin
 	clear
 	echo "	      -------------------------------------"
 	echo "	      	    【 5.4额外的插件 】"
@@ -260,7 +260,7 @@ download_package_luci() {
 		git clone https://github.com/destan19/OpenAppFilter.git
 		;;
 		3)
-		cd $HOME/$OW/$file/lede/
+		cd $HOME/$OW/$you_file/lede/
 		if [[ `cat feeds.conf.default | grep "cups" | wc -l` -eq 0 ]]; then
 			echo "src-git cups https://github.com/TheMMcOfficial/lede-cups.git" >> feeds.conf.default
 		fi
@@ -268,7 +268,7 @@ download_package_luci() {
 		./scripts/feeds install cups
 		;;
 		4)
-		cd $HOME/$OW/$file/lede/
+		cd $HOME/$OW/$you_file/lede/
 		if [[ `cat feeds.conf.default | grep "netkeeper" | wc -l` -eq 0 ]]; then
 			echo "src-git netkeeper https://github.com/sjz123321/feed-netkeeper.git" >> feeds.conf.default
 		fi
@@ -296,7 +296,7 @@ if [[ $? -eq 0 ]]; then
 }
 
 download_package_customize() {	
-	cd $HOME/$OW/$file/lede/package/Extra-plugin
+	cd $HOME/$OW/$you_file/lede/package/Extra-plugin
 	clear
 	echo "--------------------------------------------------------------------------------"
 	echo "自定义下载插件"
@@ -307,7 +307,7 @@ download_package_customize() {
 	read -p "请输入你要下载的插件地址："  download_url
 	$download_url
 	if [[ $? -eq 0 ]]; then
-		cd $HOME/$OW/$file/lede
+		cd $HOME/$OW/$you_file/lede
 	else
 		clear	
 		echo -e "没有下载成功或者插件已经存在，请检查$red package/Extra-plugin $white里面是否已经存在" && Time
@@ -326,7 +326,7 @@ download_package_customize_Decide() {
 	read -p "请输入你的决定：" Decide
 	case "$Decide" in
 		1)
-		cd $HOME/$OW/$file/lede/package/Extra-plugin
+		cd $HOME/$OW/$you_file/lede/package/Extra-plugin
 		download_package_luci
 		;;
 		2)
@@ -344,8 +344,8 @@ download_package_customize_Decide() {
 source_RestoreFactory() {
 	ls_file_luci 
 	echo ""
-	if [[ -e $HOME/$OW/$file ]]; then
-			cd $HOME/$OW/$file/lede
+	if [[ -e $HOME/$OW/$you_file ]]; then
+			cd $HOME/$OW/$you_file/lede
 			echo -e  "危险操作注意：$red所有编译过的文件全部删除,openwrt源代码保存，回车继续$white  $green Ctrl+c取消$white" && read a
 			echo -e ">>$green开始删除$file文件 $white" && Time
 			echo ""
@@ -354,7 +354,7 @@ source_RestoreFactory() {
 			source_RestoreFactory
 		fi
 	make distclean
-	ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
+	ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$you_file/lede/dl
 	echo -e ">>$green $file文件删除完成 $white"
 	echo -e "  所有编译过的文件全部删除完成，回车可以开始编译 不需要编译Ctrl+c取消,如依旧编译失败，请重新下载源代码" && read a
 	source_if
@@ -364,8 +364,8 @@ source_RestoreFactory() {
 #选项2.二次编译 与 源码更新合并
 source_secondary_compilation() {
 		ls_file_luci
-		if [[ -e $HOME/$OW/$file ]]; then
-			cd && cd $HOME/$OW/$file/lede
+		if [[ -e $HOME/$OW/$you_file ]]; then
+			cd && cd $HOME/$OW/$you_file/lede
 	 	 else
 			clear && echo "-----文件名错误，请重新输入-----" && Time
 			source_secondary_compilation
@@ -772,7 +772,7 @@ win10() {
 					 ;;
 				esac
 			
-			fi:<<'COMMENT'
+			fi
 }
 
 self_test() {
@@ -912,7 +912,8 @@ esac
 }
 
 system_install() {
-	clear && echo "是否要更新系统，首次搭建选择是，其余选否(1.是  2.否)"
+	clear
+	echo -e "$green>> 是否要更新系统，首次搭建选择是，其余选否(1.是  2.否)$white"
 	read -p "请输入你的决定："  system
 		case "$system" in
 			1)
@@ -954,23 +955,27 @@ update_system() {
 
 create_file() {
 	clear
-	echo ""
 	echo "----------------------------------------"
 	echo "		   开始创建文件夹"
 	echo "----------------------------------------"
 	echo ""
-	read -p "请输入你要创建的文件夹名:" file
+	read -p "请输入你要创建的文件夹名:" you_file
 
-	if [[ -e $HOME/$OW/$file ]]; then
-		clear && echo "文件夹已存在，请重新输入文件夹名" && Time
+	if [[ -z "$you_file" ]];then
+		echo -e "$red请不要输入空值!!!$white"
+		Time
 		create_file
-
+	elif [[ -e $HOME/$OW/$you_file ]]; then
+		clear
+		echo -e "$green你输入的$yellow$you_file$green文件夹在$yellow$HOME/$OW$green已存在，请重新输入文件夹名$white" && Time
+		create_file
 	 else
 		echo "开始创建文件夹"
-			mkdir $HOME/$OW/$file
-			cd $HOME/$OW/$file  && clear
-			echo "$file" > $HOME/$OW/$SF/tmp/you_file
-			source_download_select
+			mkdir $HOME/$OW/$you_file
+			cd $HOME/$OW/$you_file  && clear
+			echo "$you_file" > $HOME/$OW/$SF/tmp/you_file
+			#source_download_select
+			source_download_openwrt
 	 fi
 }
 
@@ -1006,8 +1011,16 @@ source_download_select() {
 source_download_openwrt() {
 		clear
 		echo "  -----------------------------------------"
+		echo -e "	$green准备下载openwrt代码$white"
+		echo -e "	$green默认下载:${yellow}Lean_master_source$white"
+		echo "  -----------------------------------------"
 		echo ""
-  		echo "	准备下载openwrt代码"
+			git clone https://github.com/coolsnowwolf/lede.git lede
+
+		echo ""
+		echo -e "$green你的源码已经为你下载到了$yellow$HOME/$OW/$you_file$white"
+		Time
+:<<'COMMENT'
 		echo ""
 		echo "	1.Lean_lede-17.01_source(我很久没对这个进行测试了)"
 		echo ""
@@ -1058,6 +1071,7 @@ source_download_openwrt() {
 				source_download_openwrt
 				 ;;
 			esac
+COMMENT
 			source_download_if
 }
 
@@ -1084,10 +1098,10 @@ source_download_pandorabox_sdk() {
 				mv PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64 lede
 				rm -rf PandoraBox-SDK-ralink-mt7621_gcc-5.5.0_uClibc-1.0.x.Linux-x86_64.tar.xz 
 				rm -rf lede/dl
-				ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$file/lede/dl
-				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$OW/$file/lede/feeds.conf.default
+				ln -s $HOME/$OW/$SF/dl  $HOME/$OW/$you_file/lede/dl
+				wget --no-check-certificate https://raw.githubusercontent.com/coolsnowwolf/lede/master/feeds.conf.default -O $HOME/$OW/$you_file/lede/feeds.conf.default
 				source_lean_package
-				cd $HOME/$OW/$file/lede	
+				cd $HOME/$OW/$you_file/lede
 				source_Soft_link			
 				update_feeds
 				make_defconfig
@@ -1104,14 +1118,14 @@ source_download_pandorabox_sdk() {
 }
 
 source_download_if() {
-		if [[ -e $HOME/$OW/$file/lede ]]; then
-			cd $HOME/$OW/$file/lede
+		if [[ -e $HOME/$OW/$you_file/lede ]]; then
+			cd $HOME/$OW/$you_file/lede
 			source_download_ok
 			ecc
 		else
 			echo ""
 			echo "源码下载失败，请检查你的网络，回车重新选择下载" && read a && Time
-			cd $HOME/$OW/$file
+			cd $HOME/$OW/$you_file
 			source_download_select
 		fi
 }
@@ -1177,24 +1191,24 @@ source_Soft_link() {
 		fi
 
 		#2
-		if [[ -e $HOME/$OW/$file/lede/dl ]]; then
+		if [[ -e $HOME/$OW/$you_file/lede/dl ]]; then
 			echo ""
 		else
-			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$file/lede/dl
+			ln -s  $HOME/$OW/$SF/dl $HOME/$OW/$you_file/lede/dl
 		fi
 
 		#3
-		if [[ -e $HOME/$OW/$file/lede/My_config ]]; then
+		if [[ -e $HOME/$OW/$you_file/lede/My_config ]]; then
 			echo ""
 		else
-			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$file/lede/My_config
+			ln -s  $HOME/$OW/$SF/My_config $HOME/$OW/$you_file/lede/My_config
 		fi
 
 		#4
-		if [[ -e $HOME/$OW/$file/lede/openwrt.sh ]]; then
+		if [[ -e $HOME/$OW/$you_file/lede/openwrt.sh ]]; then
 			echo ""
 		else
-			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$file/lede/openwrt.sh
+			ln -s  $HOME/$OW/$SF/$OCS/openwrt.sh $HOME/$OW/$you_file/lede/openwrt.sh
 		fi
 
 }
@@ -1260,10 +1274,10 @@ source_openwrt_Setting() {
 		#docekr-ce
 		if [[ -e package/other-plugins/docker-ce ]]; then
 			rm -rf package/other-plugins/docker-ce
-			svn checkout https://github.com/coolsnowwolf/packages/trunk/utils/docker-ce  $HOME/$OW/$file/lede/package/other-plugins/docker-ce
-			cd $HOME/$OW/$file/lede/
+			svn checkout https://github.com/coolsnowwolf/packages/trunk/utils/docker-ce  $HOME/$OW/$you_file/lede/package/other-plugins/docker-ce
+			cd $HOME/$OW/$you_file/lede/
 		else
-			svn checkout https://github.com/coolsnowwolf/packages/trunk/utils/docker-ce  $HOME/$OW/$file/lede/package/other-plugins/docker-ce
+			svn checkout https://github.com/coolsnowwolf/packages/trunk/utils/docker-ce  $HOME/$OW/$you_file/lede/package/other-plugins/docker-ce
 		fi
 
 		#添加库
@@ -1290,8 +1304,8 @@ source_openwrt_Setting() {
 			echo ""
 		else
 			sed -i '31a\tools-y += ucl upx' tools/Makefile
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/upx  $HOME/$OW/$file/lede/tools/upx
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/ucl  $HOME/$OW/$file/lede/tools/ucl
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/upx  $HOME/$OW/$you_file/lede/tools/upx
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/tools/ucl  $HOME/$OW/$you_file/lede/tools/ucl
 			
 		fi 
 		echo "" > $HOME/$OW/$SF/tmp/source_branch
@@ -1305,13 +1319,13 @@ source_openwrt_Setting_18() {
 	Time
 
 	#修改x86启动等待时间成0秒(by:左右）
-	sed -i 's/default "5"/default "0"/g' $HOME/$OW/$file/lede/config/Config-images.in
+	sed -i 's/default "5"/default "0"/g' $HOME/$OW/$you_file/lede/config/Config-images.in
 
 	#去掉IPV6(by:左右）
-	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$OW/$file/lede/feeds/luci/collections/luci/Makefile
+	sed -i 's/+IPV6:luci-proto-ipv6 //g' $HOME/$OW/$you_file/lede/feeds/luci/collections/luci/Makefile
 
 	#修改exfat支持(by:左右）
-	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$OW/$file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
+	sed -i 's/+kmod-nls-base @BUILD_PATENTED/+kmod-nls-base/g' $HOME/$OW/$you_file/lede/feeds/packages/kernel/exfat-nofuse/Makefile
 
 	#修改KB成MB(by:左右）
 	sed -i 's/1024) + " <%:k/1048576) + " <%:M/g' feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
@@ -1347,8 +1361,8 @@ source_lean() {
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
 			sed -i "s/luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
-			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding//g"target/linux/x86/Makefile
-			sed -i "s/luci-app-qbittorrent//g"target/linux/x86/Makefile
+			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding//g" target/linux/x86/Makefile
+			sed -i "s/luci-app-qbittorrent//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-uugamebooster//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-adbyby-plus//g" target/linux/x86/Makefile
 			sed -i "s/luci-app-wireguard//g" target/linux/x86/Makefile
@@ -1471,7 +1485,10 @@ COMMENT
 		fi
 COMMENT
 		#修改网易云启用node.js
-		sed -i "s/default n/default y/g" package/lean/luci-app-unblockmusic/Config.in
+		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-unblockmusic/Makefile
+
+		#将diskman选项启用
+		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-diskman/Makefile
 
 		#下载插件
 		other_plugins
@@ -1496,7 +1513,7 @@ COMMENT
 source_lean_package() {
 	echo ""
 	echo -e ">>$green开始下载lean的软件库$white"
-	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$file/lede/package/lean
+	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$you_file/lede/package/lean
 	if [[ $? -eq 0 ]]; then
 		echo -e ">>$green下载lean的软件库完成$white"
 	else
@@ -1512,10 +1529,10 @@ source_lienol() {
 		clear
 		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
 
-		if [[ -e $HOME/$OW/$file/lede/package/lean/luci-app-ttyd ]]; then
+		if [[ -e $HOME/$OW/$you_file/lede/package/lean/luci-app-ttyd ]]; then
 			echo ""
 		else
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$file/lede/package/lean/luci-app-ttyd
+			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$you_file/lede/package/lean/luci-app-ttyd
 		fi
 
 		./scripts/feeds install -a
@@ -1588,7 +1605,7 @@ other_plugins() {
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
 			cd  package/other-plugins/luci-app-serverchan
 			source_update_No_git_pull
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
 		fi
@@ -1602,7 +1619,7 @@ other_plugins() {
 			cd  package/other-plugins/luci-app-dockerman
 			source_update_No_git_pull
 			sed -i "s/+ttyd//g" applications/luci-app-dockerman/Makefile
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 			sed -i "s/+ttyd//g" package/other-plugins/luci-app-dockerman/applications/luci-app-dockerman/Makefile
@@ -1616,19 +1633,10 @@ other_plugins() {
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		fi
 
-		#将diskman选项启用
-		sed -i "s/default n/default y/g" package/lean/luci-app-diskman/Makefile
-
-		if [[ -e package/other-plugins/copy-pan ]]; then
-			sed -i "s/lm-sensors autocore #tr_ok/lm-sensors autocore copy-pan #tr_ok/g" include/target.mk
-		else
-			echo ""
-		fi
-
 		#adguardhome插件
 		if [[ -e package/other-plugins/luci-app-adguardhome ]]; then
 			cd  package/other-plugins/luci-app-adguardhome && source_update_No_git_pull
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
 		fi
@@ -1638,7 +1646,7 @@ other_plugins() {
 			cd  package/other-plugins/luci-app-godproxy
 			git fetch --all
 			git reset --hard origin/main
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/project-lede/luci-app-godproxy.git package/other-plugins/luci-app-godproxy
 		fi
@@ -1656,7 +1664,7 @@ other_plugins() {
 			cd  package/other-plugins/jd_openwrt_script
 			git fetch --all
 			git reset --hard origin/main
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/ITdesk01/jd_openwrt_script.git package/other-plugins/jd_openwrt_script
 		fi
@@ -1665,9 +1673,9 @@ other_plugins() {
 		#下载jd插件
 		if [[ -e package/other-plugins/luci-app-jd-dailybonus ]]; then
 			cd  package/other-plugins/node-request && source_update_No_git_pull
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 			cd  package/other-plugins/luci-app-jd-dailybonus && source_update_No_git_pull
-			cd $HOME/$OW/$file/lede/
+			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
 			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
@@ -1760,11 +1768,11 @@ make_defconfig() {
 
 dl_download() {
 	#检测dl包完整性(by:P3TERX)
-	if [[ -e $HOME/$OW/$file/lede/dl ]]; then
-		cd $HOME/$OW/$file/lede/dl
+	if [[ -e $HOME/$OW/$you_file/lede/dl ]]; then
+		cd $HOME/$OW/$you_file/lede/dl
 		find . -size -1024c -exec ls -l {} \;
        	 	find . -size -1024c -exec rm -f {} \;
-		cd $HOME/$OW/$file/lede
+		cd $HOME/$OW/$you_file/lede
 	else
 		echo ""
 	fi
@@ -1823,8 +1831,9 @@ ecc() {
 	read a
 	make menuconfig
 	if [[ $? -eq 0 ]]; then
-		Save_My_Config_luci
-		make_firmware_or_plugin
+		#Save_My_Config_luci
+		#make_firmware_or_plugin
+		make_compile_firmware
 	else
 		echo ""
 		echo -e "$redError，请查看上面报错，回车重新执行命令$white"
@@ -1926,10 +1935,10 @@ if_wo() {
 }
 
 n1_builder() {
-	n1_img="$HOME/$OW/$file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
-	builder_patch="$HOME/$OW/$file/lede/N1_builder"
+	n1_img="$HOME/$OW/$you_file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
+	builder_patch="$HOME/$OW/$you_file/lede/N1_builder"
 	armbian_img="Armbian_20.10_Aml-s9xxx_buster_5.4.101-flippy-54+o.img"
-	cd $HOME/$OW/$file/lede
+	cd $HOME/$OW/$you_file/lede
 	if [[ -e $n1_img ]]; then
 		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
 		if [[ -e $builder_patch ]]; then
@@ -2055,7 +2064,7 @@ make_continue_to_compile() {
 	read  -p "请输入你的决定:" continue_to_compile
 		case "$continue_to_compile" in
 		1)
-		cd $HOME/$OW/$file/lede
+		cd $HOME/$OW/$you_file/lede
 		make_firmware_or_plugin
 		;;
 		2)
@@ -2096,7 +2105,7 @@ update_clean_make() {
 	clear
 	echo -e "$green>>更新脚本到最新$white"
 	update_script
-	cd $HOME/$OW/$file/lede
+	cd $HOME/$OW/$you_file/lede
 	echo -e "$green>>文件夹:$action1 执行make clean$white"
 		make clean && rm -rf .config && rm -rf ./tmp/ && rm -rf ./feeds
 	echo -e "$green>>文件夹:$action1 执行git pull$white"
@@ -2147,9 +2156,9 @@ actions_openwrt() {
 	fi
 
 	echo "开始创建编译文件夹"
-	mkdir $HOME/$OW/$file
-	git clone  https://github.com/coolsnowwolf/lede.git $HOME/$OW/$file/lede
-	cd $HOME/$OW/$file/lede
+	mkdir $HOME/$OW/$you_file
+	git clone  https://github.com/coolsnowwolf/lede.git $HOME/$OW/$you_file/lede
+	cd $HOME/$OW/$you_file/lede
 	source_download_ok
 	make_j
 }
@@ -2200,7 +2209,7 @@ action2_if() {
 		file_help
 	else
 		file=$action1
-		cd $HOME/$OW/$file/lede
+		cd $HOME/$OW/$you_file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
 			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
@@ -2221,7 +2230,7 @@ action3_if() {
 		echo ""
 	else
 		file=$action1
-		cd $HOME/$OW/$file/lede
+		cd $HOME/$OW/$you_file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action3" in
 			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
