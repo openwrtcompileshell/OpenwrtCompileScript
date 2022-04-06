@@ -2054,18 +2054,23 @@ make_continue_to_compile() {
 	echo "---------------------------------------------------------------------"
 	echo -e "你的编译出错了是否要继续编译"
 	echo ""
-	echo -e "$green 1.是（回到编译固件 OR 编译插件界面，直接选择编译固件还是插件即可）$white"
+	echo -e "$green 1.是（默认执行make clean && make V=s,以方便查出具体报错问题）$white"
 	echo ""
 	echo -e "$red 2.否 （直接退出脚本）$white"
 	echo ""
-	echo ""
-		prompt
+	echo -e "$yellow温馨提醒，编译失败一般有以下几种可能$white"
+	echo "1. 网络（需要科学上网）"
+	echo "2. Dl库没有下载完整（跟网络很大关系）"
+	echo "3. -j 多线程编译"
+	echo "4. 内存太少，在－ｊ的时候容易报错"
+	echo "5. 空间不足（至少４０Ｇ空间）"
 	echo "---------------------------------------------------------------------"
 	read  -p "请输入你的决定:" continue_to_compile
 		case "$continue_to_compile" in
 		1)
 		cd $HOME/$OW/$you_file/lede
-		make_firmware_or_plugin
+		make clean && make V=s
+		#make_firmware_or_plugin
 		;;
 		2)
 		exit
