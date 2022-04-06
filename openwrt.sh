@@ -626,12 +626,14 @@ description_if(){
 		clear && echo -e  "$green已经安装curl$white"
 	fi
 
+:<<'COMMENT'
 	#解决golang下载慢的问题,来源：https://goproxy.cn/
-	if [[ ! "$GO111MODULE" == "no" ]]; then
+	if [[ ! "$GO111MODULE" == "no" ]]; thendescription_if
 		echo "export GO111MODULE=on" | sudo tee -a /etc/profile
 		echo "export GOPROXY=https://goproxy.cn" | sudo tee -a /etc/profile
 		source /etc/profile
 	fi
+COMMENT
 	
 	if [[ ! -d "$HOME/$OW/$SF/$OCS" ]]; then
 		echo "开始创建主文件夹"
@@ -646,7 +648,7 @@ description_if(){
 	#判断是否云编译
 	workspace_home=`echo "$HOME" | grep gitpod | wc -l`
 	if [[ "$workspace_home" == "1" ]]; then
-		echo "$yellow请注意云编译已经放弃维护很久了，不保证你能编译成功,太耗时耗力，你如果不信邪你可以回车继续$white"
+		echo "$yellow请注意云编译已经放弃维护很久了description_if，不保证你能编译成功,太耗时耗力，你如果不信邪你可以回车继续$white"
 		read a
         	echo "开始添加云编译系统变量"
 		Cloud_env=`gp env | grep -o "shfile" | wc -l `
@@ -696,6 +698,7 @@ description_if(){
 		bash openwrt.sh
 	fi
 
+:<<'COMMENT'
 	#win10
 	check_win10_system=$(cat /proc/version |grep -o Microsoft@Microsoft.com)
 	check_win10_system01=$(cat /proc/version |grep -o microsoft-standard)
@@ -706,6 +709,8 @@ description_if(){
 	else
 		echo "不是win10系统" && clear
 	fi
+
+
 	
 	clear
 
@@ -723,6 +728,12 @@ description_if(){
 				clear && echo "+++++密码错误++++++" && Time && description_if
 			fi
 	fi
+COMMENT
+
+	clear
+	echo ""
+	echo -e "$red图形界面编译已停止维护，请参考底下命令行进行编译$white"
+
 }
 
 win10() {
@@ -761,7 +772,7 @@ win10() {
 					 ;;
 				esac
 			
-			fi
+			fi:<<'COMMENT'
 }
 
 self_test() {
@@ -2147,11 +2158,11 @@ file_help() {
 	echo "---------------------------------------------------------------------"
 	echo ""
 	echo -e "$green用法: bash \$openwrt [文件夹] [命令] $white"
-	echo -e "$green文件夹目录结构：$HOME/$OW/你的文件夹/lede $white"
+	echo -e "$green脚本创建文件夹目录结构：$HOME/$OW/$yellow你起的文件夹名$green/lede $white"
 	echo ""
 	echo -e "$yellow可用命令：$white"
 	echo -e "$green   make_j $white            执行make download 和make -j V=s "
-	echo -e "$green   new_source_make $white   新建一个文件夹下载你需要的源码并进行编译 "
+	echo -e "$green   new_source_make $white   脚本新建一个文件夹下载你需要的源码并进行编译 "
 	echo -e "$green   clean_make $white        执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   noclean_make $white      不执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   update_clean_make $white 执行make clean 并同步最新的源码 再进行编译"
@@ -2164,9 +2175,9 @@ file_help() {
 	echo -e "$green   bash \$openwrt help $white  查看帮助  "
 	echo -e "$green   bash \$openwrt new_source_make $white  新建一个文件夹下载你需要的源码并进行编译  "
 	echo -e "$green   bash \$openwrt update_script $white  将脚本同步到最新  "
-	echo -e "$green   bash \$openwrt 你的文件夹  clean_make $white   清理编译文件，再重新编译  "
-	echo -e "$green   bash \$openwrt 你的文件夹  update_clean_make $white 同步最新的源码清理编译文件再编译  "
-	echo -e "$green   bash \$openwrt 你的文件夹  update_script_rely update_clean_make $white 脚本，源码依赖，源码同步最新，清理编译文件再编译  "
+	echo -e "$green   bash \$openwrt $yellow你起的文件夹名$green  clean_make $white   清理编译文件，再重新编译  "
+	echo -e "$green   bash \$openwrt $yellow你起的文件夹名$green  update_clean_make $white 同步最新的源码清理编译文件再编译  "
+	echo -e "$green   bash \$openwrt $yellow你起的文件夹名$green  update_script_rely update_clean_make $white 脚本，源码依赖，源码同步最新，清理编译文件再编译  "
 	echo ""
 	echo "---------------------------------------------------------------------"
 
@@ -2232,6 +2243,7 @@ action2="$2"
 action3="$3"
 if [[ -z $action1 ]]; then
 	description_if
+	file_help
 else
 	case "$action1" in
 		help)
