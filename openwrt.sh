@@ -481,22 +481,18 @@ git_reset() {
 source_config() {
 	clear
 		 echo "----------------------------------------------------------------------"
-		 echo "是否要加载你之前保存的配置"
-		 echo "     1.是（加载之前保存的配置）"
-		 echo "     2.否（以全新的config进行编译）"
-		 echo "     3.继续上次的编译（不对配置做任何操作）"
+		 echo -e "$green选择编译方式$white"
+		 echo "     1.以全新的config进行编译 (适合编译新机型)"
+		 echo "     2.继续上次的编译（不对配置做任何操作）"
 		 echo ""
-		 echo -e "$yellow PS:如果源码进行过重大更新，建议直接选择2.以全新config进行编译，以减少报错$white"
+		 echo -e "$yellow PS:如果源码进行过重大更新，建议直接选择1.以全新config进行编译，以减少报错$white"
 		 echo "----------------------------------------------------------------------"
 	read -p "请输入你的决定："  config
 		case "$config" in
 			1)
-			transfer_my_config
-			;;
-			2)
 			rm -rf .config && rm -rf ./tmp
 			;;
-			3)
+			2)
 			echo ""
 			;;
 			*)
@@ -2179,9 +2175,9 @@ file_help() {
 	echo -e "$green   new_source_make $white   脚本新建一个文件夹下载你需要的源码并进行编译 "
 	echo ""
 	echo -e "$yellow二次编译建议：$white"
-	echo -e "$green   make_j $white            执行make download 和make -j V=s "
+	#echo -e "$green   make_j $white            执行make download 和make -j V=s "
+	echo -e "$green   noclean_make $white      不执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   clean_make $white        执行make clean清理一下源码然后再进行编译"
-	#echo -e "$green   noclean_make $white      不执行make clean清理一下源码然后再进行编译"
 	echo -e "$green   update_clean_make $white 执行make clean 并同步最新的源码 再进行编译"
 	#echo -e "$green   update_clean_make_kernel $white 编译完成以后执行make kernel_menuconfig($red危险操作$white)"
 	echo -e "$green   update_script $white     将脚本同步到最新"
@@ -2193,7 +2189,7 @@ file_help() {
 	echo -e "$green   bash \$openwrt new_source_make $white  "
 	echo ""
 	echo -e "$yellow  2.不执行clean,执行make download 和make -j V=s(适合二次编译) $white  "
-	echo -e "$green   bash \$openwrt $yellow你起的文件夹名$green  make_j $white "
+	echo -e "$green   bash \$openwrt $yellow你起的文件夹名$green  noclean_make $white "
 	echo ""
 	echo -e "$yellow  3.清理编译文件，再重新编译(适合二次编译) $white  "
 	echo -e "$green   bash \$openwrt $yellow你起的文件夹名$green  clean_make $white   "
