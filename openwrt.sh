@@ -2168,6 +2168,9 @@ actions_openwrt() {
 
 file_help() {
 	echo "---------------------------------------------------------------------"
+	echo "	 Openwrt Compile Script编译脚本"
+	echo "	 by:ITdesk"
+	echo "---------------------------------------------------------------------"
 	echo ""
 	echo -e "$green用法: bash \$openwrt [文件夹] [命令] $white"
 	echo -e "$green脚本创建文件夹目录结构：$HOME/$OW/$yellow你起的文件夹名$green/lede $white"
