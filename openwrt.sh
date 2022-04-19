@@ -2108,18 +2108,19 @@ noclean_make() {
 
 update_clean_make() {
 	clear
-	echo -e "$green>>更新脚本到最新$white"
+	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
 	update_script
 	cd $HOME/$OW/$you_file/lede
-	echo -e "$green>>文件夹:$action1 执行make clean$white"
+	file_patch="$HOME/$OW/$you_file/lede"
+	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make clean$white" && sleep 3
 		make clean && rm -rf .config && rm -rf ./tmp/ && rm -rf ./feeds
-	echo -e "$green>>文件夹:$action1 执行git pull$white"
+	echo -e "$green>>文件夹:$yellow$file_patch$green 执行git pull$white" && sleep 3
 		source_update_No_git_pull
-	echo -e "$green>>文件夹:$action1 执行常用设置$white"
+	echo -e "$green>>文件夹:$yellow$file_patch$green 执行常用设置$white"　&& sleep 3
 		source_download_ok
-	echo -e "$green>>文件夹:$action1 执行make menuconfig $white"
+	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make menuconfig $white"　&& sleep 3
 		make menuconfig
-	echo -e "$green>>文件夹:$action1 执行make download 和make -j $white"
+	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make download 和make -j $white"　&& sleep 3
 		make_j
 
 	if [[ $? -eq 0 ]]; then
@@ -2213,7 +2214,7 @@ action2_if() {
 		echo -e "$red>>命令参数不能为空！$white"
 		file_help
 	else
-		file=$action1
+		you_file=$action1
 		cd $HOME/$OW/$you_file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
@@ -2234,7 +2235,7 @@ action3_if() {
 	if [[ -z $action3 ]]; then
 		echo ""
 	else
-		file=$action1
+		you_file=$action1
 		cd $HOME/$OW/$you_file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action3" in
