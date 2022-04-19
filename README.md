@@ -1,6 +1,6 @@
 # OpenwrtCompileScript
 
-![CompileScript](doc/CompileScript.PNG) 
+![Command_Line](doc/Command_Line.PNG)
 
 ## 序言
 
@@ -21,12 +21,9 @@ The script is made to work on these OS :
 - Ubuntu 16.4
 - Ubuntu 18.4 （首选，脚本基于此版本编写测试）
 - win10子系统（ubuntu 18.04 LTS）
-- （已放弃）Github Gitpod云编译(参考：https://www.right.com.cn/forum/thread-1573038-1-1.html)
 - Deepin 15.11桌面版（群友测试ok）
 
 ## 脚本使用教程
-
-[OpenwrtCompileScript使用说明.pdf](OpenwrtCompileScript使用说明.pdf) （有段时间没有更新了）
 
 **脚本视频教程加群** :**667491026**   （**拒绝大爷公子伸手党**)
 
@@ -54,33 +51,45 @@ cd OpenwrtCompileScript && bash openwrt.sh
 ## 命令行调用脚本
 ```bash
 用法: bash $openwrt [文件夹] [命令] 
-文件夹目录结构：$HOME/Openwrt/你的文件夹/lede
+脚本创建文件夹目录结构：/home/zhang/Openwrt/你起的文件夹名/lede 
 
-可用命令:
-   make_j             执行make download 和make -j V=s 
-   new_source_make    新建一个文件夹下载你需要的源码并进行编译 
-   clean_make         执行make clean清理一下源码然后再进行编译
+首次编译建议：
+   new_source_make    脚本新建一个文件夹下载你需要的源码并进行编译 
+
+二次编译建议：
    noclean_make       不执行make clean清理一下源码然后再进行编译
+   clean_make         执行make clean清理一下源码然后再进行编译
    update_clean_make  执行make clean 并同步最新的源码 再进行编译
-   update_clean_make_kernel  编译完成以后执行make kernel_menuconfig(危险操作)
    update_script      将脚本同步到最新
    update_script_rely 将脚本和源码依赖同步到最新
-   help  查看帮助
 
-例子： 
-   bash $openwrt help   查看帮助 
-   bash $openwrt new_source_make   新建一个文件夹下载你需要的源码并进行编译
-   bash $openwrt update_script   将脚本同步到最新
-   bash $openwrt 你的文件夹  clean_make    清理编译文件，再重新编译 
-   bash $openwrt 你的文件夹  update_clean_make  同步最新的源码清理编译文件再编译 
-   bash $openwrt 你的文件夹  update_script_rely update_clean_make  脚本，源码依赖，源码同步最新，清理编译文件再编译
+
+例子：  
+  1.新建一个文件夹下载你需要的源码并进行编译(适合首次编译)  
+   bash $openwrt new_source_make   
+
+  2.不执行clean,执行make download 和make -j V=s(适合二次编译)   
+   bash $openwrt 你起的文件夹名  noclean_make  
+
+  3.清理编译文件，再重新编译(适合二次编译)   
+   bash $openwrt 你起的文件夹名  clean_make    
+
+  4.同步最新的源码清理编译文件再编译(适合二次编译) 
+   bash $openwrt 你起的文件夹名  update_clean_make  
+
+   bash $openwrt help   查看帮助  
+   bash $openwrt update_script   将脚本同步到最新  
+
 
 
 ``` 
-![Command_Line](doc/Command_Line.PNG)
+
 
 
 ## 版本修改记录
+### ++3.0版本
+1.禁用图形界面
+2.现在支持lean的源码，后期有时间再考虑其他
 
 ### ++2.9版本
 
