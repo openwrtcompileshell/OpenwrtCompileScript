@@ -1869,6 +1869,7 @@ make_firmware_or_plugin() {
 }
 
 make_compile_firmware() {
+	rm -rf /tmp/compile.log
 	clear
 	echo "--------------------------------------------------------"
 	echo -e "$green++编译固件是否要使用多线程编译++$white"
@@ -1885,13 +1886,15 @@ make_compile_firmware() {
 	if [[ -z $mk_f ]];then
 		clear && echo "开始执行编译" && Time
 		dl_download
-		make V=s
+		tail -f /tmp/compile.log &
+		make V=s >>/tmp/compile.log
 	else
 		dl_download
 		clear
 		echo -e "你输入的命令是：$green$mk_f$white"
 		echo "准备开始执行编译" && Time
-		$mk_f
+		tail -f /tmp/compile.log　&
+		$mk_f >>/tmp/compile.log
 	fi
 	
 	if [[ $? -eq 0 ]]; then
@@ -1926,7 +1929,12 @@ if_wo() {
 			echo -e "本次编译完成的固件已经copy到$green $HOME/bin/$da-$source_type $white"
 		fi
 	else
-		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
+		echo "---------------------------------------------------"
+		echo -e "$red>> 固件编译失败，请查看报错代码$white"
+			cat /tmp/compile.log | grep -E "ERROR/|failed"
+		echo -e "$yellow >>更多编译过程可以查看　$green/tmp/compile.log$yellow　方便你查看错误发生过程"
+		echo ----------------------------------------------------
+
 		make_continue_to_compile
 	fi
 }
