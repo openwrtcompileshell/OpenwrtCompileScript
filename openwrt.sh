@@ -1882,7 +1882,7 @@ make_compile_firmware() {
 	echo -e "$red!!!请不要在输入参数这行直接输数字，把命令敲全，不懂就直接回车!!!$white"
 	echo "--------------------------------------------------------"
 	read  -p "请输入你的参数(回车默认：make V=s)：" mk_f
-	if [[ -z "$mk_f" ]];then
+	if [[ -z $mk_f ]];then
 		clear && echo "开始执行编译" && Time
 		dl_download
 		make V=s
@@ -2081,11 +2081,12 @@ make_continue_to_compile() {
 
 #单独的命令模块
 make_j() {
-	dl_download
-	calculating_time_start
-	make -j$(nproc) V=s
-	calculating_time_end
-	n1_builder
+	make_compile_firmware
+	#dl_download
+	#calculating_time_start
+	#make -j$(nproc) V=s
+	#calculating_time_end
+	#n1_builder
 }
 
 new_source_make() {
