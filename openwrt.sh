@@ -1020,9 +1020,11 @@ source_download_openwrt() {
 			case "$Download_source_openwrt" in
 				1)
 				git clone https://github.com/coolsnowwolf/lede.git lede
+				echo "lean" > $HOME/$OW/$SF/tmp/source_type
 				;;
 				2)
-				git clone -b openwrt-18.06-k5.4 https://github.com/immortalwrt/immortalwrt lede
+				git clone -b openwrt-18.06-k5.4 --single-branch  https://github.com/immortalwrt/immortalwrt lede
+				echo "immortalwrt" > $HOME/$OW/$SF/tmp/source_type
 				;;
 				*)
 				clear && echo  "请输入正确的数字（1-2）" && Time
@@ -1144,7 +1146,7 @@ source_download_if() {
 }
 
 source_download_ok() {
-			source_if
+			#source_if
 			source_Soft_link
 			update_feeds
 			#source_openwrt
@@ -1460,6 +1462,30 @@ COMMENT
 
 		fi
 
+		#修改网易云启用node.js
+		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-unblockmusic/Makefile
+
+		#将diskman选项启用
+		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-diskman/Makefile
+
+		#下载插件
+		other_plugins
+
+		#删除这个，解决报错问题
+		rm -rf dl/go-mod-cache && rm -rf ./tmp
+
+		update_feeds
+		#node.js
+		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
+		if [[  "$node_if" == "0" ]];then
+			echo "src-git node https://github.com/nxhack/openwrt-node-packages.git" >>feeds.conf.default
+			./scripts/feeds update node
+			rm ./package/feeds/packages/node
+			rm ./package/feeds/packages/node-*
+			./scripts/feeds install -a -p node
+		fi
+		echo -e ">>$green lean版本配置优化完成$white"
+
 	fi
 :<<'COMMENT'
 		#替换lean首页文件，添加天气代码(by:冷淡)
@@ -1497,29 +1523,6 @@ COMMENT
 			sed -i "74s/^/        /" package/other-plugins/luci-app-passwall/Makefile
 		fi
 COMMENT
-		#修改网易云启用node.js
-		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-unblockmusic/Makefile
-
-		#将diskman选项启用
-		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-diskman/Makefile
-
-		#下载插件
-		other_plugins
-
-		#删除这个，解决报错问题
-		rm -rf dl/go-mod-cache && rm -rf ./tmp
-		
-		update_feeds
-		#node.js
-		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
-		if [[  "$node_if" == "0" ]];then
-			echo "src-git node https://github.com/nxhack/openwrt-node-packages.git" >>feeds.conf.default
-			./scripts/feeds update node
-			rm ./package/feeds/packages/node
-			rm ./package/feeds/packages/node-*
-			./scripts/feeds install -a -p node	
-		fi
-		echo -e ">>$green lean版本配置优化完成$white"
 }
 
 
