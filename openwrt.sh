@@ -1012,16 +1012,17 @@ source_download_openwrt() {
 		#echo -e "	$green默认下载:${yellow}Lean_master_source$white"
 		echo "  -----------------------------------------"
 		echo ""
-		echo "	1.Lean_master_source　(推荐,我个人用的比较多)"
+		echo -e "	1.Lean_master_source　$yellow(* 推荐,我个人用的比较多)$white"
 		echo ""
 		echo " 	2.immortalwrt_openwrt-18.06-k5.4"
+		echo ""
 		read  -p "请输入你要下载的源代码:" Download_source_openwrt
 			case "$Download_source_openwrt" in
 				1)
 				git clone https://github.com/coolsnowwolf/lede.git lede
 				;;
 				2)
-				git clone -b openwrt-18.06-k5.4 --single-branch https://github.com/immortalwrt/immortalwrt lede
+				git clone -b openwrt-18.06-k5.4 https://github.com/immortalwrt/immortalwrt lede
 				;;
 				*)
 				clear && echo  "请输入正确的数字（1-2）" && Time
