@@ -2290,6 +2290,11 @@ action3_if() {
 }
 
 
+if [[ $(users) == "root" ]];then
+	echo -e "${red}请勿使用root进行编译！！！${white}"
+	exit 0
+fi
+
 #copy  by:Toyo  modify:ITdesk
 action1="$1"
 action2="$2"

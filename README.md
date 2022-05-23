@@ -29,7 +29,10 @@ The script is made to work on these OS :
 
 **脚本问题反馈** ：https://github.com/openwrtcompileshell/OpenwrtCompileScript/issues 或者加群反馈
 
+
 ## Usage 使用方法
+**请勿使用Root进行编译！！！**
+
 
 1、使用git克隆下载脚本并赋予执行权限
 
@@ -44,7 +47,7 @@ git clone https://github.com/openwrtcompileshell/OpenwrtCompileScript.git && chm
 cd OpenwrtCompileScript && bash openwrt.sh
 ```
 
-**注意**:执行脚本后会自动添加系统变量，第二次可使用如下命令运行脚本。
+**注意**:执行脚本后会自动添加系统变量，第二次可使用如下命令运行脚本。(如果不行，请重启的你的Linux)
 
 `bash $openwrt`
 
