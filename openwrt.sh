@@ -1352,8 +1352,8 @@ source_openwrt_Setting_18() {
 }
 
 source_lean() {
-	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
-	if [[ "$source_type" == "lean" ]]; then
+	source_type=`git remote show origin | grep "coolsnowwolf" | wc -l`
+	if [[ "$source_type" == "2" ]]; then
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
