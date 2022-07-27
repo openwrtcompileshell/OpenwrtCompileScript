@@ -1889,6 +1889,7 @@ make_firmware_or_plugin() {
 
 make_compile_firmware() {
 	rm -rf /tmp/compile.log
+	calculating_time_start
 	clear
 	echo "--------------------------------------------------------"
 	echo -e "$green++编译固件是否要使用多线程编译++$white"
