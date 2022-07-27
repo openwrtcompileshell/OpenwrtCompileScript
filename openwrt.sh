@@ -24,8 +24,33 @@ calculating_time_end() {
 	endTime=`date +%Y%m%d-%H:%M:%S`
 	endTime_s=`date +%s`
 	sumTime=$[ $endTime_s - $startTime_s ]
+
+	echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime $white"
+	echo -e "耗时:"
+
+	#以下代码ｃｏｐｙ　https://blog.csdn.net/weixin_33478575/article/details/116683248
+	local T=$sumTime
+
+	local D=$((T/60/60/24))
+
+	local H=$((T/60/60%24))
+
+	local M=$((T/60%60))
+
+	local S=$((T%60))
+
+	(( $D > 0 )) && printf '%d 天 ' $D
+
+	(( $H > 0 )) && printf '%d 小时 ' $H
+
+	(( $M > 0 )) && printf '%d 分钟 ' $M
+
+	(( $D > 0 || $H > 0 || $M > 0 )) && printf 'and '
+
+	printf '%d 秒\n' $S
+
 	echo ""
-	echo -e "$yellow开始时间:$green $startTime ---> $yellow结束时间:$green $endTime" "$yellow耗时:$green $sumTime 秒$white"
+
 }
 
 prompt() {
