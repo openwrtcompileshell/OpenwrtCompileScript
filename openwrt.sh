@@ -1905,15 +1905,15 @@ make_compile_firmware() {
 	if [[ -z $mk_f ]];then
 		clear && echo "开始执行编译" && Time
 		dl_download
-		tail -f /tmp/compile.log &
-		make V=s >>/tmp/compile.log
+		make V=s >>/tmp/compile.log &
+		tail -f /tmp/compile.log
 	else
 		dl_download
 		clear
 		echo -e "你输入的命令是：$green$mk_f$white"
 		echo "准备开始执行编译" && Time
-		tail -f /tmp/compile.log　&
-		$mk_f >>/tmp/compile.log
+		$mk_f >>/tmp/compile.log &
+		tail -f /tmp/compile.log
 	fi
 	
 	if [[ $? -eq 0 ]]; then
