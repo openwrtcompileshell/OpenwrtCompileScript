@@ -1946,16 +1946,22 @@ make_compile_firmware() {
 }
 
 if_make() {
+	#set -x
 	if [[ `cat /tmp/compile.log |grep "make\[1\]: Leaving directory" | wc -l` == "1" ]];then
+		kill_tail=$(ps -an | grep tail | grep -v grep | awk '{print $1}')
+		kill -9 $kill_tail
 		n1_builder
 		if_wo
 		calculating_time_end
 	else
 		if [[ `cat /tmp/compile.log |grep "make\: \*\*\* \[world\] Error 2" | wc -l ` == "1" ]]; then
-			if_make
-		else
+			kill_tail=$(ps -an | grep tail | grep -v grep | awk '{print $1}')
+			kill -9 $kill_tail
 			echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
 			make_continue_to_compile
+		else
+			sleep 2
+			if_make
 		fi
 	fi
 
