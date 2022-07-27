@@ -1932,24 +1932,33 @@ make_compile_firmware() {
 		clear && echo "开始执行编译" && Time
 		dl_download
 		make V=s >>/tmp/compile.log &
-		tail -f /tmp/compile.log
+		tail -f /tmp/compile.log &
 	else
 		dl_download
 		clear
 		echo -e "你输入的命令是：$green$mk_f$white"
 		echo "准备开始执行编译" && Time
 		$mk_f >>/tmp/compile.log &
-		tail -f /tmp/compile.log
+		tail -f /tmp/compile.log &
 	fi
 	
-	if [[ $? -eq 0 ]]; then
+	if_make
+}
+
+if_make() {
+	if [[ `cat /tmp/compile.log |grep "make\[1\]: Leaving directory" | wc -l` == "1" ]];then
 		n1_builder
 		if_wo
 		calculating_time_end
 	else
-		echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
-		make_continue_to_compile
+		if [[ `cat /tmp/compile.log |grep "make\: \*\*\* \[world\] Error 2" | wc -l ` == "1" ]]; then
+			if_make
+		else
+			echo -e "$red>> 固件编译失败，请查询上面报错代码$white"
+			make_continue_to_compile
+		fi
 	fi
+
 	#by：BoomLee  ITdesk
 }
 
