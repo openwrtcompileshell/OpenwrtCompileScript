@@ -2181,8 +2181,6 @@ noclean_make() {
 
 update_clean_make() {
 	clear
-	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
-	update_script
 	cd $HOME/$OW/$you_file/lede
 	file_patch="$HOME/$OW/$you_file/lede"
 	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make clean$white" && sleep 3
@@ -2341,6 +2339,14 @@ action3_if() {
 if [[ $(users) == "root" ]];then
 	echo -e "${red}请勿使用root进行编译！！！${white}"
 	exit 0
+fi
+
+git_branch=$(git branch -v | grep -o 落后 )
+if [[  "$git_branch" == "落后" ]]; then
+	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
+	update_script
+else
+	echo -e "$green脚本已经最新$white"
 fi
 
 #copy  by:Toyo  modify:ITdesk
