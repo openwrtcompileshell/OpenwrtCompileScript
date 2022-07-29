@@ -2346,6 +2346,7 @@ if [[  "$git_branch" == "落后" ]]; then
 	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
 	update_script
 else
+	#测试一下
 	echo -e "$green脚本已经最新$white"
 fi
 
