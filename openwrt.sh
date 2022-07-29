@@ -2341,7 +2341,7 @@ if [[ $(users) == "root" ]];then
 	exit 0
 fi
 
-git_branch=$(git branch -v | grep -o 落后 )
+git_branch=$(git fetch --all | git branch -v | grep -o "落后")
 if [[  "$git_branch" == "落后" ]]; then
 	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
 	update_script
