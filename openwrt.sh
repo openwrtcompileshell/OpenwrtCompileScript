@@ -1699,14 +1699,6 @@ other_plugins() {
 			git clone https://github.com/project-lede/luci-app-godproxy.git package/other-plugins/luci-app-godproxy
 		fi
 
-		 #错误访问登录限制（来自恩山401626436）
-		if [[ -e package/other-plugins/luci-app-banlogon ]]; then
-			rm -rf  package/other-plugins/luci-app-banlogon
-			cp -r $HOME/$OW/$SF/$OCS/package/luci-app-banlogon  package/other-plugins/luci-app-banlogon
-		else
-			cp -r $HOME/$OW/$SF/$OCS/package/luci-app-banlogon  package/other-plugins/luci-app-banlogon
-		fi
-
 		#安装脚本
 		if [[ -e package/other-plugins/jd_openwrt_script ]]; then
 			cd  package/other-plugins/jd_openwrt_script
