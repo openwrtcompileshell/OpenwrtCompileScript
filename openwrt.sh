@@ -1394,7 +1394,7 @@ source_lean() {
 		update_feeds
 
 		#target.mk
-		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd #tr_ok"
+		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1417,8 +1417,8 @@ source_lean() {
 		fi
 
 		#修改X86默认固件大小
-		if [[ `grep -o "default 480" config/Config-images.in | wc -l` == "1" ]]; then
-			sed -i 's\default 480\default 1024\g' config/Config-images.in
+		if [[ `grep -o "default 400" config/Config-images.in | wc -l` == "1" ]]; then
+			sed -i 's\default 400\default 1024\g' config/Config-images.in
 			#传统模式
 			grub_position=$(cat config/Config-images.in | grep -n "Build GRUB images" | awk  '{print $1}' | sed "s/://")
 			del_num=$(($grub_position + 4))
@@ -1428,7 +1428,7 @@ source_lean() {
 		else
 			echo ""
 		fi
-
+	
 		#默认对x86首页下手，其他的你们安全了
 		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/x86/index.htm)
 		if [[ "$x86indexif" == "Local Weather" ]]; then
@@ -1508,6 +1508,11 @@ COMMENT
 		rm -rf dl/go-mod-cache && rm -rf ./tmp
 
 		update_feeds
+
+		#修改python版本为3.7
+		sed -i "/PYTHON3_VERSION_MINOR:=9/PYTHON3_VERSION_MINOR:=7/g" feeds/packages/lang/python/python3-version.mk
+		./scripts/feeds install -a -p python
+
 		#node.js
 		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
 		if [[  "$node_if" == "0" ]];then
@@ -1517,6 +1522,7 @@ COMMENT
 			rm ./package/feeds/packages/node-*
 			./scripts/feeds install -a -p node
 		fi
+		
 		echo -e ">>$green lean版本配置优化完成$white"
 
 	fi
