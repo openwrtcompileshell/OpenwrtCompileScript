@@ -1706,6 +1706,26 @@ other_plugins() {
 			git clone https://github.com/project-lede/luci-app-godproxy.git package/other-plugins/luci-app-godproxy
 		fi
 
+		#openwrt-OpenAppFilter插件
+		if [[ -e package/other-plugins/openwrt-OpenAppFilter ]]; then
+			cd  package/other-plugins/openwrt-OpenAppFilter
+			git fetch --all
+			git reset --hard origin/main
+			cd $HOME/$OW/$you_file/lede/
+		else
+			git clone https://github.com/Lienol/openwrt-OpenAppFilter.git package/other-plugins/openwrt-OpenAppFilter
+		fi
+
+		#openwrt-OpenAppFilter插件
+		if [[ -e package/other-plugins/openwrt-passwall2 ]]; then
+			cd  package/other-plugins/openwrt-passwall2
+			git fetch --all
+			git reset --hard origin/main
+			cd $HOME/$OW/$you_file/lede/
+		else
+			git clone https://github.com/xiaorouji/openwrt-passwall2.git package/other-plugins/openwrt-passwall2
+		fi
+
 		#安装脚本
 		if [[ -e package/other-plugins/jd_openwrt_script ]]; then
 			cd  package/other-plugins/jd_openwrt_script
