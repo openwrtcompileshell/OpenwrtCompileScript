@@ -1689,11 +1689,12 @@ other_plugins() {
 		fi
 
 		#adguardhome插件
-		if [[ -e package/other-plugins/luci-app-adguardhome ]]; then
-			cd  package/other-plugins/luci-app-adguardhome && source_update_No_git_pull
+		if [[ -e package/other-plugins/luci-app-adguardhome1 ]]; then
+			rm -rf package/other-plugins/luci-app-adguardhome
+			cd  package/other-plugins/luci-app-adguardhome1 && source_update_No_git_pull
 			cd $HOME/$OW/$you_file/lede/
 		else
-			git clone https://github.com/rufengsuixing/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome
+			git clone https://github.com/kongfl888/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome1
 		fi
 
 		#godproxy插件
@@ -1710,20 +1711,29 @@ other_plugins() {
 		if [[ -e package/other-plugins/openwrt-OpenAppFilter ]]; then
 			cd  package/other-plugins/openwrt-OpenAppFilter
 			git fetch --all
-			git reset --hard origin/main
+			git reset --hard origin/master
 			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone https://github.com/Lienol/openwrt-OpenAppFilter.git package/other-plugins/openwrt-OpenAppFilter
 		fi
 
-		#openwrt-OpenAppFilter插件
-		if [[ -e package/other-plugins/openwrt-passwall2 ]]; then
-			cd  package/other-plugins/openwrt-passwall2
+		#openwrt-passwall插件
+		if [[ -e package/other-plugins/openwrt-passwall ]]; then
+			cd  package/other-plugins/openwrt-passwall
 			git fetch --all
-			git reset --hard origin/main
+			git reset --hard origin/packages
 			cd $HOME/$OW/$you_file/lede/
 		else
-			git clone https://github.com/xiaorouji/openwrt-passwall2.git package/other-plugins/openwrt-passwall2
+			git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall
+		fi
+
+		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
+			cd  package/other-plugins/openwrt-passwall_luci
+			git fetch --all
+			git reset --hard origin/luci
+			cd $HOME/$OW/$you_file/lede/
+		else
+			git clone -b luci https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall_luci
 		fi
 
 		#安装脚本
@@ -1733,7 +1743,7 @@ other_plugins() {
 			git reset --hard origin/main
 			cd $HOME/$OW/$you_file/lede/
 		else
-			git clone https://github.com/ITdesk01/jd_openwrt_script.git package/other-plugins/jd_openwrt_script
+			git clone https://github.com/xdhgsq/xdh_plug.git package/other-plugins/jd_openwrt_script
 		fi
 
 :<<'COMMENT'
