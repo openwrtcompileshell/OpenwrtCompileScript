@@ -1722,6 +1722,12 @@ other_plugins() {
 			cd  package/other-plugins/openwrt-passwall
 			git fetch --all
 			git reset --hard origin/packages
+			#删除冲突包
+			conflict_package="ipt2socks chinadns-ng dns2socks dns2tcp gn hysteria microsocks naiveproxy shadowsocksr-libev shadowsocks-rust simple-obfs tcping trojan v2ray-core v2ray-geodata v2ray-plugin xray-core xray-plugin"
+			for i in `echo "$conflict_package"`
+			do
+				rm -rf package/other-plugins/openwrt-passwall/$i
+			done
 			cd $HOME/$OW/$you_file/lede/
 		else
 			git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall
