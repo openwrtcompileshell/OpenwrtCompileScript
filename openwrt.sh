@@ -1394,7 +1394,7 @@ source_lean() {
 		update_feeds
 
 		#target.mk
-		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server #tr_ok"
+		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-app-ap-modem luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall luci-app-mosdns #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1526,42 +1526,7 @@ COMMENT
 		echo -e ">>$green lean版本配置优化完成$white"
 
 	fi
-:<<'COMMENT'
-		#替换lean首页文件，添加天气代码(by:冷淡)
-		indexif=$(grep -o "Local Weather" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm)
-		if [[ "$indexif" == "Local Weather" ]]; then
-			echo "已经替换首页文件"
-		else
-			rm -rf feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/index.htm feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-		fi
 
-		#增加首页温度显示
-		temperature_if=$(grep -o "@TARGET_x86" package/lean/autocore/Makefile | wc -l)
-		if [[ "$temperature_if" == "1" ]]; then
-			rm -rf package/lean/autocore/files/autocore
-			sed -i "s/@TARGET_x86/@(i386||x86_64||arm||mipsel||mips||aarch64)/g"  package/lean/autocore/Makefile
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/autocore  package/lean/autocore/files/autocore
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_temperature/temperature package/lean/autocore/files/sbin/temperature
-		else
-			echo "temperature添加完成"
-		fi
-
-		#默认选上其他参数
-		if [[ -e package/other-plugins/luci-app-passwall ]]; then
-			sed -i '54d' package/other-plugins/luci-app-passwall/Makefile
-			sed -i '53a\default y if i386||x86_64||arm||aarch64' package/other-plugins/luci-app-passwall/Makefile
-			sed -i "54s/^/        /" package/other-plugins/luci-app-passwall/Makefile
-
-			sed -i '66d' package/other-plugins/luci-app-passwall/Makefile
-			sed -i '65a\default y if i386||x86_64||arm||aarch64' package/other-plugins/luci-app-passwall/Makefile
-			sed -i "66s/^/        /" package/other-plugins/luci-app-passwall/Makefile
-
-			sed -i '74d' package/other-plugins/luci-app-passwall/Makefile
-			sed -i '73a\default y if i386||x86_64||arm||aarch64' package/other-plugins/luci-app-passwall/Makefile
-			sed -i "74s/^/        /" package/other-plugins/luci-app-passwall/Makefile
-		fi
-COMMENT
 }
 
 
@@ -1619,30 +1584,6 @@ source_lienol() {
 		fi
 
 		echo -e ">>$green lean版本配置优化完成$white"
-:<<'COMMENT'
-		#默认选上tj
-		trojanif=$(grep -o "#tjdefault n" feeds/lienol/lienol/luci-app-passwall/Makefile | wc -l)
-		if [[ "$trojanif" == "1" ]]; then
-			echo "Trojan设置完成"
-		else
-			sed -i '45s/\(.\{1\}\)/\#tj/' feeds/lienol/lienol/luci-app-passwall/Makefile
-			sed -i '45a\default y' feeds/lienol/lienol/luci-app-passwall/Makefile
-			sed -i "45s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
-			sed -i "46s/^/        /" feeds/lienol/lienol/luci-app-passwall/Makefile
-		fi
-
-		#更改passwall国内的dns
-		passwall_dns=$(grep -o "option up_china_dns '114.114.114.114'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
-		if [[ "$passwall_dns" == "1" ]]; then
-			sed -i "s/option up_china_dns '114.114.114.114'/option up_china_dns '223.5.5.5'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
-		fi
-
-		#更改passwall的dns模式
-		dns_mode=$(grep -o "option dns_mode 'pdnsd'" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall | wc -l)
-		if [[ "$dns_mode" == "1" ]]; then
-			sed -i "s/option dns_mode 'pdnsd'/option dns_mode 'chinadns-ng'/g" feeds/lienol/lienol/luci-app-passwall/root/etc/config/passwall
-		fi
-COMMENT
 	fi
 }
 
@@ -1655,7 +1596,15 @@ other_plugins() {
 			mkdir package/other-plugins
 		fi
 
-		
+		#下载光猫访问
+		if [[ -e package/other-plugins/luci-app-ap-modem ]]; then
+			rm -rf package/other-plugins/luci-app-ap-modem
+			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
+			cd $HOME/$OW/$you_file/lede/
+		else
+			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
+		fi
+	
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
 			cd  package/other-plugins/luci-app-serverchan
@@ -1718,21 +1667,6 @@ other_plugins() {
 		fi
 
 		#openwrt-passwall插件
-		if [[ -e package/other-plugins/openwrt-passwall ]]; then
-			cd  package/other-plugins/openwrt-passwall
-			git fetch --all
-			git reset --hard origin/packages
-			#删除冲突包
-			conflict_package="ipt2socks chinadns-ng dns2socks dns2tcp gn hysteria microsocks naiveproxy shadowsocksr-libev shadowsocks-rust simple-obfs tcping trojan v2ray-core v2ray-geodata v2ray-plugin xray-core xray-plugin"
-			for i in `echo "$conflict_package"`
-			do
-				rm -rf package/other-plugins/openwrt-passwall/$i
-			done
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall
-		fi
-
 		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
 			cd  package/other-plugins/openwrt-passwall_luci
 			git fetch --all
@@ -1741,6 +1675,65 @@ other_plugins() {
 		else
 			git clone -b luci https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall_luci
 		fi
+
+		#openwrt-passwall插件依赖
+		if [[ -e package/other-plugins/openwrt-passwall ]]; then
+			cd  package/other-plugins/openwrt-passwall
+			git fetch --all
+			git reset --hard origin/packages
+			#删除冲突包
+			conflict_package="ipt2socks chinadns-ng dns2socks dns2tcp gn hysteria microsocks naiveproxy shadowsocksr-libev shadowsocks-rust simple-obfs tcping trojan v2ray-core v2ray-geodata v2ray-plugin xray-core xray-plugin"
+			for i in `echo "$conflict_package"`
+			do
+				echo ""
+				#rm -rf package/other-plugins/openwrt-passwall/$i
+			done
+			cd $HOME/$OW/$you_file/lede/
+		else
+			git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall
+		fi
+
+		#openwrt-passwall插件默认选上其他参数
+		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
+			cat >/tmp/passwall_luci_set <<EOF
+				Brook
+				Hysteria
+				NaiveProxy
+EOF
+
+			passwall_dir="package/other-plugins/openwrt-passwall_luci/luci-app-passwall/Makefile"
+			for i in `cat /tmp/passwall_luci_set`
+			do
+				Rows=$(grep -n "Include $i"  $passwall_dir | awk -F ":" '{print $1}')
+				Rows1=$(($Rows + 1))
+				sed -i "$Rows1 d" $passwall_dir
+				sed -i "$Rows a\default y" $passwall_dir
+				
+			done
+		fi
+
+		#helloword插件默认选上其他参数
+		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
+			cat >/tmp/helloworld_set <<EOF
+				Hysteria
+				IPT2Socks
+				Kcptun
+				NaiveProxy
+				Redsocks2
+				Trojan
+EOF
+
+			helloworld_dir="feeds/helloworld/luci-app-ssr-plus/Makefile"
+			for i in `cat /tmp/helloworld_set`
+			do
+				Rows=$(grep -n "Include $i"  $helloworld_dir | awk -F ":" '{print $1}')
+				Rows1=$(($Rows + 1))
+				sed -i "$Rows1 d" $helloworld_dir
+				sed -i "$Rows a\default y" $helloworld_dir
+				
+			done
+		fi
+
 
 		#安装脚本
 		if [[ -e package/other-plugins/jd_openwrt_script ]]; then
@@ -1752,44 +1745,7 @@ other_plugins() {
 			git clone https://github.com/xdhgsq/xdh_plug.git package/other-plugins/jd_openwrt_script
 		fi
 
-:<<'COMMENT'
-		#下载jd插件
-		if [[ -e package/other-plugins/luci-app-jd-dailybonus ]]; then
-			cd  package/other-plugins/node-request && source_update_No_git_pull
-			cd $HOME/$OW/$you_file/lede/
-			cd  package/other-plugins/luci-app-jd-dailybonus && source_update_No_git_pull
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/jerrykuku/node-request.git package/other-plugins/node-request
-			git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/other-plugins/luci-app-jd-dailybonus
-		fi
 
-		#Hello word插件
-		if [[ -e package/other-plugins/luci-app-passwall ]]; then
-			rm -rf package/other-plugins/luci-app-passwall
-			rm -rf package/other-plugins/chinadns-ng
-			rm -rf package/other-plugins/tcping
-			rm -rf package/other-plugins/trojan-go
-			rm -rf package/other-plugins/trojan-plus
-			rm -rf package/other-plugins/brook
-			rm -rf package/other-plugins/ssocks
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-go package/other-plugins/trojan-go
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-plus package/other-plugins/trojan-plus
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/ssocks package/other-plugins/ssocks
-		else
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/lienol/luci-app-passwall package/other-plugins/luci-app-passwall
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/chinadns-ng package/other-plugins/chinadns-ng
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/tcping package/other-plugins/tcping
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-go package/other-plugins/trojan-go
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/trojan-plus package/other-plugins/trojan-plus
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/brook package/other-plugins/brook
-			svn checkout https://github.com/xiaorouji/openwrt-package/trunk/package/ssocks package/other-plugins/ssocks
-		fi
-COMMENT
 }
 
 #Public配置
@@ -1805,19 +1761,7 @@ source_Setting_Public() {
 	#修改固件生成名字,增加当天日期(by:左右）
 	sed -i 's/IMG_PREFIX:=$(VERSION_DIST_SANITIZED)/IMG_PREFIX:=[$(shell date +%Y%m%d)]-$(VERSION_DIST_SANITIZED)/g' include/image.mk
 
-
-	#frpc替换为27版本
-	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
-	if [[ `echo "$source_type" | grep openwrt | wc -l` == "1" ]]; then
-		sed -i "s/PKG_VERSION:=0.34.1/PKG_VERSION:=0.27.0/g" feeds/packages/net/frp/Makefile
-	elif [[ `echo "$source_type" | grep lean | wc -l` == "1" ]]; then
-		sed -i "s/PKG_VERSION:=0.34.1/PKG_VERSION:=0.27.0/g" package/lean/frp/Makefile
-		sed -i "s/PKG_HASH:=a47f952cc491a1d5d6f838306f221d6a8635db7cf626453df72fe6531613d560/PKG_HASH:=5d2efd5d924c7a7f84a9f2838de6ab9b7d5ca070ab243edd404a5ca80237607c/g" package/lean/frp/Makefile
-	else
-		echo ""
-	fi
-
-	sed -i "s/*\/\$time \* /0 *\/2 /g" package/lean/luci-app-frpc/root/etc/init.d/frp
+	sed -i "s/*\/\$time \* /0 *\/2 /g" feeds/luci/applications/luci-app-frpc/root/etc/init.d/frp
 
 	echo -e ">>$green Public配置完成$white"	
 }
