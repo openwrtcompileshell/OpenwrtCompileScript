@@ -152,6 +152,7 @@ update_script() {
 		git reset --hard origin/master
 		if [[ $? -eq 0 ]]; then
 			echo -e "$green>> 脚本源码更新成功$white"
+			sleep 2
 		else
 			echo -e "$red>> 脚本源码更新失败，重新执行代码$white"
 			update_script
@@ -161,6 +162,7 @@ update_script() {
 		git reset --hard origin/master
 		if [[ $? -eq 0 ]]; then
 			echo -e "$green>> 脚本源码更新成功$white"
+			sleep 2
 		else
 			echo -e "$red>> 脚本源码更新失败，重新执行代码$white"
 			update_script
