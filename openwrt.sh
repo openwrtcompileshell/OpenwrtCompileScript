@@ -146,14 +146,12 @@ Time() {
 #选项9.更新update_script
 update_script() {
 	clear
-	cd $HOME/$OW/$SF/$OCS
+	cd $shfile
 	if [[ "$action1" == "" ]]; then
 		git fetch --all
 		git reset --hard origin/master
 		if [[ $? -eq 0 ]]; then
-			echo -e "$green>> 脚本源码更新成功回车进入编译菜单$white"
-			read a
-			bash $openwrt
+			echo -e "$green>> 脚本源码更新成功$white"
 		else
 			echo -e "$red>> 脚本源码更新失败，重新执行代码$white"
 			update_script
@@ -2335,7 +2333,8 @@ fi
 
 git_branch=$(cd $shfile | git fetch --all | git branch -v| grep -o "落后")
 if [[  "$git_branch" == "落后" ]]; then
-	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
+	echo -e "$yellow>>当前你的脚本不是最新$white"　
+	echo -e "$yellow开始更新到最新版本。。。$white"&& sleep 3
 	update_script
 else
 	echo -e "$green脚本已经最新$white" && sleep 2
