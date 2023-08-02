@@ -1303,7 +1303,7 @@ source_openwrt_Setting() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid kmod-mmc-spi kmod-sdhci kmod-ath5k kmod-ath9k kmod-ath9k-htc kmod-ath10k kmod-rt2800-usb kmod-e1000e kmod-igb kmod-igbvf kmod-ixgbe kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-i40e kmod-i40evf kmod-r8125 kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-r8168 kmod-mlx4-core kmod-mlx5-core kmod-drm-amdgpu ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie htop lm-sensors  automount autosamba luci-app-aria2 luci-app-frps luci-app-hd-idle luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm  ca-certificates #autocore"
+		x86_makefile="partx-utils mkf2fs fdisk e2fsprogs wpad kmod-usb-hid kmod-mmc-spi kmod-sdhci kmod-ath5k kmod-ath9k kmod-ath9k-htc kmod-ath10k kmod-rt2800-usb kmod-e1000e kmod-igb kmod-igbvf kmod-ixgbe kmod-pcnet32 kmod-tulip kmod-vmxnet3 kmod-i40e kmod-i40evf kmod-r8125 kmod-8139cp kmod-8139too kmod-fs-f2fs kmod-sound-hda-core kmod-sound-hda-codec-realtek kmod-sound-hda-codec-via kmod-sound-via82xx kmod-sound-hda-intel kmod-sound-hda-codec-hdmi kmod-sound-i8x0 kmod-usb-audio kmod-usb-net kmod-usb-net-asix kmod-usb-net-asix-ax88179 kmod-usb-net-rtl8150 kmod-usb-net-rtl8152 kmod-r8168 kmod-mlx4-core kmod-mlx5-core kmod-drm-amdgpu ath10k-firmware-qca988x ath10k-firmware-qca9888 ath10k-firmware-qca9984 brcmfmac-firmware-43602a1-pcie htop lm-sensors  automount autosamba luci-app-frps luci-app-hd-idle luci-app-dockerman iperf iperf3 luci-app-ddns luci-app-sqm  ca-certificates #autocore"
 		FEATURES="squashfs vdi vmdk pcmcia fpu boot-part rootfs-part ext4 targz"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
@@ -1394,7 +1394,7 @@ source_lean() {
 		update_feeds
 
 		#target.mk
-		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-app-ap-modem luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall luci-app-mosdns #tr_ok"
+		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1403,7 +1403,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-aria2 luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp luci-app-turboacc luci-app-v2ray-server ipv6helper luci-app-go-aliyundrive-webdav"
+		x86_makefile="luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp luci-app-turboacc luci-app-v2ray-server ipv6helper luci-app-go-aliyundrive-webdav"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1477,7 +1477,7 @@ COMMENT
 
 
 		#N1_makefile
-		N1_makefile="mkf2fs e2fsprogs brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio brcmfmac-firmware-usb wireless-regdb kmod-b44 kmod-brcmfmac kmod-brcmutil kmod-cfg80211 fdisk blkid lsblk losetup uuidgen  tar  gawk getopt  bash perl perlbase-utf8 acl attr chattr debugfs dosfstools dumpe2fs e2freefrag e4crypt exfat-fsck exfat-mkfs f2fs-tools filefrag fstrim fuse-utils hfsfsck lsattr mkhfs ncdu nfs-utils nfs-utils-libs ntfs-3g ntfs-3g-utils resize2fs squashfs-tools-mksquashfs squashfs-tools-unsquashfs swap-utils tune2fs xfs-admin xfs-fsck xfs-growfs xfs-mkfs ddns-scripts_aliyun jd_openwrt_script luci-app-aria2 luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-transmission luci-app-upnp"
+		N1_makefile="mkf2fs e2fsprogs brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio brcmfmac-firmware-usb wireless-regdb kmod-b44 kmod-brcmfmac kmod-brcmutil kmod-cfg80211 fdisk blkid lsblk losetup uuidgen  tar  gawk getopt  bash perl perlbase-utf8 acl attr chattr debugfs dosfstools dumpe2fs e2freefrag e4crypt exfat-fsck exfat-mkfs f2fs-tools filefrag fstrim fuse-utils hfsfsck lsattr mkhfs ncdu nfs-utils nfs-utils-libs ntfs-3g ntfs-3g-utils resize2fs squashfs-tools-mksquashfs squashfs-tools-unsquashfs swap-utils tune2fs xfs-admin xfs-fsck xfs-growfs xfs-mkfs ddns-scripts_aliyun jd_openwrt_script luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-transmission luci-app-upnp"
 		if [[ `grep -o "$N1_makefile" target/linux/armvirt/Makefile ` == "$N1_makefile" ]]; then
 			echo -e "$green N1_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1487,7 +1487,7 @@ COMMENT
 		fi
 
 		#rockchip_makefile
-		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-aria2 luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-ssrserver-python luci-app-transmission luci-app-zerotier wget"
+		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-ssrserver-python luci-app-transmission luci-app-zerotier wget"
 		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
 			echo -e "$green rockchip_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1595,15 +1595,6 @@ other_plugins() {
 		else
 			mkdir package/other-plugins
 		fi
-
-		#下载光猫访问
-		if [[ -e package/other-plugins/luci-app-ap-modem ]]; then
-			rm -rf package/other-plugins/luci-app-ap-modem
-			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
-			cd $HOME/$OW/$you_file/lede/
-		else
-			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
-		fi
 	
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
@@ -1676,6 +1667,7 @@ other_plugins() {
 			git clone -b luci https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall_luci
 		fi
 
+
 		#openwrt-passwall插件依赖
 		if [[ -e package/other-plugins/openwrt-passwall ]]; then
 			cd  package/other-plugins/openwrt-passwall
@@ -1744,7 +1736,28 @@ EOF
 		else
 			git clone https://github.com/xdhgsq/xdh_plug.git package/other-plugins/jd_openwrt_script
 		fi
+:<<'COMMENT'
 
+		#下载光猫访问
+		if [[ -e package/other-plugins/luci-app-ap-modem ]]; then
+			rm -rf package/other-plugins/luci-app-ap-modem
+			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
+			cd $HOME/$OW/$you_file/lede/
+		else
+			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
+		fi
+		#openwrt-passwall插件2
+		if [[ -e package/other-plugins/openwrt-passwall2_luci ]]; then
+			rm -rf package/other-plugins/openwrt-passwall_luci
+			cd  package/other-plugins/openwrt-passwall2_luci
+			git fetch --all
+			git reset --hard origin/luci
+			cd $HOME/$OW/$you_file/lede/
+		else
+			rm -rf package/other-plugins/openwrt-passwall_luci
+			git clone -b main https://github.com/xiaorouji/openwrt-passwall2.git package/other-plugins/openwrt-passwall2_luci
+		fi
+COMMENT
 
 }
 
