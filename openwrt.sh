@@ -2333,18 +2333,22 @@ if [[ $(users) == "root" ]];then
 	exit 0
 fi
 
-git_branch=$(git fetch --all | git branch -v | grep -o "落后")
+git_branch=$(cd $shfile | git fetch --all | git branch -v| grep -o "落后")
 if [[  "$git_branch" == "落后" ]]; then
 	echo -e "$green>>更新脚本到最新$white"　&& sleep 3
 	update_script
 else
-	echo -e "$green脚本已经最新$white"
+	echo -e "$green脚本已经最新$white" && sleep 2
 fi
+
+
 
 #copy  by:Toyo  modify:ITdesk
 action1="$1"
 action2="$2"
 action3="$3"
+
+
 if [[ -z $action1 ]]; then
 	description_if
 	file_help
