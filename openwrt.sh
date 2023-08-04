@@ -1691,6 +1691,7 @@ other_plugins() {
 				Brook
 				Hysteria
 				NaiveProxy
+				tuic-client
 EOF
 
 			passwall_dir="package/other-plugins/openwrt-passwall_luci/luci-app-passwall/Makefile"
@@ -1713,6 +1714,7 @@ EOF
 				NaiveProxy
 				Redsocks2
 				Trojan
+				tuic-client
 EOF
 
 			helloworld_dir="feeds/helloworld/luci-app-ssr-plus/Makefile"
