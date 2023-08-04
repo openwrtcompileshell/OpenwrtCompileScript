@@ -2333,7 +2333,8 @@ if [[ $(users) == "root" ]];then
 	exit 0
 fi
 
-git_branch=$(cd $shfile | git fetch --all | git branch -v| grep -o "落后")
+cd $shfile
+git_branch=$(git fetch --all | git branch -v| grep -o "落后")
 if [[  "$git_branch" == "落后" ]]; then
 	echo -e "$yellow>>当前你的脚本不是最新$white"　
 	echo -e "$yellow开始更新到最新版本。。。$white"&& sleep 3
