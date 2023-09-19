@@ -612,7 +612,10 @@ source_update() {
 }
 
 source_update_No_git_pull() {
-	source_branch=$(cat "$HOME/$OW/$SF/tmp/source_branch")
+	if [ -z ${source_branch} ];then
+		source_branch=$(cat "$HOME/$OW/$SF/tmp/source_branch")
+	fi
+
 	clear
 	if [[ "$source_branch" == "" ]]; then
 		git fetch --all
@@ -621,7 +624,8 @@ source_update_No_git_pull() {
 		git fetch --all
 		git reset --hard origin/$source_branch
 		if [[ $? -eq 0 ]]; then
-			echo ""
+			echo -e "$green>> 源码更新$white"
+			sleep 1
 		else
 			echo -e "$red>> 源码更新失败，重新执行代码$white" && Time
 			source_update_No_git_pull
@@ -1391,7 +1395,6 @@ source_lean() {
 		
 		#添加库
 		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
-		update_feeds
 
 		#target.mk
 		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
@@ -1506,22 +1509,6 @@ COMMENT
 
 		#删除这个，解决报错问题
 		rm -rf dl/go-mod-cache && rm -rf ./tmp
-
-		update_feeds
-
-		#修改python版本为3.7
-		sed -i "/PYTHON3_VERSION_MINOR:=9/PYTHON3_VERSION_MINOR:=7/g" feeds/packages/lang/python/python3-version.mk
-		./scripts/feeds install -a -p python
-
-		#node.js
-		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
-		if [[  "$node_if" == "0" ]];then
-			echo "src-git node https://github.com/nxhack/openwrt-node-packages.git" >>feeds.conf.default
-			./scripts/feeds update node
-			rm ./package/feeds/packages/node
-			rm ./package/feeds/packages/node-*
-			./scripts/feeds install -a -p node
-		fi
 		
 		echo -e ">>$green lean版本配置优化完成$white"
 
@@ -1596,24 +1583,11 @@ other_plugins() {
 			mkdir package/other-plugins
 		fi
 
+
+#需要删除的前置
 		#更换mosdns
 		if [[ -e package/other-plugins/luci-app-mosdns ]]; then
 			rm -rf package/feeds/luci/luci-app-mosdns
-			cd  package/other-plugins/luci-app-mosdns
-			source_update_No_git_pull
-			cd $HOME/$OW/$you_file/lede/
-		else
-			rm -rf package/feeds/luci/luci-app-mosdns
-			git clone https://github.com/sbwml/luci-app-mosdns.git package/other-plugins/luci-app-mosdns
-		fi
-	
-		#下载一下微信推送插件
-		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
-			cd  package/other-plugins/luci-app-serverchan
-			source_update_No_git_pull
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/tty228/luci-app-serverchan.git package/other-plugins/luci-app-serverchan
 		fi
 
 		#采用lisaac的luci-app-dockerman
@@ -1621,15 +1595,40 @@ other_plugins() {
 			rm -rf package/lean/luci-app-dockerman
 		fi
 
+#中部
+cat >/tmp/other-plugins.txt <<EOF
+	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
+	luci-app-mosdns		https://github.com/sbwml/luci-app-mosdns.git
+	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
+	luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
+	luci-app-godproxy	https://github.com/project-lede/luci-app-godproxy.git
+	openwrt-OpenAppFilter	https://github.com/Lienol/openwrt-OpenAppFilter.git
+	openwrt-passwall_luci	https://github.com/xiaorouji/openwrt-passwall.git
+	openwrt-passwall	https://github.com/xiaorouji/openwrt-passwall.git
+	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
+EOF
+
+for plugins_name in `cat /tmp/other-plugins.txt | awk '{print $1}'`
+do {
+	if [[ -e package/other-plugins/${plugins_name} ]]; then
+		cd  package/other-plugins/${plugins_name}
+		source_branch=$(git branch | sed "s/*//g" | sed "s/ //g")
+		source_update_No_git_pull
+		cd $HOME/$OW/$you_file/lede/
+	else
+		git_url=$(cat /tmp/other-plugins.txt | grep "${plugins_name}" | awk '{print $2}')
+		git clone ${git_url} package/other-plugins/${plugins_name}
+	fi
+}&
+done
+wait
+
+#需要调整的后部
+		#采用lisaac的luci-app-dockerman
 		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
-			cd  package/other-plugins/luci-app-dockerman
-			source_update_No_git_pull
-			sed -i "s/+ttyd//g" applications/luci-app-dockerman/Makefile
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/lisaac/luci-app-dockerman.git package/other-plugins/luci-app-dockerman
 			sed -i "s/+ttyd//g" package/other-plugins/luci-app-dockerman/applications/luci-app-dockerman/Makefile
 		fi
+
 
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
@@ -1639,51 +1638,9 @@ other_plugins() {
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		fi
 
-		#adguardhome插件
-		if [[ -e package/other-plugins/luci-app-adguardhome1 ]]; then
-			rm -rf package/other-plugins/luci-app-adguardhome
-			cd  package/other-plugins/luci-app-adguardhome1 && source_update_No_git_pull
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/kongfl888/luci-app-adguardhome.git package/other-plugins/luci-app-adguardhome1
-		fi
-
-		#godproxy插件
-		if [[ -e package/other-plugins/luci-app-godproxy ]]; then
-			cd  package/other-plugins/luci-app-godproxy
-			git fetch --all
-			git reset --hard origin/main
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/project-lede/luci-app-godproxy.git package/other-plugins/luci-app-godproxy
-		fi
-
-		#openwrt-OpenAppFilter插件
-		if [[ -e package/other-plugins/openwrt-OpenAppFilter ]]; then
-			cd  package/other-plugins/openwrt-OpenAppFilter
-			git fetch --all
-			git reset --hard origin/master
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/Lienol/openwrt-OpenAppFilter.git package/other-plugins/openwrt-OpenAppFilter
-		fi
-
-		#openwrt-passwall插件
-		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
-			cd  package/other-plugins/openwrt-passwall_luci
-			git fetch --all
-			git reset --hard origin/luci
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone -b luci https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall_luci
-		fi
-
-
 		#openwrt-passwall插件依赖
 		if [[ -e package/other-plugins/openwrt-passwall ]]; then
 			cd  package/other-plugins/openwrt-passwall
-			git fetch --all
-			git reset --hard origin/packages
 			#删除冲突包
 			conflict_package="ipt2socks chinadns-ng dns2socks dns2tcp gn hysteria microsocks naiveproxy shadowsocksr-libev shadowsocks-rust simple-obfs tcping trojan v2ray-core v2ray-geodata v2ray-plugin xray-core xray-plugin"
 			for i in `echo "$conflict_package"`
@@ -1692,8 +1649,6 @@ other_plugins() {
 				#rm -rf package/other-plugins/openwrt-passwall/$i
 			done
 			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone -b packages https://github.com/xiaorouji/openwrt-passwall.git package/other-plugins/openwrt-passwall
 		fi
 
 		#openwrt-passwall插件默认选上其他参数
@@ -1739,39 +1694,17 @@ EOF
 			done
 		fi
 
-
-		#安装脚本
-		if [[ -e package/other-plugins/jd_openwrt_script ]]; then
-			cd  package/other-plugins/jd_openwrt_script
-			git fetch --all
-			git reset --hard origin/main
-			cd $HOME/$OW/$you_file/lede/
-		else
-			git clone https://github.com/xdhgsq/xdh_plug.git package/other-plugins/jd_openwrt_script
+		#node.js
+		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
+		if [[  "$node_if" == "0" ]];then
+			echo "src-git node https://github.com/nxhack/openwrt-node-packages.git" >>feeds.conf.default
+			./scripts/feeds update node
+			rm ./package/feeds/packages/node
+			rm ./package/feeds/packages/node-*
+			./scripts/feeds install -a -p node
 		fi
-:<<'COMMENT'
 
-		#下载光猫访问
-		if [[ -e package/other-plugins/luci-app-ap-modem ]]; then
-			rm -rf package/other-plugins/luci-app-ap-modem
-			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
-			cd $HOME/$OW/$you_file/lede/
-		else
-			svn checkout https://github.com/linkease/openwrt-app-actions/trunk/applications/luci-app-ap-modem package/other-plugins/luci-app-ap-modem
-		fi
-		#openwrt-passwall插件2
-		if [[ -e package/other-plugins/openwrt-passwall2_luci ]]; then
-			rm -rf package/other-plugins/openwrt-passwall_luci
-			cd  package/other-plugins/openwrt-passwall2_luci
-			git fetch --all
-			git reset --hard origin/luci
-			cd $HOME/$OW/$you_file/lede/
-		else
-			rm -rf package/other-plugins/openwrt-passwall_luci
-			git clone -b main https://github.com/xiaorouji/openwrt-passwall2.git package/other-plugins/openwrt-passwall2_luci
-		fi
-COMMENT
-
+		update_feeds
 }
 
 #Public配置
