@@ -1595,6 +1595,17 @@ other_plugins() {
 		else
 			mkdir package/other-plugins
 		fi
+
+		#更换mosdns
+		if [[ -e package/other-plugins/luci-app-mosdns ]]; then
+			rm -rf package/feeds/luci/luci-app-mosdns
+			cd  package/other-plugins/luci-app-mosdns
+			source_update_No_git_pull
+			cd $HOME/$OW/$you_file/lede/
+		else
+			rm -rf package/feeds/luci/luci-app-mosdns
+			git clone https://github.com/sbwml/luci-app-mosdns.git package/other-plugins/luci-app-mosdns
+		fi
 	
 		#下载一下微信推送插件
 		if [[ -e package/other-plugins/luci-app-serverchan ]]; then
