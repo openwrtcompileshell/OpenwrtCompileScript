@@ -1393,8 +1393,8 @@ source_lean() {
 		clear
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
-		#添加库
-		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
+		#添加helloworld库
+		#echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
 
 		#target.mk
 		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
@@ -1607,7 +1607,7 @@ cat >/tmp/other-plugins.txt <<EOF
 	openwrt-passwall	https://github.com/xiaorouji/openwrt-passwall.git
 	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
 EOF
-
+	
 for plugins_name in `cat /tmp/other-plugins.txt | awk '{print $1}'`
 do {
 	if [[ -e package/other-plugins/${plugins_name} ]]; then
@@ -1638,19 +1638,6 @@ wait
 			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
 		fi
 
-		#openwrt-passwall插件依赖
-		if [[ -e package/other-plugins/openwrt-passwall ]]; then
-			cd  package/other-plugins/openwrt-passwall
-			#删除冲突包
-			conflict_package="ipt2socks chinadns-ng dns2socks dns2tcp gn hysteria microsocks naiveproxy shadowsocksr-libev shadowsocks-rust simple-obfs tcping trojan v2ray-core v2ray-geodata v2ray-plugin xray-core xray-plugin"
-			for i in `echo "$conflict_package"`
-			do
-				echo ""
-				#rm -rf package/other-plugins/openwrt-passwall/$i
-			done
-			cd $HOME/$OW/$you_file/lede/
-		fi
-
 		#openwrt-passwall插件默认选上其他参数
 		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
 			cat >/tmp/passwall_luci_set <<EOF
@@ -1670,7 +1657,7 @@ EOF
 				
 			done
 		fi
-
+:<<'COMMENT'
 		#helloword插件默认选上其他参数
 		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
 			cat >/tmp/helloworld_set <<EOF
@@ -1693,6 +1680,7 @@ EOF
 				
 			done
 		fi
+COMMENT
 
 		#node.js
 		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
@@ -1702,6 +1690,16 @@ EOF
 			rm ./package/feeds/packages/node
 			rm ./package/feeds/packages/node-*
 			./scripts/feeds install -a -p node
+		fi
+
+#将golang退回1.20
+		if [ -f golang.zip ];then
+			rm -rf /feeds/packages/lang/golang/*
+			unzip golang.zip -d /feeds/packages/lang/golang
+		else
+			wget https://github.com/xiaorouji/openwrt-passwall/files/12568587/golang.zip
+			rm -rf /feeds/packages/lang/golang/*
+			unzip golang.zip -d /feeds/packages/lang/golang
 		fi
 
 		update_feeds
