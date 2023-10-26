@@ -1694,12 +1694,14 @@ COMMENT
 
 #将golang退回1.20
 		if [ -f golang.zip ];then
-			rm -rf /feeds/packages/lang/golang/*
-			unzip golang.zip -d /feeds/packages/lang/golang
+			rm -rf ./feeds/packages/lang/golang/*
+			unzip golang.zip -d ./feeds/packages/lang/golang
+			./scripts/feeds install -a -p golang
 		else
 			wget https://github.com/xiaorouji/openwrt-passwall/files/12568587/golang.zip
-			rm -rf /feeds/packages/lang/golang/*
-			unzip golang.zip -d /feeds/packages/lang/golang
+			rm -rf ./feeds/packages/lang/golang/*
+			unzip golang.zip -d ./feeds/packages/lang/golang
+			./scripts/feeds install -a -p golang
 		fi
 
 		update_feeds
