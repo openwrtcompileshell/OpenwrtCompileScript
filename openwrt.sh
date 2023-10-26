@@ -1394,7 +1394,7 @@ source_lean() {
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
 		#添加helloworld库
-		#echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
+		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
 
 		#target.mk
 		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
@@ -1652,12 +1652,20 @@ EOF
 			do
 				Rows=$(grep -n "Include $i"  $passwall_dir | awk -F ":" '{print $1}')
 				Rows1=$(($Rows + 1))
-				sed -i "$Rows1 d" $passwall_dir
-				sed -i "$Rows a\default y" $passwall_dir
-				
+				Rows_left="1"
+				while [[ ${Rows_left} -gt 0 ]]; do
+					Rows1_if=$(sed -n "${Rows1}p" $passwall_dir | grep -o "default n" | wc -l)
+					if [ ${Rows1_if} == "1" ];then
+						sed -i "$Rows1 d" $passwall_dir
+						sed -i "$Rows a\	default y" $passwall_dir
+						Rows_left=$(($Rows_left -1))
+					else
+						Rows1=$(($Rows1 + 1))
+					fi
+				done
 			done
 		fi
-:<<'COMMENT'
+
 		#helloword插件默认选上其他参数
 		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
 			cat >/tmp/helloworld_set <<EOF
@@ -1667,7 +1675,7 @@ EOF
 				NaiveProxy
 				Redsocks2
 				Trojan
-				tuic-client
+				Tuic-Client
 EOF
 
 			helloworld_dir="feeds/helloworld/luci-app-ssr-plus/Makefile"
@@ -1675,12 +1683,20 @@ EOF
 			do
 				Rows=$(grep -n "Include $i"  $helloworld_dir | awk -F ":" '{print $1}')
 				Rows1=$(($Rows + 1))
-				sed -i "$Rows1 d" $helloworld_dir
-				sed -i "$Rows a\default y" $helloworld_dir
-				
+				Rows_left="1"
+				while [[ ${Rows_left} -gt 0 ]]; do
+					Rows1_if=$(sed -n "${Rows1}p" $helloworld_dir | grep -o "default n" | wc -l)
+					if [ ${Rows1_if} == "1" ];then
+						sed -i "$Rows1 d" $helloworld_dir
+						sed -i "$Rows a\	default y" $helloworld_dir
+						Rows_left=$(($Rows_left -1))
+					else
+						Rows1=$(($Rows1 + 1))
+					fi
+				done
 			done
 		fi
-COMMENT
+
 
 		#node.js
 		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
