@@ -1505,6 +1505,7 @@ COMMENT
 		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-diskman/Makefile
 
 		#下载插件
+		update_feeds
 		other_plugins
 
 		#删除这个，解决报错问题
@@ -1569,8 +1570,6 @@ source_lienol() {
 		else
 			sed -i "s/uboot-envtools/$ipq806_makefile/g" target/linux/ipq806x/Makefile
 		fi
-
-		echo -e ">>$green lean版本配置优化完成$white"
 	fi
 }
 
@@ -1642,7 +1641,6 @@ wait
 		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
 			cat >/tmp/passwall_luci_set <<EOF
 				Brook
-				Hysteria
 				NaiveProxy
 				tuic-client
 EOF
@@ -1669,15 +1667,14 @@ EOF
 		#helloword插件默认选上其他参数
 		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
 			cat >/tmp/helloworld_set <<EOF
-				Hysteria
 				IPT2Socks
 				Kcptun
 				NaiveProxy
 				Redsocks2
 				Trojan
 				Tuic-Client
+				Shadow-TLS
 EOF
-
 			helloworld_dir="feeds/helloworld/luci-app-ssr-plus/Makefile"
 			for i in `cat /tmp/helloworld_set`
 			do
@@ -1696,7 +1693,6 @@ EOF
 				done
 			done
 		fi
-
 
 		#node.js
 		node_if=$(grep "https://github.com/nxhack/openwrt-node-packages.git" feeds.conf.default | wc -l)
@@ -1725,7 +1721,6 @@ EOF
 
 #Public配置
 source_Setting_Public() {
-	clear
 	echo -e ">>$green Public配置$white" 
 	#隐藏首页显示用户名(by:kokang)
 	sed -i 's/name="luci_username" value="<%=duser%>"/name="luci_username"/g' feeds/luci/modules/luci-base/luasrc/view/sysauth.htm
@@ -1742,7 +1737,6 @@ source_Setting_Public() {
 }
 
 update_feeds() {
-	clear
 	echo "---------------------------"
 	echo -e "      $green更新Feeds代码$white"
 	echo "---------------------------"
@@ -2146,8 +2140,11 @@ update_clean_make() {
 	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make menuconfig $white"　&& sleep 3
 		make menuconfig
 	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make download 和make -j $white"　&& sleep 3
-		make_j
-
+		if [ "$3" == "auto" ];then
+			make -j${cpu_cores} V=s
+		else
+			make_j
+		fi
 	if [[ $? -eq 0 ]]; then
 		echo ""
 	else
@@ -2280,6 +2277,9 @@ action3_if() {
 			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
 			$action3
 			;;
+			auto)
+			echo ""
+			;;
 			*)
 			echo ""
 			echo -e "$red 命令不存在，使用方法参考以下！！！$white"
@@ -2311,6 +2311,7 @@ fi
 action1="$1"
 action2="$2"
 action3="$3"
+
 
 
 if [[ -z $action1 ]]; then
