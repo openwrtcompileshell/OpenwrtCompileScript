@@ -1394,7 +1394,9 @@ source_lean() {
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
 		#添加helloworld库
-		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
+		#echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
+
+		sed -i "s/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages.git^7b64b8dd1ac074db03938822d5c67d1814436581/g" feeds.conf.default
 
 		#target.mk
 		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
@@ -1406,7 +1408,7 @@ source_lean() {
 		fi	
 		
 		#x86_makefile
-		x86_makefile="luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns jd_openwrt_script luci-app-openvpn-server luci-app-upnp luci-app-turboacc luci-app-v2ray-server ipv6helper luci-app-go-aliyundrive-webdav"
+		x86_makefile="luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns luci-app-openvpn-server luci-app-upnp luci-app-turboacc luci-app-v2ray-server ipv6helper luci-app-go-aliyundrive-webdav"
 		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
 			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
 		else
@@ -1499,7 +1501,7 @@ COMMENT
 		fi
 
 		#修改网易云启用node.js
-		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-unblockmusic/Makefile
+		#sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-unblockmusic/Makefile
 
 		#将diskman选项启用
 		sed -i "s/default n/default y/g" feeds/luci/applications/luci-app-diskman/Makefile
@@ -1628,6 +1630,20 @@ wait
 			sed -i "s/+ttyd//g" package/other-plugins/luci-app-dockerman/applications/luci-app-dockerman/Makefile
 		fi
 
+		#下载luci-app-ssr-plus
+		if [[ -e package/other-plugins/luci-app-ssr-plus ]]; then
+			rm -rf   package/other-plugins/luci-app-ssr-plus
+			svn checkout https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/other-plugins/luci-app-ssr-plus
+			svn checkout https://github.com/fw876/helloworld/trunk/lua-neturl package/other-plugins/lua-neturl
+			svn checkout https://github.com/fw876/helloworld/trunk/shadow-tls package/other-plugins/shadow-tls
+			svn checkout https://github.com/fw876/helloworld/trunk/redsocks2 package/other-plugins/redsocks2
+		else
+			svn checkout https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/other-plugins/luci-app-ssr-plus
+			svn checkout https://github.com/fw876/helloworld/trunk/lua-neturl package/other-plugins/lua-neturl
+			svn checkout https://github.com/fw876/helloworld/trunk/shadow-tls package/other-plugins/shadow-tls
+			svn checkout https://github.com/fw876/helloworld/trunk/redsocks2 package/other-plugins/redsocks2
+		fi
+
 
 		#下载lienol的fileassistant
 		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
@@ -1640,7 +1656,6 @@ wait
 		#openwrt-passwall插件默认选上其他参数
 		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
 			cat >/tmp/passwall_luci_set <<EOF
-				Brook
 				NaiveProxy
 				tuic-client
 EOF
@@ -1704,7 +1719,13 @@ EOF
 			./scripts/feeds install -a -p node
 		fi
 
-#将golang退回1.20
+:<<"no_print"
+		#frp修改
+		sed -i "s/0.51.3/0.49.0/g"  ./feeds/packages/net/frp/Makefile
+		sed -i "s/83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef/8ff92d4f763d596bee35efe17f0729d36e584b93c49a7671cebde4bb318b458f/g" ./feeds/packages/net/frp/Makefile
+	
+no_print
+		#将golang退回1.20
 		if [ -f golang.zip ];then
 			rm -rf ./feeds/packages/lang/golang/*
 			unzip golang.zip -d ./feeds/packages/lang/golang
@@ -2138,9 +2159,13 @@ update_clean_make() {
 	echo -e "$green>>文件夹:$yellow$file_patch$green 执行常用设置$white"　&& sleep 3
 		source_download_ok
 	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make menuconfig $white"　&& sleep 3
-		make menuconfig
+		if [ "$action3" == "auto" ];then
+			echo -e "$green>检测到$yellow$action3$green，开始自动运行编译$white" && sleep 3
+		else
+			make menuconfig
+		fi
 	echo -e "$green>>文件夹:$yellow$file_patch$green 执行make download 和make -j $white"　&& sleep 3
-		if [ "$3" == "auto" ];then
+		if [ "$action3" == "auto" ];then
 			make -j${cpu_cores} V=s
 		else
 			make_j
