@@ -1394,12 +1394,12 @@ source_lean() {
 		echo -e ">>$green针对lean版本开始配置优化$white" && Time
 		
 		#添加helloworld库
-		#echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
+		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
 
-		sed -i "s/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages.git^7b64b8dd1ac074db03938822d5c67d1814436581/g" feeds.conf.default
+		#sed -i "s/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages.git^7b64b8dd1ac074db03938822d5c67d1814436581/g" feeds.conf.default
 
 		#target.mk
-		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-fileassistant  luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
+		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1519,62 +1519,6 @@ COMMENT
 
 }
 
-
-source_lean_package() {
-	echo ""
-	echo -e ">>$green开始下载lean的软件库$white"
-	svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean  $HOME/$OW/$you_file/lede/package/lean
-	if [[ $? -eq 0 ]]; then
-		echo -e ">>$green下载lean的软件库完成$white"
-	else
-		clear
-		echo "下载lean插件没有成功，重新执行代码" && Time
-		source_lean_package
-	fi
-}
-
-source_lienol() {
-	source_type=`cat "$HOME/$OW/$SF/tmp/source_type"`
-	if [[ "$source_type" == "lienol" ]]; then
-		clear
-		echo -e ">>$green针对lienol版本开始配置优化$white" && Time
-
-		if [[ -e $HOME/$OW/$you_file/lede/package/lean/luci-app-ttyd ]]; then
-			echo ""
-		else
-			svn checkout https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd $HOME/$OW/$you_file/lede/package/lean/luci-app-ttyd
-		fi
-
-		./scripts/feeds install -a
-
-		#lienol_target.mk
-		sed -i "s/luci-app-ddns/luci-app-sqm /g" include/target.mk
-		sed -i "s/luci-theme-bootstrap-mod/ /g" include/target.mk
-		sed -i "s/luci-app-pptp-vpnserver-manyusers luci-app-pppoe-server luci-app-pppoe-relay/luci-app-autoreboot luci-app-frpc luci-app-ttyd luci-app-arpbind /g" include/target.mk
-		sed -i "s/ip6tables/ /g" include/target.mk
-		sed -i "s/odhcpd-ipv6only odhcp6c/ /g" include/target.mk
-
-		#x86禁用gzip压缩
-		sed -i "s/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS || TARGET_x86/depends on TARGET_IMAGES_PAD || TARGET_ROOTFS_EXT4FS #|| TARGET_x86/g" config/Config-images.in
-
-		#lienol_x86_makefile
-		x86_makefile="luci-app-unblockmusic luci-app-transmission luci-app-aria2 luci-app-baidupcs-web  "
-		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
-			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/luci-app-v2ray-server luci-app-trojan-server/$x86_makefile/g" target/linux/x86/Makefile
-		fi
-
-		#lienol_ipq806_makefile
-		ipq806_makefile="uboot-envtools automount autosamba  luci-app-aria2 luci-app-baidupcs-web luci-app-unblockmusic luci-app-wifischedule fdisk e2fsprogs"
-		if [[ `grep -o "$ipq806_makefile" target/linux/ipq806x/Makefile  ` == "$ipq806_makefile" ]]; then
-			echo -e "$green 配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/uboot-envtools/$ipq806_makefile/g" target/linux/ipq806x/Makefile
-		fi
-	fi
-}
-
 other_plugins() {
 
 		#other-plugins
@@ -1586,10 +1530,6 @@ other_plugins() {
 
 
 #需要删除的前置
-		#更换mosdns
-		if [[ -e package/other-plugins/luci-app-mosdns ]]; then
-			rm -rf package/feeds/luci/luci-app-mosdns
-		fi
 
 		#采用lisaac的luci-app-dockerman
 		if [[ -e package/lean/luci-app-dockerman ]]; then
@@ -1599,17 +1539,16 @@ other_plugins() {
 #中部
 cat >/tmp/other-plugins.txt <<EOF
 	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
-	luci-app-mosdns		https://github.com/sbwml/luci-app-mosdns.git
 	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
 	luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
 	luci-app-godproxy	https://github.com/project-lede/luci-app-godproxy.git
 	openwrt-OpenAppFilter	https://github.com/Lienol/openwrt-OpenAppFilter.git
 	openwrt-passwall_luci	https://github.com/xiaorouji/openwrt-passwall.git
-	openwrt-passwall	https://github.com/xiaorouji/openwrt-passwall.git
+	openwrt-passwall	https://github.com/xiaorouji/openwrt-passwall-packages.git
 	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
 EOF
 	
-for plugins_name in `cat /tmp/other-plugins.txt | awk '{print $1}'`
+for plugins_name in `cat /tmp/other-plugins.txt | awk '{print $1}' | grep -v "#"`
 do {
 	if [[ -e package/other-plugins/${plugins_name} ]]; then
 		cd  package/other-plugins/${plugins_name}
@@ -1630,29 +1569,7 @@ wait
 			sed -i "s/+ttyd//g" package/other-plugins/luci-app-dockerman/applications/luci-app-dockerman/Makefile
 		fi
 
-		#下载luci-app-ssr-plus
-		if [[ -e package/other-plugins/luci-app-ssr-plus ]]; then
-			rm -rf   package/other-plugins/luci-app-ssr-plus
-			svn checkout https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/other-plugins/luci-app-ssr-plus
-			svn checkout https://github.com/fw876/helloworld/trunk/lua-neturl package/other-plugins/lua-neturl
-			svn checkout https://github.com/fw876/helloworld/trunk/shadow-tls package/other-plugins/shadow-tls
-			svn checkout https://github.com/fw876/helloworld/trunk/redsocks2 package/other-plugins/redsocks2
-		else
-			svn checkout https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/other-plugins/luci-app-ssr-plus
-			svn checkout https://github.com/fw876/helloworld/trunk/lua-neturl package/other-plugins/lua-neturl
-			svn checkout https://github.com/fw876/helloworld/trunk/shadow-tls package/other-plugins/shadow-tls
-			svn checkout https://github.com/fw876/helloworld/trunk/redsocks2 package/other-plugins/redsocks2
-		fi
-
-
-		#下载lienol的fileassistant
-		if [[ -e package/other-plugins/luci-app-fileassistant ]]; then
-			rm -rf   package/other-plugins/luci-app-fileassistant
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
-		else
-			svn checkout https://github.com/Lienol/openwrt-package/trunk/luci-app-fileassistant package/other-plugins/luci-app-fileassistant
-		fi
-
+		
 		#openwrt-passwall插件默认选上其他参数
 		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
 			cat >/tmp/passwall_luci_set <<EOF
@@ -1679,7 +1596,7 @@ EOF
 			done
 		fi
 
-		#helloword插件默认选上其他参数
+		#luci-app-ssr-plus插件默认选上其他参数
 		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
 			cat >/tmp/helloworld_set <<EOF
 				IPT2Socks
@@ -1720,11 +1637,25 @@ EOF
 		fi
 
 :<<"no_print"
+		#下载luci-app-ssr-plus
+		if [[ -e package/other-plugins/luci-app-ssr-plus ]]; then
+			rm -rf   package/other-plugins/luci-app-ssr-plus
+			svn checkout https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/other-plugins/luci-app-ssr-plus
+			svn checkout https://github.com/fw876/helloworld/trunk/lua-neturl package/other-plugins/lua-neturl
+			svn checkout https://github.com/fw876/helloworld/trunk/shadow-tls package/other-plugins/shadow-tls
+			svn checkout https://github.com/fw876/helloworld/trunk/redsocks2 package/other-plugins/redsocks2
+		else
+			svn checkout https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus package/other-plugins/luci-app-ssr-plus
+			svn checkout https://github.com/fw876/helloworld/trunk/lua-neturl package/other-plugins/lua-neturl
+			svn checkout https://github.com/fw876/helloworld/trunk/shadow-tls package/other-plugins/shadow-tls
+			svn checkout https://github.com/fw876/helloworld/trunk/redsocks2 package/other-plugins/redsocks2
+		fi
+
 		#frp修改
 		sed -i "s/0.51.3/0.49.0/g"  ./feeds/packages/net/frp/Makefile
 		sed -i "s/83032399773901348c660d41c967530e794ab58172ccd070db89d5e50d915fef/8ff92d4f763d596bee35efe17f0729d36e584b93c49a7671cebde4bb318b458f/g" ./feeds/packages/net/frp/Makefile
 	
-no_print
+
 		#将golang退回1.20
 		if [ -f golang.zip ];then
 			rm -rf ./feeds/packages/lang/golang/*
@@ -1736,7 +1667,7 @@ no_print
 			unzip golang.zip -d ./feeds/packages/lang/golang
 			./scripts/feeds install -a -p golang
 		fi
-
+no_print
 		update_feeds
 }
 
