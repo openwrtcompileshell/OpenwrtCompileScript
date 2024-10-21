@@ -1399,7 +1399,7 @@ source_lean() {
 		#sed -i "s/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages.git^7b64b8dd1ac074db03938822d5c67d1814436581/g" feeds.conf.default
 
 		#target.mk
-		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc  luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon-mod luci-theme-design luci-theme-material luci-theme-netgear luci-app-passwall #tr_ok"
+		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon luci-theme-openwrt luci-theme-openwrt-2020 luci-app-passwall luci-app-adguardhome luci-app-cpulimit luci-app-ttyd luci-app-turboacc #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1537,14 +1537,15 @@ other_plugins() {
 		fi
 
 #中部
+
 cat >/tmp/other-plugins.txt <<EOF
 	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
 	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
-	luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
+	#luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
 	luci-app-godproxy	https://github.com/project-lede/luci-app-godproxy.git
 	openwrt-OpenAppFilter	https://github.com/Lienol/openwrt-OpenAppFilter.git
 	openwrt-passwall_luci	https://github.com/xiaorouji/openwrt-passwall.git
-	openwrt-passwall	https://github.com/xiaorouji/openwrt-passwall-packages.git
+	openwrt-passwall-packages	https://github.com/xiaorouji/openwrt-passwall-packages.git
 	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
 EOF
 	
@@ -1562,6 +1563,7 @@ do {
 }&
 done
 wait
+
 
 #需要调整的后部
 		#采用lisaac的luci-app-dockerman
@@ -2209,7 +2211,7 @@ action2_if() {
 		cd $HOME/$OW/$you_file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action2" in
-			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
+			other_plugins|make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
 			$action2
 			action3_if
 			;;
@@ -2230,7 +2232,7 @@ action3_if() {
 		cd $HOME/$OW/$you_file/lede
 		rm -rf $HOME/$OW/$SF/tmp/*
 		case "$action3" in
-			make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
+			other_plugins|make_j|new_source_make|clean_make|noclean_make|update_clean_make|update_clean_make_kernel|update_script_rely|n1_builder)
 			$action3
 			;;
 			auto)
