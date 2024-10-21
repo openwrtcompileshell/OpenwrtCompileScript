@@ -1399,7 +1399,7 @@ source_lean() {
 		#sed -i "s/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages.git^7b64b8dd1ac074db03938822d5c67d1814436581/g" feeds.conf.default
 
 		#target.mk
-		target_mk="automount autosamba luci-app-filetransfer luci-app-ssr-plus luci-app-sfe luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-arpbind luci-app-wol luci-app-unblockmusic  luci-app-dockerman lm-sensors luci-app-vsftpd openssh-sftp-server luci-theme-argon luci-theme-openwrt luci-theme-openwrt-2020 luci-app-passwall luci-app-adguardhome luci-app-cpulimit luci-app-ttyd luci-app-turboacc #tr_ok"
+		target_mk=" luci-app-filetransfer luci-app-ssr-plus  luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-arpbind luci-app-wol   luci-app-dockerman lm-sensors  openssh-sftp-server luci-theme-argon luci-theme-openwrt luci-theme-openwrt-2020 luci-app-passwall luci-app-adguardhome luci-app-cpulimit luci-app-ttyd luci-app-turboacc #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1443,19 +1443,19 @@ source_lean() {
 			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/x86/index.htm
 		fi
 	
-		base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh-cn/base.po)
+		base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh_Hans/base.po)
 		if [[ "$base_zh_po_if" == "#天气预报" ]]; then
 			echo "已添加天气预报翻译"
 		else
-			sed -i '$a \#天气预报\nmsgid "Weather"\nmsgstr "天气"\n\nmsgid "Local Weather"\nmsgstr "本地天气"\n ' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a \#天气预报\nmsgid "Weather"\nmsgstr "天气"\n\nmsgid "Local Weather"\nmsgstr "本地天气"\n ' feeds/luci/modules/luci-base/po/zh_Hans/base.po
 		fi
 
 		#首页显示编译时间
-		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh-cn/base.po)
+		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh_Hans/base.po)
 		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
 			echo "已添加首页显示编译时间"
 		else
-			sed -i '$a \#首页显示编译时间\nmsgid "Compile_time"\nmsgstr "固件编译时间"\n' feeds/luci/modules/luci-base/po/zh-cn/base.po
+			sed -i '$a \#首页显示编译时间\nmsgid "Compile_time"\nmsgstr "固件编译时间"\n' feeds/luci/modules/luci-base/po/zh_Hans/base.po
 			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
 			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
 			echo "echo \"`date "+%Y-%m-%d %H:%M"` (commit:`git log -1 --format=format:'%C(bold white)%h%C(reset)'`)\" >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
