@@ -1396,30 +1396,15 @@ source_lean() {
 		#添加helloworld库
 		echo "src-git helloworld https://github.com/fw876/helloworld" >> feeds.conf.default
 
-		#sed -i "s/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages/src-git packages https:\\/\\/github.com\\/coolsnowwolf\\/packages.git^7b64b8dd1ac074db03938822d5c67d1814436581/g" feeds.conf.default
 
 		#target.mk
-		target_mk=" luci-app-filetransfer luci-app-ssr-plus  luci-app-accesscontrol luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-arpbind luci-app-wol   luci-app-dockerman lm-sensors  openssh-sftp-server luci-theme-argon luci-theme-openwrt luci-theme-openwrt-2020 luci-app-passwall luci-app-adguardhome luci-app-cpulimit luci-app-ttyd luci-app-turboacc #tr_ok"
+		target_mk="luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-adguardhome luci-app-cpulimit luci-app-ttyd  luci-app-vnstat luci-app-diag-core luci-app-pbr luci-app-ssr-plus luci-app-turboacc luci-app-webadmin lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
-			sed -i "s/luci-app-autoreboot/luci-app-autoreboot  $target_mk/g" include/target.mk
+			sed -i "s/luci-app-autoreboot/luci-app-autoreboot $target_mk/g" include/target.mk
 
 		fi	
-		
-		#x86_makefile
-		x86_makefile="luci-app-baidupcs-web luci-app-frps luci-app-hd-idle iperf iperf3 luci-app-ddns luci-app-openvpn-server luci-app-upnp luci-app-turboacc luci-app-v2ray-server ipv6helper luci-app-go-aliyundrive-webdav"
-		if [[ `grep -o "$x86_makefile" target/linux/x86/Makefile ` == "$x86_makefile" ]]; then
-			echo -e "$green x86_makefile配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/luci-app-unblockmusic luci-app-zerotier luci-app-xlnetacc/$x86_makefile/g" target/linux/x86/Makefile
-			sed -i "s/luci-app-ipsec-vpnd luci-proto-bonding//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-qbittorrent//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-uugamebooster//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-adbyby-plus//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-wireguard//g" target/linux/x86/Makefile
-			sed -i "s/luci-app-baidupcs-web//g" target/linux/x86/Makefile
-		fi
 
 		#修改X86默认固件大小
 		if [[ `grep -o "default 400" config/Config-images.in | wc -l` == "1" ]]; then
@@ -1535,6 +1520,7 @@ other_plugins() {
 		if [[ -e package/lean/luci-app-dockerman ]]; then
 			rm -rf package/lean/luci-app-dockerman
 		fi
+			
 
 #中部
 
@@ -1543,7 +1529,6 @@ cat >/tmp/other-plugins.txt <<EOF
 	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
 	#luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
 	luci-app-godproxy	https://github.com/project-lede/luci-app-godproxy.git
-	openwrt-OpenAppFilter	https://github.com/Lienol/openwrt-OpenAppFilter.git
 	openwrt-passwall_luci	https://github.com/xiaorouji/openwrt-passwall.git
 	openwrt-passwall-packages	https://github.com/xiaorouji/openwrt-passwall-packages.git
 	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
@@ -1577,6 +1562,7 @@ wait
 			cat >/tmp/passwall_luci_set <<EOF
 				NaiveProxy
 				tuic-client
+				Hysteria
 EOF
 
 			passwall_dir="package/other-plugins/openwrt-passwall_luci/luci-app-passwall/Makefile"
@@ -1608,6 +1594,7 @@ EOF
 				Trojan
 				Tuic-Client
 				Shadow-TLS
+				Hysteria
 EOF
 			helloworld_dir="feeds/helloworld/luci-app-ssr-plus/Makefile"
 			for i in `cat /tmp/helloworld_set`
