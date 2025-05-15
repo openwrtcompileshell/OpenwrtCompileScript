@@ -1466,16 +1466,6 @@ COMMENT
 		fi
 
 
-		#N1_makefile
-		N1_makefile="mkf2fs e2fsprogs brcmfmac-firmware-43430-sdio brcmfmac-firmware-43455-sdio brcmfmac-firmware-usb wireless-regdb kmod-b44 kmod-brcmfmac kmod-brcmutil kmod-cfg80211 fdisk blkid lsblk losetup uuidgen  tar  gawk getopt  bash perl perlbase-utf8 acl attr chattr debugfs dosfstools dumpe2fs e2freefrag e4crypt exfat-fsck exfat-mkfs f2fs-tools filefrag fstrim fuse-utils hfsfsck lsattr mkhfs ncdu nfs-utils nfs-utils-libs ntfs-3g ntfs-3g-utils resize2fs squashfs-tools-mksquashfs squashfs-tools-unsquashfs swap-utils tune2fs xfs-admin xfs-fsck xfs-growfs xfs-mkfs ddns-scripts_aliyun jd_openwrt_script luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-transmission luci-app-upnp"
-		if [[ `grep -o "$N1_makefile" target/linux/armvirt/Makefile ` == "$N1_makefile" ]]; then
-			echo -e "$green N1_makefile配置已经修改，不做其他操作$white"
-		else
-			sed -i "s/mkf2fs e2fsprogs/$N1_makefile/g" target/linux/armvirt/Makefile
-			sed -i "s/default y if TARGET_sunxi/default y if TARGET_sunxi\n default y if TARGET_armvirt/g" package/kernel/mac80211/broadcom.mk
-
-		fi
-
 		#rockchip_makefile
 		rockchip_makefile="luci-app-vsftpd ipv6helper autocore-arm jd_openwrt_script luci-app-frps luci-app-hd-idle luci-app-openvpn-server luci-app-ssrserver-python luci-app-transmission luci-app-zerotier wget"
 		if [[ `grep -o "$rockchip_makefile" target/linux/rockchip/Makefile ` == "$rockchip_makefile" ]]; then
@@ -1846,7 +1836,6 @@ if_make() {
 	if [[ `cat /tmp/compile.log |grep "make\[1\]: Leaving directory" | wc -l` == "1" ]];then
 		kill_tail=$(ps -an | grep tail | grep -v grep | awk '{print $1}')
 		kill -9 $kill_tail
-		n1_builder
 		if_wo
 		calculating_time_end
 	else
@@ -1895,63 +1884,6 @@ if_wo() {
 	fi
 }
 
-n1_builder() {
-	n1_img="$HOME/$OW/$you_file/lede/bin/targets/armvirt/64/[$(date +%Y%m%d)]-openwrt-armvirt-64-default-rootfs.tar.gz"
-	builder_patch="$HOME/$OW/$you_file/lede/N1_builder"
-	armbian_img="Armbian_20.10_Aml-s9xxx_buster_5.4.101-flippy-54+o.img"
-	cd $HOME/$OW/$you_file/lede
-	if [[ -e $n1_img ]]; then
-		echo -e "$green >>检测到N1固件，自动制作N1的OpenWRT镜像$white" && Time
-		if [[ -e $builder_patch ]]; then
-			cd $builder_patch
-			git fetch --all
-			git reset --hard origin/20210310
-		else
-			git clone -b 20210310 https://github.com/ITdesk01/N1_and_beikeyun-OpenWRT-Image-Builder.git $builder_patch
-		fi
-
-		if [ ! -d $builder_patch/tmp ];then
-			mkdir -p $builder_patch/tmp
-		else
-			sudo rm -rf $builder_patch/tmp/*
-		fi
-
-		if [ ! -d $builder_patch/imges ];then
-			mkdir -p $builder_patch/imges
-		fi
-
-		if [[ -e $builder_patch/imges/$armbian_img ]]; then
-			echo -e "$green >>$builder_patch/imges/$armbian_img存在，复制固件$white" && clear
-
-			if [[ ! -e $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz ]]; then
-				echo -e "$green>> 开始复制openwrt固件 $white"
-				rm -rf $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
-				cp $n1_img $builder_patch/openwrt-armvirt-64-default-rootfs.tar.gz
-			fi
-
-			cd $builder_patch
-			echo -e "$green>> 准备开始制作n1固件，请输入管理员密码 $white"
-			sudo bash mk_s905d_n1.sh
-			if [[ $? -eq 0 ]]; then
-				echo ""
-				echo -e "$green >>N1镜像制作完成,你的固件在：$builder_patch/tmp$white"
-			else
-				echo -e "$red >>N1固件制作失败，重新执行代码 $white" && Time
-				n1_builder
-			fi
-
-		else
-			clear
-			echo -e "$yellow >>检查到没有$armbian_img,请将你的armbian镜像放到：$builder_patch/imges $white"
-			echo -e "$green >>存放完成以后，回车继续制作N1固件$white"
-			read a
-			n1_builder
-		fi
-
-	else
-		echo ""
-	fi
-}
 
 
 make_Compile_plugin() {
