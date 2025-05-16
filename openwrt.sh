@@ -1407,8 +1407,8 @@ source_lean() {
 		fi	
 
 		#修改X86默认固件大小
-		if [[ `grep -o "default 400" config/Config-images.in | wc -l` == "1" ]]; then
-			sed -i 's\default 400\default 1024\g' config/Config-images.in
+		if [[ `grep -o "default 448" config/Config-images.in | wc -l` == "1" ]]; then
+			sed -i 's\default 448\default 1024\g' config/Config-images.in
 			#传统模式
 			grub_position=$(cat config/Config-images.in | grep -n "Build GRUB images" | awk  '{print $1}' | sed "s/://")
 			del_num=$(($grub_position + 4))
