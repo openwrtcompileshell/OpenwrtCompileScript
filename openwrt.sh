@@ -1398,7 +1398,7 @@ source_lean() {
 
 
 		#target.mk
-		target_mk="luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-fileassistant luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-diag-core  luci-app-ssr-plus luci-app-turboacc luci-app-speedtest-web luci-app-bandix lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-tiny  fail2ban #tr_ok"
+		target_mk="luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-fileassistant luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-diag-core  luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-tiny  fail2ban #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1515,9 +1515,9 @@ other_plugins() {
 #中部
 
 cat >/tmp/other-plugins.txt <<EOF
-	luci-app-speedtest-web	https://github.com/ZeaKyX/luci-app-speedtest-web.git
+	#luci-app-speedtest-web	https://github.com/ZeaKyX/luci-app-speedtest-web.git
 	speedtest-web		https://github.com/ZeaKyX/speedtest-web.git
-	luci-app-bandix		https://github.com/timsaya/luci-app-bandix.git
+	#luci-app-bandix		https://github.com/timsaya/luci-app-bandix.git
 	openwrt-bandix		https://github.com/timsaya/openwrt-bandix.git
 	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
 	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
