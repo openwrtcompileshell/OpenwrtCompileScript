@@ -1516,7 +1516,9 @@ other_plugins() {
 
 cat >/tmp/other-plugins.txt <<EOF
 	luci-app-speedtest-web	https://github.com/ZeaKyX/luci-app-speedtest-web.git
+	speedtest-web		https://github.com/ZeaKyX/speedtest-web.git
 	luci-app-bandix		https://github.com/timsaya/luci-app-bandix.git
+	openwrt-bandix		https://github.com/timsaya/openwrt-bandix.git
 	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
 	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
 	#luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
