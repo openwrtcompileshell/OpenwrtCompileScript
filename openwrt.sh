@@ -1286,7 +1286,7 @@ source_openwrt_Setting() {
 		source_lean_package
 		echo -e ">>$green openwrt官方源码开始配置优化$white"
 		Time
-		itdesk_default_packages="block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-serverchan luci-app-diskman luci-app-passwall luci-app-fileassistant luci-app-jd-dailybonus luci-app-wrtbwmon luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-unblockmusic luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol  luci-app-frpc luci-app-ttyd luci-app-netdata  ddns-scripts_aliyun ddns-scripts_dnspod #tr_ok "
+		itdesk_default_packages="block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-diskman luci-app-passwall luci-app-jd-dailybonus luci-app-wrtbwmon luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-unblockmusic luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol  luci-app-frpc luci-app-ttyd luci-app-netdata  ddns-scripts_aliyun ddns-scripts_dnspod #tr_ok "
 		lean_packages_nas="DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba"	
 
 		#修改target.mk
@@ -1399,7 +1399,7 @@ source_lean() {
 
 
 		#target.mk
-		target_mk="luci-app-serverchan luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-fileassistant luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-diag-core  luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-tiny  fail2ban  smartmontools e2fsprogs luci-app-wrtbwmon luci-app-bandix parted losetup resize2fs blkid #tr_ok"
+		target_mk="luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-tiny  fail2ban  smartmontools e2fsprogs luci-app-wrtbwmon luci-app-bandix parted losetup resize2fs blkid #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1420,43 +1420,7 @@ source_lean() {
 			echo ""
 		fi
 	
-		#默认对x86首页下手，其他的你们安全了
-		x86indexif=$(grep -o "Local Weather" package/lean/autocore/files/x86/index.htm)
-		if [[ "$x86indexif" == "Local Weather" ]]; then
-			echo "已经替换X86首页文件"
-		else
-			rm -rf package/lean/autocore/files/x86/index.htm
-			cp $HOME/$OW/$SF/$OCS/Warehouse/index_Weather/x86_index.htm package/lean/autocore/files/x86/index.htm
-		fi
-	
-		base_zh_po_if=$(grep -o "#天气预报" feeds/luci/modules/luci-base/po/zh_Hans/base.po)
-		if [[ "$base_zh_po_if" == "#天气预报" ]]; then
-			echo "已添加天气预报翻译"
-		else
-			sed -i '$a \#天气预报\nmsgid "Weather"\nmsgstr "天气"\n\nmsgid "Local Weather"\nmsgstr "本地天气"\n ' feeds/luci/modules/luci-base/po/zh_Hans/base.po
-		fi
 
-		#首页显示编译时间
-		Compile_time_if=$(grep -o "#首页显示编译时间" feeds/luci/modules/luci-base/po/zh_Hans/base.po)
-		if [[ "$Compile_time_if" == "#首页显示编译时间" ]]; then
-			echo "已添加首页显示编译时间"
-		else
-			sed -i '$a \#首页显示编译时间\nmsgid "Compile_time"\nmsgstr "固件编译时间"\n' feeds/luci/modules/luci-base/po/zh_Hans/base.po
-			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
-			sed -i '$d' package/lean/default-settings/files/zzz-default-settings
-			echo "echo \"`date "+%Y-%m-%d %H:%M"` (commit:`git log -1 --format=format:'%C(bold white)%h%C(reset)'`)\" >> /etc/Compile_time" >> package/lean/default-settings/files/zzz-default-settings
-			echo "exit 0" >> package/lean/default-settings/files/zzz-default-settings
-		fi
-
-:<<'COMMENT'
-		#修改x86内核
-		if [[ `grep -o "KERNEL_PATCHVER:=5.4" target/linux/x86/Makefile | wc -l` == "1" ]]; then
-			sed -i 's\KERNEL_PATCHVER:=5.4\KERNEL_PATCHVER:=4.19\g' target/linux/x86/Makefile
-			sed -i 's\KERNEL_TESTING_PATCHVER:=5.4\KERNEL_TESTING_PATCHVER:=4.19\g' target/linux/x86/Makefile
-		else
-			echo ""
-		fi
-COMMENT
 		#ipq806x_makefile
 		ipq806x_makefile="kmod-ath10k-ct wpad-openssl jd_openwrt_script"
 		#ipq806x_makefile="kmod-ath10k-ct wpad-openssl kmod-qca-nss-drv kmod-qca-nss-drv-qdisc kmod-qca-nss-ecm-standard kmod-qca-nss-gmac kmod-nss-ifb iptables-mod-physdev kmod-ipt-physdev kmod-qca-nss-drv-pppoe MAC80211_NSS_SUPPORT  luci-app-cpufreq jd_openwrt_script"
@@ -1523,11 +1487,7 @@ cat >/tmp/other-plugins.txt <<EOF
 	luci-app-bandix		https://github.com/timsaya/luci-app-bandix.git
 	openwrt-bandix		https://github.com/timsaya/openwrt-bandix.git
 	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
-	luci-app-serverchan	https://github.com/tty228/luci-app-serverchan.git
-	#luci-app-adguardhome1	https://github.com/kongfl888/luci-app-adguardhome.git
 	luci-app-godproxy	https://github.com/project-lede/luci-app-godproxy.git
-	openwrt-passwall_luci	https://github.com/xiaorouji/openwrt-passwall.git
-	openwrt-passwall-packages	https://github.com/xiaorouji/openwrt-passwall-packages.git
 	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
 EOF
 	
