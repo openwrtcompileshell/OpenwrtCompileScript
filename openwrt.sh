@@ -1286,7 +1286,7 @@ source_openwrt_Setting() {
 		source_lean_package
 		echo -e ">>$green openwrt官方源码开始配置优化$white"
 		Time
-		itdesk_default_packages="block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-diskman luci-app-passwall luci-app-jd-dailybonus luci-app-wrtbwmon luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-unblockmusic luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol  luci-app-frpc luci-app-ttyd luci-app-netdata  ddns-scripts_aliyun ddns-scripts_dnspod #tr_ok "
+		itdesk_default_packages="block-mount coremark kmod-nf-nathelper kmod-nf-nathelper-extra kmod-ipt-raw wget libustream-openssl ca-certificates default-settings luci luci-app-ddns luci-app-upnp luci-app-autoreboot luci-app-webadmin luci-app-diskman luci-app-passwall luci-app-jd-dailybonus luci-app-filetransfer luci-app-vsftpd luci-app-ssr-plus luci-app-unblockmusic luci-app-arpbind luci-app-vlmcsd luci-app-wol luci-app-ramfree luci-app-sfe luci-app-nlbwmon luci-app-accesscontrol  luci-app-frpc luci-app-ttyd luci-app-netdata  ddns-scripts_aliyun ddns-scripts_dnspod #tr_ok "
 		lean_packages_nas="DEFAULT_PACKAGES.nas:=fdisk lsblk mdadm automount autosamba"	
 
 		#修改target.mk
@@ -1399,7 +1399,7 @@ source_lean() {
 
 
 		#target.mk
-		target_mk="luci-app-diskman luci-app-wrtbwmon luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-tiny  fail2ban  smartmontools e2fsprogs luci-app-wrtbwmon luci-app-bandix parted losetup resize2fs blkid #tr_ok"
+		target_mk="luci-app-diskman luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-tiny  fail2ban  smartmontools e2fsprogs parted losetup resize2fs blkid #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
@@ -1471,23 +1471,11 @@ other_plugins() {
 
 #需要删除的前置
 
-		#采用lisaac的luci-app-dockerman
-		if [[ -e package/lean/luci-app-dockerman ]]; then
-			rm -rf package/lean/luci-app-dockerman
-		fi
 			
 
 #中部
 
 cat >/tmp/other-plugins.txt <<EOF
-	luci-app-wrtbwmon	https://github.com/brvphoenix/luci-app-wrtbwmon.git
-	openwrt-wrtbwmon		https://github.com/brvphoenix/wrtbwmon.git
-	luci-app-speedtest-web	https://github.com/ZeaKyX/luci-app-speedtest-web.git
-	openwrt-speedtest		https://github.com/ZeaKyX/speedtest-web.git
-	luci-app-bandix		https://github.com/timsaya/luci-app-bandix.git
-	openwrt-bandix		https://github.com/timsaya/openwrt-bandix.git
-	luci-app-dockerman	https://github.com/lisaac/luci-app-dockerman.git
-	luci-app-godproxy	https://github.com/project-lede/luci-app-godproxy.git
 	jd_openwrt_script	https://github.com/xdhgsq/xdh_plug.git
 EOF
 	
@@ -1506,44 +1494,30 @@ do {
 done
 wait
 
+	#删除异常软件
+	rm -rf package/other-plugins/luci-app-dockerman
+	rm -rf package/other-plugins/openwrt-speedtest
+	rm -rf package/other-plugins/openwrt-passwall-packages
+	rm -rf package/other-plugins/luci-app-speedtest-web
+	rm -rf package/other-plugins/openwrt-passwall_luci
+	rm -rf package/other-plugins/luci-app-bandix
+	rm -rf package/other-plugins/openwrt-bandix
+	rm -rf package/other-plugins/luci-app-wrtbwmon
+	rm -rf package/other-plugins/openwrt-wrtbwmon
+	rm -rf package/other-plugins/luci-app-godproxy
+	
+	
 
 #需要调整的后部
-		#采用lisaac的luci-app-dockerman
+		
+
+:<<"no_print"
+
+	#采用lisaac的luci-app-dockerman
 		if [[ -e package/other-plugins/luci-app-dockerman ]]; then
 			sed -i "s/+ttyd//g" package/other-plugins/luci-app-dockerman/applications/luci-app-dockerman/Makefile
 		fi
 
-		
-		#openwrt-passwall插件默认选上其他参数
-		if [[ -e package/other-plugins/openwrt-passwall_luci ]]; then
-			cat >/tmp/passwall_luci_set <<EOF
-				NaiveProxy
-				tuic-client
-				Hysteria
-EOF
-
-			passwall_dir="package/other-plugins/openwrt-passwall_luci/luci-app-passwall/Makefile"
-			for i in `cat /tmp/passwall_luci_set`
-			do
-				Rows=$(grep -n "Include $i"  $passwall_dir | awk -F ":" '{print $1}')
-				Rows1=$(($Rows + 1))
-				Rows_left="1"
-				while [[ ${Rows_left} -gt 0 ]]; do
-					Rows1_if=$(sed -n "${Rows1}p" $passwall_dir | grep -o "default n" | wc -l)
-					if [ ${Rows1_if} == "1" ];then
-						sed -i "$Rows1 d" $passwall_dir
-						sed -i "$Rows a\	default y" $passwall_dir
-						Rows_left=$(($Rows_left -1))
-					else
-						Rows1=$(($Rows1 + 1))
-					fi
-				done
-			done
-		fi
-
-
-
-:<<"no_print"
 				#luci-app-ssr-plus插件默认选上其他参数
 		if [[ -e feeds/helloworld/luci-app-ssr-plus ]]; then
 			cat >/tmp/helloworld_set <<EOF
