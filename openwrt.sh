@@ -1399,7 +1399,7 @@ source_lean() {
 
 
 		#target.mk
-		target_mk="luci-app-diskman luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-full tcpdump-mini conntrack iftop nmap kmod-sched fail2ban  smartmontools e2fsprogs parted losetup resize2fs blkid #tr_ok"
+		target_mk="luci-app-diskman luci-app-frpc luci-app-frps luci-app-wol luci-app-dockerman luci-theme-argon luci-app-passwall luci-app-ipsec-vpnd luci-app-ttyd  luci-app-vnstat luci-app-ssr-plus luci-app-turboacc  lm-sensors  openssh-sftp-server iperf iperf3 ipv6helper tc-full tcpdump-mini conntrack iftop nmap kmod-sched kmod-sched-act-police fail2ban  smartmontools e2fsprogs parted losetup resize2fs blkid #tr_ok"
 		if [[ `grep -o "#tr_ok" include/target.mk | wc -l ` == "1" ]]; then
 			echo ""
 		else
